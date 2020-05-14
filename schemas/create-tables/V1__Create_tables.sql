@@ -66,7 +66,8 @@ ON DELETE CASCADE
 
 CREATE TABLE sport(
 sport_name VARCHAR(20),
-PRIMARY KEY(sport_name)
+PRIMARY KEY(sport_name),
+CHECK(sport_name IN('TENNIS', 'FOOTBALL', 'BASKETBALL'))
 );
 
 CREATE TABLE contest(
@@ -77,8 +78,7 @@ name VARCHAR(30),
 PRIMARY KEY(contest_id, season),
 FOREIGN KEY(sport_name) REFERENCES
 sport(sport_name)
-ON DELETE CASCADE ON UPDATE CASCADE,
-CHECK(sport_name IN('TENNIS', 'FOOTBALL', 'BASKETBALL'))
+ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `match`(
@@ -263,7 +263,7 @@ PRIMARY KEY(result_id),
 FOREIGN KEY(result_id) REFERENCES result(result_id) ON
 DELETE CASCADE ON UPDATE CASCADE,
 CHECK(first_set_winner IN ('HOME', 'AWAY')),
-CHECK(result_set_winner IN ('HOME', 'AWAY'))
+CHECK(second_set_winner IN ('HOME', 'AWAY'))
 );
 
 CREATE TABLE comment(
