@@ -8,6 +8,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import Box from '@material-ui/core/Box';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,11 +49,24 @@ export default function NavBar() {
           <Typography variant="h4" className={classes.title}>
             AlphaBet
           </Typography>
-          <Button color="inherit">Home</Button>
-          <Button color="inherit">Profile</Button>
-          <Button color="inherit">Editors</Button>
-          <Button color="inherit">Feed</Button>
-          <Button className={classes.menuButton} color="inherit">Market</Button>
+              <Button color="inherit">
+                <Link to="/">Home</Link>
+              </Button>
+              <Button color="inherit">
+                <Link to="/about">About</Link>
+              </Button>
+              <Button color="inherit">
+                <Link to="/profile">Profile</Link>
+              </Button>
+              <Button color="inherit">
+                <Link to="/editors">Editors</Link>
+              </Button>
+              <Button color="inherit">
+                    <Link to="/feed">Feed</Link>
+              </Button>
+              <Button className={classes.menuButton} color="inherit">
+                    <Link to="/market">Market</Link>
+              </Button>
           <Box className={classes.box} my={-5}>
             <List component="nav">
               <Box mb={-2}>
