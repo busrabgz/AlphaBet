@@ -11072,7 +11072,7 @@
 8405 silly runTopLevelLifecycles Finishing
 8406 silly install printInstalled
 8407 verbose stack Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
-8408 verbose cwd /home/busrabgz/PycharmProjects/busrabgz.github.io/front_end
+8408 verbose cwd /home/busrabgz/PycharmProjects/busrabgz.github.io/project
 8409 error Linux 5.3.0-51-generic
 8410 error argv "/usr/bin/node" "/usr/bin/npm" "install" "-g" "npm@latest"
 8411 error node v8.10.0
