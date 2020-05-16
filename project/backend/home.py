@@ -56,11 +56,13 @@ def login():
         if val > 0:
             person = cur.fetchone();
             if bcrypt.check_password_hash(person['password'], personDetails['password']):
-                access_token = create_access_token(identity={''})
-                return render_template('register.html')
+                access_token = create_access_token(identity={'username': person['username']})
 
-        mysql.connection.commit()
-        cur.close()
+                result = {
+                    "username": personDetails['username'],
+                    "access_token" : access_token
+                }
+                return jsonify(({"result": result}))
     return render_template('login.html')
 
 @app.route('/time')
