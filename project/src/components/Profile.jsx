@@ -6,17 +6,22 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import Button from '@material-ui/core/Button';
+import {UserContext} from './user-context';
 
 class Profile extends Component {
-  constructor(props) {
-    super(props)
-    }
 
   render() {
-    return (<div>
-        <NavBar />
-        <h1>Profile Page</h1>
-    </div>);
+    return (
+    <UserContext.Consumer>
+    { ( {username, balance, updateBalance} ) => (
+        <div>
+            <NavBar userBalance={balance}/>
+            <h1>Profile Page of {username}</h1>
+            <Button onClick={updateBalance}> Add balance </Button>
+        </div>
+         )}
+     </UserContext.Consumer>);
   }
 }
 
