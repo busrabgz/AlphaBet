@@ -53,7 +53,7 @@ export default function NavBar(props) {
           <Typography variant="h4" className={classes.title}>
             AlphaBet
           </Typography>
-            <Link to='/home'>
+            <Link to='/'>
               <Button color="white">
               Home
               </Button>

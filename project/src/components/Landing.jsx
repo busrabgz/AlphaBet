@@ -24,6 +24,7 @@ class Landing extends React.Component {
               </Route>
               <Route path="/signin">
                 <SignIn />
+              </Route>
               <Route exact path="/">
                 <Home/>
               </Route>
