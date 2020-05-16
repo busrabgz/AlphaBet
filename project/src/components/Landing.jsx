@@ -3,6 +3,7 @@ import Home from './Home.jsx'
 import Profile from './Profile.jsx'
 import Register from './Register.jsx'
 import SignIn from './SignIn.jsx'
+import Feed from './Feed.jsx'
 import {
   BrowserRouter as
   Switch,
@@ -21,6 +22,9 @@ class Landing extends React.Component {
               </Route>
               <Route path="/register">
                 <Register />
+              </Route>
+              <Route path="/feed">
+                <Feed />
               </Route>
               <Route path="/signin">
                 <SignIn />
