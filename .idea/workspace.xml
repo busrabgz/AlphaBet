@@ -26,12 +26,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e22c31e1-1417-44a4-80dd-27dcaec3fa94" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/project/backend/templates/login.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project/backend/templates/register.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/schemas/create-tables/V2__Alter_person.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/backend/home.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/backend/home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/project/src/App.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
