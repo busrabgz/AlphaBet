@@ -8,6 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import Box from '@material-ui/core/Box';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import {
   BrowserRouter as Router,
   Switch,
@@ -28,14 +29,17 @@ const useStyles = makeStyles((theme) => ({
   },
   box: {
     maxHeight: 100,
-    marginLeft: theme.spacing(30),
+    marginLeft: theme.spacing(20),
   },
   listItemText: {
     fontSize: '0.8em',
   },
   logoutButton: {
-    marginLeft: theme.spacing(20),
+    marginLeft: theme.spacing(5),
 
+  },
+  buttonGroup: {
+    marginLeft: theme.spacing(15),
   },
 }));
 
@@ -49,9 +53,11 @@ export default function NavBar() {
           <Typography variant="h4" className={classes.title}>
             AlphaBet
           </Typography>
-              <Button color="inherit">
-                <Link to="/">Home</Link>
+            <Link to='/home'>
+              <Button color="white">
+              Home
               </Button>
+            </Link>
               <Button color="inherit">
                 <Link to="/about">About</Link>
               </Button>
@@ -61,7 +67,7 @@ export default function NavBar() {
               <Button color="inherit">
                 <Link to="/editors">Editors</Link>
               </Button>
-              <Button color="inherit">
+              <Button color="white">
                     <Link to="/feed">Feed</Link>
               </Button>
               <Button className={classes.menuButton} color="inherit">
@@ -81,7 +87,15 @@ export default function NavBar() {
               </Box>
             </List>
           </Box>
-          <Button size="small" variant="contained" color="secondary" className={classes.logoutButton}>Log Out</Button>
+
+          <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.buttonGroup}>
+          <Link to='/register' style={{textDecoration: 'none'}}>
+            <Button size="small" variant="contained" color="secondary" >Register</Button>
+          </Link>
+          <Link to='/signin' style={{textDecoration: 'none'}}>
+            <Button size="small" variant="contained" color="secondary" >Sign In</Button>
+          </Link>
+          </ButtonGroup> 
         </Toolbar>
       </AppBar>
     </div>

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import Home from './Home.jsx'
 import Profile from './Profile.jsx'
+import Register from './Register.jsx'
+import SignIn from './SignIn.jsx'
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,6 +20,12 @@ class Landing extends Component {
           <Switch>
               <Route path="/profile">
                 <Profile />
+              </Route>
+              <Route path="/register">
+                <Register />
+              </Route>
+              <Route path="/signin">
+                <SignIn />
               </Route>
               <Route path="/">
                 <Home />
