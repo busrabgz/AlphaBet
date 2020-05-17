@@ -3,6 +3,7 @@ import Home from './Home.jsx'
 import Profile from './Profile.jsx'
 import Register from './Register.jsx'
 import SignIn from './SignIn.jsx'
+import Editor from './Editor.jsx'
 import {
   BrowserRouter as
   Switch,
@@ -18,6 +19,9 @@ class Landing extends React.Component {
           <Switch>
               <Route path="/profile">
                 <Profile/>
+              </Route>
+              <Route path="/editors">
+                <Editor/>
               </Route>
               <Route path="/register">
                 <Register />
