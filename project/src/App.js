@@ -20,10 +20,11 @@ class App extends React.Component {
         }));
     };
 
-    this.updateLoginState = (newState, newType) => {
+    this.updateLogInState = (newState, newType, newName) => {
         this.setState( state => ({
             loggedIn: newState,
-            type: type
+            type: newType,
+            username: newName,
         }));
     };
 

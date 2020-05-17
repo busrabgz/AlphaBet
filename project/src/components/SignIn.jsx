@@ -10,19 +10,31 @@ import {
   Redirect
 } from "react-router-dom";
 import axios from 'axios';
-import { UserContext } from './user-context.js';
+import { UserContext, userInfo } from './user-context.js';
 
 const URL = "http://localhost:5000/signin";
 
 class SignIn extends Component {
+  static contextType = UserContext
+ 
   constructor(props) {
     super(props)
-    this.state = {username: "", password: "", logged_in: false}
-
+    this.state = {username: '', password: ''}
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
    }
 
+   componentDidMount() {
+     const userInfo = this.context
+     console.log(userInfo)
+     console.log(userInfo.loggedIn)
+     this.setState({
+       username: userInfo.username,
+       password: userInfo.password,
+     })
+   }
+
+   
    handleSubmit(event){
     axios.post(URL,
         {
@@ -33,7 +45,7 @@ class SignIn extends Component {
         .then( res => {
             if(res.data.result.success == "true"){
                 console.log("login", res);
-                this.setState({ logged_in: true });
+                userInfo.updateLogInState(res.data.result.success, res.data.result.type, res.data.result.username);
                  }
             })
          .catch(error => {
@@ -43,13 +55,13 @@ class SignIn extends Component {
    }
 
    handleChange(event) {
-       this.setState({
+      this.setState({
         [event.target.name]: event.target.value
        });
    }
 
   render() {
-    if (this.state.logged_in) {
+    if (userInfo.loggedIn) {
       // redirect to home if logged in
       return <Redirect to = {{ pathname: "/profile" }} />;
     }

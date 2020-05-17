@@ -1,8 +1,8 @@
 import React from 'react'
 
 export const userInfo = {
-    username: 'theyucin',
-    password: 'zaa',
+    username: '',
+    password: '',
     balance: 50,
     type: '',
     loggedIn: false,
