@@ -21,12 +21,12 @@ class App extends React.Component {
     };
 
     this.state = {
-        username: userInfo.username,
-        password: userInfo.password,
-        balance: userInfo.balance,
-        updateBalance: this.updateBalance,
-        };
-
+      username: userInfo.username,
+      password: userInfo.password,
+      balance: userInfo.balance,
+      updateBalance: this.updateBalance,
+      betslip: userInfo.betslip,
+      };
     }
 
   render(){
