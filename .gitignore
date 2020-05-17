@@ -1,8 +1,9 @@
-
+project/node_modules/
+project/backend/
+project/pycache/
+project/package.json
 project/yarn.lock
 
-project/package.json
-
-.idea/workspace.xml
-
 project/package-lock.json
+
+.idea/
