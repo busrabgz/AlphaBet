@@ -10,6 +10,7 @@ import {
   Redirect
 } from "react-router-dom";
 import axios from 'axios';
+import { UserContext } from './user-context.js';
 
 const URL = "http://localhost:5000/signin";
 
@@ -52,30 +53,32 @@ class SignIn extends Component {
       // redirect to home if logged in
       return <Redirect to = {{ pathname: "/profile" }} />;
     }
-    return (<div>
-        <NavBar />
-        <h1>Login Page</h1>
-         <form onSubmit={this.handleSubmit}>
-            <input
-                type="username"
-                name = "username"
-                placeholder="Username"
-                value={this.state.username}
-                onChange={this.handleChange}
-                required
-            />
+    return (
+        <div>
+            <NavBar />
+            <h1>Login Page</h1>
+            <form onSubmit={this.handleSubmit}>
+                <input
+                    type="username"
+                    name = "username"
+                    placeholder="Username"
+                    value={this.state.username}
+                    onChange={this.handleChange}
+                    required
+                />
 
-            <input
-                type="password"
-                name = "password"
-                placeholder="Password"
-                value={this.state.password}
-                onChange={this.handleChange}
-                required
-            />
-            <button type="submit">Login</button>
-        </form>
-    </div>);
+                <input
+                    type="password"
+                    name = "password"
+                    placeholder="Password"
+                    value={this.state.password}
+                    onChange={this.handleChange}
+                    required
+                />
+                <button type="submit">Login</button>
+            </form>
+        </div>
+      );
   }
 }
 
