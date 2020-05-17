@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {UserContext} from '../user-context';
+import {UserContext, userInfo} from '../user-context';
 import SingleBet from './SingleBet.jsx';
 
 const divStyle = {
@@ -14,23 +14,32 @@ const divStyle = {
   };
 
 class BetSlip extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      betslip: this.props.slip,
+      singleBets: [],
+    };
 
+  
+    for ( var i = 0; i < this.state.betslip.length; i++) {
+      var betinfo = {
+        name: this.state.betslip[i].matchname,
+        bet: this.state.betslip[i].bet,
+        odd: this.state.betslip[i].odd
+      }
 
+      this.state.singleBets[i] = <SingleBet key={i} info= {betinfo}/>
+    }
+  }
 
   render() {
     return (
-    <UserContext.Consumer>
-    { ( {username, balance, updateBalance} ) => (
         <div style={divStyle}>
-            <SingleBet />
-            <SingleBet />
-            <SingleBet />
-            <SingleBet />
-            <SingleBet />
+          {this.state.singleBets}
         </div>
-         )}
-     </UserContext.Consumer>);
+    );
   }
-}
+}   
 
 export default BetSlip

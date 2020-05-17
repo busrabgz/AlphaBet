@@ -10,15 +10,23 @@ const divStyle = {
 
 class SingleBet extends Component {
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      matchname: props.info.name,
+      bet: props.info.bet,
+      odd: props.info.odd
+    }
+  }
+
   render() {
     return (
-    <UserContext.Consumer>
-    { ( {username, balance, updateBalance} ) => (
         <div style={divStyle}>
-            <h1>Bets will be shown here</h1>
+            <p>{this.state.matchname}</p>
+            <p>{this.state.bet}</p>
+            <h3>{this.state.odd}</h3>
         </div>
-         )}
-     </UserContext.Consumer>);
+         )
   }
 }
 
