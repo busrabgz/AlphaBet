@@ -28,7 +28,7 @@ class SignIn extends Component {
             username: this.state.username,
             password: this.state.password
          },
-        {withCredentials: true})
+        {withCredentials: false})
         .then( res => {
             if(res.data.result.success == "true"){
                 console.log("login", res);
@@ -50,7 +50,7 @@ class SignIn extends Component {
   render() {
     if (this.state.logged_in) {
       // redirect to home if logged in
-      return <Redirect to = {{ pathname: "/" }} />;
+      return <Redirect to = {{ pathname: "/profile" }} />;
     }
     return (<div>
         <NavBar />

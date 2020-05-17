@@ -35,7 +35,7 @@ class Register extends Component {
             email: this.state.email,
             type: this.state.type
          },
-         {withCredentials: true})
+         {credentials: 'include'})
         .then( res => {
             if(res.data.result.success == "true"){
                 console.log("registration", res);
