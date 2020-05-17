@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NavBar() {
+export default function NavBar(props) {
   const classes = useStyles();
-
+  const balanceStr = "Balance: " + props.userBalance;
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -53,7 +53,7 @@ export default function NavBar() {
           <Typography variant="h4" className={classes.title}>
             AlphaBet
           </Typography>
-            <Link to='/home'>
+            <Link to='/'>
               <Button color="white">
               Home
               </Button>
@@ -77,7 +77,7 @@ export default function NavBar() {
             <List component="nav">
               <Box mb={-2}>
               <ListItem>
-                <ListItemText classes={{primary:classes.listItemText}} primary="Balance: "></ListItemText>
+                <ListItemText classes={{primary:classes.listItemText}} primary={balanceStr}></ListItemText>
               </ListItem>
               </Box>
               <Box mt={-1}>

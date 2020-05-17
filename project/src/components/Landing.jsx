@@ -1,25 +1,23 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Home from './Home.jsx'
 import Profile from './Profile.jsx'
 import Register from './Register.jsx'
 import SignIn from './SignIn.jsx'
 import {
-  BrowserRouter as Router,
+  BrowserRouter as
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
+import {UserContext} from './user-context';
 
-class Landing extends Component {
-  constructor(props) {
-    super(props)
-    }
+class Landing extends React.Component {
 
   render() {
-    return (<div>
+    return (
+        <div>
           <Switch>
               <Route path="/profile">
-                <Profile />
+                <Profile/>
               </Route>
               <Route path="/register">
                 <Register />
@@ -27,12 +25,14 @@ class Landing extends Component {
               <Route path="/signin">
                 <SignIn />
               </Route>
-              <Route path="/">
-                <Home />
+              <Route exact path="/">
+                <Home/>
               </Route>
           </Switch>
-    </div>);
+        </div>
+    );
   }
 }
+Landing.contextType = UserContext;
 
 export default Landing

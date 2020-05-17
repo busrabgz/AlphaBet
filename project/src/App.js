@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import NavBar from './components/NavBar.jsx'
-import Home from './components/Home.jsx'
-import Profile from './components/Profile.jsx'
-
 import Landing from './components/Landing.jsx'
 import logo from './logo.svg';
 import './App.css';
@@ -12,24 +8,38 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import {UserContext, userInfo} from './components/user-context.js';
 
-function App() {
-const [currentTime, setCurrentTime] = useState(0);
+class App extends React.Component {
+    constructor(props){
+    super(props)
 
-  useEffect(() => {
-    fetch('/time').then(res => res.json()).then(data => {
-      setCurrentTime(data.time);
-    });
-  }, []);
+    this.updateBalance = (amount) => {
+        this.setState( state => ({
+            balance: state.balance + 1
+        }));
+    };
 
-  return (
+    this.state = {
+        username: userInfo.username,
+        password: userInfo.password,
+        balance: userInfo.balance,
+        updateBalance: this.updateBalance,
+        };
 
-    <div className="App">
-        <Router>
-            <Landing />
-        </Router>
-    </div>
-  );
+    }
+
+  render(){
+      return (
+        <div className="App">
+            <Router>
+                <UserContext.Provider value={this.state}>
+                    <Landing />
+                </UserContext.Provider>
+            </Router>
+        </div>
+      );
+  }
 }
 
 export default App;
