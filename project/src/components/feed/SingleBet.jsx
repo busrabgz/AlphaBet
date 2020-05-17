@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button';
 import {UserContext} from '../user-context';
+import Paper from '@material-ui/core/Paper';
 
 const divStyle = {
-  height: "10em",
-  overflowX: "scroll",
+  height: "8em",
   overflowY: "hidden",
   };
 
@@ -22,9 +22,11 @@ class SingleBet extends Component {
   render() {
     return (
         <div style={divStyle}>
+          <Paper elevation={3}>
             <p>{this.state.matchname}</p>
             <p>{this.state.bet}</p>
-            <h3>{this.state.odd}</h3>
+            <p>{this.state.odd}</p>
+          </Paper>
         </div>
          )
   }

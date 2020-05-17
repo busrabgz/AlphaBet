@@ -17,6 +17,11 @@ const divStyle = {
   width: "100%",
 };
 
+const buttonStyle = {
+  backgroundColor: '#4CAF50',
+  color: "white",
+}
+
 class FeedDetails extends Component {
 
   render() {
@@ -42,6 +47,13 @@ class FeedDetails extends Component {
                       <TableCell align="right">MS-1</TableCell>
                       <TableCell align="right">1.5</TableCell>
                     </TableRow>
+                    <TableBody>
+                      <TableCell>
+                        <Button variant='contained' style={buttonStyle} >
+                          Bet on this now!
+                        </Button>
+                      </TableCell>
+                    </TableBody>
                 </TableBody>
               </Table>
             </TableContainer>
