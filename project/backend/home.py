@@ -50,6 +50,12 @@ def home():
 
         if len(input["filter"]["contest"]) == 1:
             contest = str(tuple(input["filter"]["contest"])).replace(",", "")
+        elif len(input["filter"]["contest"]) == 0:
+            cur.execute("SELECT name FROM contest")
+            temp = cur.fetchall()
+
+            contest = tuple([contest[0] for contest in temp])
+
         else:
             contest = str(tuple(input["filter"]["contest"]))
 
@@ -75,8 +81,8 @@ def home():
                              ", current_competitors AS (SELECT competitor_id, side, match_id FROM competitor_match "
                              "NATURAL JOIN final_filter), all_sides AS (SELECT competitor_name, side, match_id FROM "
                              "all_competitors NATURAL JOIN current_competitors), bet_data AS (SELECT * FROM "
-                             "bet NATURAL JOIN final_filter) SELECT * FROM match_data NATURAL JOIN bet_data NATURAL "
-                             "JOIN all_sides"
+                             "bet NATURAL JOIN final_filter WHERE active = TRUE) SELECT * FROM match_data NATURAL "
+                             "JOIN bet_data NATURAL JOIN all_sides"
                     )
         match_data_columns = [column[0] for column in cur.description]
 
