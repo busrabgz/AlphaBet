@@ -100,10 +100,21 @@ def home():
         for row in cur.fetchall():
             results.append(dict(zip(old_odds_columns, row)))
 
+        if input["filter"]["sort_type"] == "popularity":
+
+            cur.execute("WITH active_bet AS ( SELECT bet_id, match_id FROM bet WHERE active = TRUE), "
+                        "all_placed_bets AS ( SELECT * FROM included_bet NATURAL JOIN bet_slip NATURAL JOIN "
+                        "active_bet WHERE placed = TRUE) SELECT bet_id, match_id, Count(bet_slip_id) AS count "
+                        "FROM all_placed_bets GROUP BY bet_id, match_id")
+
+            popularity_columns = [column[0] for column in cur.description]
+
+            for row in cur.fetchall():
+                results.append(dict(zip(popularity_columns, row)))
+
         return {
             "response": results
         }
-
 
     elif input["request_type"] == "play_betslip":
 
