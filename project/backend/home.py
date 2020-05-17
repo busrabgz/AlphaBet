@@ -133,7 +133,7 @@ def home():
                                     "user.account_balance - {1} WHERE user_id = {2}".format(input["played_amount"],
                                                                                             input["played_amount"],
                                                                                             person_id))
-
+                        return {"status": "success"}
                     else:
                         return {"status": "not_enough_credits"}
             else:
