@@ -54,12 +54,13 @@ def home():
         "played_amount": request.get_json(force=True)["played_amount"],
         "match_id": request.get_json(force=True)["match_id"],
         "bet_id": request.get_json(force=True)["bet_id"],
+        "editor_comment": request.get_json(force=True)["editor_comment"],
         "vote_side": request.get_json(force=True)["vote_side"],
         "filter": request.get_json(force=True)["filter"]
     }
 
     '''
-    Filter request uses input["filter], 
+    Filter request uses input["filter"], 
     '''
 
     if input["request_type"] == "filter":
@@ -132,7 +133,6 @@ def home():
             "response": results
         }
 
-
     elif input["request_type"] == "play_betslip": #Requires the input["played_amount"]
 
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
@@ -171,7 +171,25 @@ def home():
             else:
                 return {"status": "mbn_not_satisfied"}
 
-    elif input["request_type"] == "add_bet_to_betslip":
+    elif input["request_type"] == "editor_share_betslip":
+        if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
+            person_id = cur.fetchone()[0]
+
+        if cur.execute(
+                "SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}".format(person_id)) > 0:
+            bet_slip_id = cur.fetchone()[0]
+
+        cur.execute("INSERT INTO shared_bet_slip (bet_slip_id, sharer_id) VALUES ({0}, {1})"
+                    .format(bet_slip_id, person_id))
+
+    elif input["request_type"] == "suggest_bet":
+        if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
+            person_id = cur.fetchone()[0]
+
+        cur.execute("INSERT INTO suggested_bet (editor_id, bet_id, match_id, comment) VALUES ({0}, {1}, {2}, '{3}')"
+                    .format(person_id, input["bet_id"], input["match_id"], input["editor_comment"]))
+
+    elif input["request_type"] == "add_bet_to_betslip": #Editor also adds bet to betslip using this request
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
             person_id = cur.fetchone()[0]
 

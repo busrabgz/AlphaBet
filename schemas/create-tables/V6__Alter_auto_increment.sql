@@ -1,0 +1,21 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
+ALTER TABLE person MODIFY person_id INT AUTO_INCREMENT;
+ALTER TABLE user MODIFY user_id INT AUTO_INCREMENT;
+ALTER TABLE bet_slip MODIFY bet_slip_id INT AUTO_INCREMENT;
+ALTER TABLE bet MODIFY COLUMN bet_id INT NOT NULL;
+
+DELIMITER $$
+
+CREATE TRIGGER composite_auto_inc BEFORE INSERT ON bet
+FOR EACH ROW BEGIN
+    SET NEW.bet_id = (
+       SELECT IFNULL(MAX(bet_id), 1) + 1
+       FROM bet
+       WHERE match_id  = NEW.match_id
+    );
+END $$
+
+DELIMITER ;
+
+SET FOREIGN_KEY_CHECKS = 1;
