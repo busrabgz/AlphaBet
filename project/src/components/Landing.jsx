@@ -5,6 +5,7 @@ import Register from './Register.jsx'
 import SignIn from './SignIn.jsx'
 import Feed from './Feed.jsx'
 import Market from './Market.jsx'
+import Editor from './Editor.jsx'
 import {
   BrowserRouter as
   Switch,
@@ -22,6 +23,9 @@ class Landing extends React.Component {
           <Switch>
               <Route path="/profile">
                 <Profile id={userId}/>
+              </Route>
+              <Route path="/editors">
+                <Editor/>
               </Route>
               <Route path="/register">
                 <Register id={userId}/>
