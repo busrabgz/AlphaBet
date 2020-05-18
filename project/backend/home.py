@@ -321,24 +321,6 @@ def profile():
         }
         return jsonify({"result": result})
 
-    if input["request_type"] == "get_friends":
-        cur = mysql.connection.cursor()
-        ## TODO RETURNS WHOLE PERSON LIST
-        cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id, username "
-                    "FROM user_friend NATURAL JOIN person WHERE user_id = {0})"
-                    "SELECT username FROM friends".format(input["user_id"]))
-
-        user = cur.fetchall()
-        friends = []
-
-        for row in user:
-            friends.append(row[0])
-
-        result = {
-            "friends": friends
-        }
-        return jsonify({"result": result})
-
     if input["request_type"] == "get_pending_bet_slips":
         cur = mysql.connection.cursor()
         # TODO
@@ -397,6 +379,37 @@ def profile():
         cur = mysql.connection.cursor()
         cur.execute("WITH achieved_id AS (SELECT achievement_id, user_id FROM gained_achievement NATURAL JOIN user "
                     "WHERE user_id = {0}) SELECT COUNT(achievement_id) AS gained_count FROM achieved_id"
+                    .format(input["user_id"]))
+
+        val = cur.fetchone()
+
+        result = {
+            "gained_achievement_count": val[0]
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_friends":
+        cur = mysql.connection.cursor()
+        ## TODO RETURNS WHOLE PERSON LIST
+        cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id, username "
+                    "FROM user_friend NATURAL JOIN person WHERE user_id = {0})"
+                    "SELECT username FROM friends".format(input["user_id"]))
+
+        user = cur.fetchall()
+        friends = []
+
+        for row in user:
+            friends.append(row[0])
+
+        result = {
+            "friends": friends
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "search_friends":
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id "
+                    "WHERE username LIKE ‘%@friend_search_text%’ AND u.user_id <> @user_id"
                     .format(input["user_id"]))
 
         val = cur.fetchone()
