@@ -25,9 +25,9 @@ class Profile extends Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance} ) => (
+    { ( {username, balance, updateBalance, loggedIn} ) => (
         <div>
-            <NavBar userBalance={balance}/>
+            <NavBar userBalance={balance} userSuccess={loggedIn}/>
             <h1>Profile Page of {username}</h1>
             <UserInfoPanel username={username} update={updateBalance}/>
             <div>

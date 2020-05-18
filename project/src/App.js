@@ -14,19 +14,33 @@ class App extends React.Component {
     constructor(props){
     super(props)
 
-    this.updateBalance = (amount) => {
+    this.updateBalance = () => {
         this.setState( state => ({
             balance: state.balance + 1
         }));
     };
 
+    this.updateLogInState = (newState, newType, newName,newId) => {
+        this.setState( state => ({
+            loggedIn: newState,
+            type: newType,
+            username: newName,
+            userId: newId
+        }));
+        return true
+    };
+
     this.state = {
-      username: userInfo.username,
-      password: userInfo.password,
-      balance: userInfo.balance,
-      updateBalance: this.updateBalance,
-      betslip: userInfo.betslip,
-      };
+        userId: userInfo.userId,
+        username: userInfo.username,
+        password: userInfo.password,
+        balance: userInfo.balance,
+        updateBalance: this.updateBalance,
+        type: userInfo.type,
+        loggedIn: userInfo.loggedIn,
+        updateLogInState: this.updateLogInState,
+        betslip: userInfo.betslip
+        };
     }
 
   render(){

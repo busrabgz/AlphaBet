@@ -16,11 +16,11 @@ class Home extends Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance} ) => (
+    { ( {username, balance, updateBalance, loggedIn} ) => (
         <div>
-            <NavBar userBalance={balance}/>
+            <NavBar userBalance={balance} userSuccess={loggedIn}/>
             <h1>Home Page</h1>
-            <p>"WELCOME " {username}</p>
+            <p>"WELCOME " {this.props.id}</p>
         </div>
          )}
      </UserContext.Consumer>);

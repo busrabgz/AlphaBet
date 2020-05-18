@@ -16,29 +16,32 @@ class Landing extends React.Component {
 
   render() {
     return (
+    <UserContext.Consumer>
+    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId} ) => (
         <div>
           <Switch>
               <Route path="/profile">
-                <Profile/>
+                <Profile id={userId}/>
               </Route>
               <Route path="/register">
-                <Register />
+                <Register id={userId}/>
               </Route>
               <Route path="/feed">
                 <Feed />
               </Route>
               <Route path="/signin">
-                <SignIn />
+                <SignIn id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} userType={type} balanceFunc={updateBalance} balance={balance} />
               </Route>
               <Route path="/market">
                 <Market />
               </Route>
               <Route exact path="/">
-                <Home/>
+                <Home id={userId}/>
               </Route>
           </Switch>
         </div>
-    );
+        )}
+    </UserContext.Consumer>);
   }
 }
 Landing.contextType = UserContext;
