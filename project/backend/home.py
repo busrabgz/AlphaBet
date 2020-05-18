@@ -66,6 +66,20 @@ def home():
 
     if input["request_type"] == "filter":
 
+        if input["filter"]["sort_type"] == "popularity":
+
+            cur.execute("WITH active_bet AS ( SELECT bet_id, match_id FROM bet WHERE active = TRUE), "
+                        "all_placed_bets AS ( SELECT * FROM included_bet NATURAL JOIN bet_slip NATURAL JOIN "
+                        "active_bet WHERE placed = TRUE) SELECT bet_id, match_id, Count(bet_slip_id) AS play_count "
+                        "FROM all_placed_bets GROUP BY bet_id, match_id")
+
+            popularity_columns = [column[0] for column in cur.description]
+
+            popularity_results = []
+
+            for row in cur.fetchall():
+                popularity_results.append(dict(zip(popularity_columns, row)))
+
         if len(input["filter"]["contest"]) == 1:
             contest = str(tuple(input["filter"]["contest"])).replace(",", "")
         elif len(input["filter"]["contest"]) == 0:
@@ -104,34 +118,92 @@ def home():
                     )
         match_data_columns = [column[0] for column in cur.description]
 
-        results = []
+        match_data_results = []
 
         for row in cur.fetchall():
-            results.append(dict(zip(match_data_columns, row)))
+            match_data_results.append(dict(zip(match_data_columns, row)))
 
-        cur.execute(filter + "SELECT match_id, bet_type, MAX(change_date) AS change_date, odd FROM (SELECT * FROM bet "
-                             "NATURAL JOIN final_filter WHERE active = FALSE) AS inactive_bets GROUP BY "
-                             "match_id, bet_type, odd")
+        matches = []
+
+        for row in match_data_results:
+
+            composite_already_added = False
+            match_found = False
+
+            if row["side"] == "HOME":
+                home_side = row["competitor_name"]
+                away_side = ""
+
+            else:
+                home_side = ""
+                away_side = row["competitor_name"]
+
+            total_odd = row["odd"]
+
+            for match in matches:
+
+                if match["match_id"] == row["match_id"]:
+                    match_found = True
+
+                    for bet in match["bets"]:
+                        if bet["bet_id"] == row["bet_id"]:
+                            composite_already_added = True
+
+                            if bet["home_side"] == "":
+                                bet["home_side"] = row["competitor_name"]
+                            else:
+                                bet["away_side"] = row["competitor_name"]
+                    if not composite_already_added:
+
+                        bet_to_add = {
+                            "bet_id": row["bet_id"],
+                            "home_side": home_side,
+                            "away_side": away_side,
+                            "odd": total_odd,
+                            "play_count": 0,
+                            "bet_type": row["bet_type"]
+                        }
+
+                        if input["filter"]["sort_type"] == "popularity":
+                            for bet in popularity_results:
+                                if bet["match_id"] == match["match_id"] and bet["bet_id"] == row["bet_id"]:
+                                    bet_to_add["play_count"] = bet["play_count"]
+
+                        match["bets"].append(bet_to_add)
+
+            if not match_found:
+                bets = [{
+                    "bet_id": row["bet_id"],
+                    "home_side": home_side,
+                    "away_side": away_side,
+                    "odd": total_odd,
+                    "play_count": 0,
+                    "bet_type": row["bet_type"]
+                }]
+
+                if input["filter"]["sort_type"] == "popularity":
+                    for bet in popularity_results:
+                        if bet["match_id"] == row["match_id"] and bet["bet_id"] == row["bet_id"]:
+                            bets[0]["play_count"] = bet["play_count"]
+                matches.append({
+                    "match_id": row["match_id"],
+                    "bets": bets
+                })
+
+        cur.execute(filter + "SELECT match_id, bet_id, bet_type, MAX(change_date) AS change_date, odd FROM (SELECT * "
+                             "FROM bet NATURAL JOIN final_filter WHERE active = FALSE) AS inactive_bets GROUP BY "
+                             "match_id, bet_id, bet_type, odd")
 
         old_odds_columns = [column[0] for column in cur.description]
 
+        old_odds_results = []
+
         for row in cur.fetchall():
-            results.append(dict(zip(old_odds_columns, row)))
-
-        if input["filter"]["sort_type"] == "popularity":
-
-            cur.execute("WITH active_bet AS ( SELECT bet_id, match_id FROM bet WHERE active = TRUE), "
-                        "all_placed_bets AS ( SELECT * FROM included_bet NATURAL JOIN bet_slip NATURAL JOIN "
-                        "active_bet WHERE placed = TRUE) SELECT bet_id, match_id, Count(bet_slip_id) AS count "
-                        "FROM all_placed_bets GROUP BY bet_id, match_id")
-
-            popularity_columns = [column[0] for column in cur.description]
-
-            for row in cur.fetchall():
-                results.append(dict(zip(popularity_columns, row)))
+            old_odds_results.append(dict(zip(old_odds_columns, row)))
 
         return {
-            "response": results
+            "matches": matches,
+            "old_odds": old_odds_results,
         }
 
     elif input["request_type"] == "play_betslip":  # Requires the input["played_amount"]
@@ -149,7 +221,6 @@ def home():
 
             mbn_result = cur.fetchone()[0]
 
-            print(mbn_result)
             if mbn_result == "MBN_satisfied":
 
                 if cur.execute("SELECT CASE WHEN user.account_balance < 3 THEN 'insufficent_credits'"
@@ -325,33 +396,137 @@ def feed():
     input = {
         "user_id": request.get_json(force=True)["user_id"],
         "request_type": request.get_json(force=True)["request_type"],
-        "comment_text": request.get_json(force=True)["comment_text"]
+        "comment_text": request.get_json(force=True)["comment_text"],
+        "focused_bet_slip_id": request.get_json(force=True)["focused_bet_slip_id"]
     }
 
     if input["request_type"] == "display_shared_bets":
 
-        cur.execute("WITH friend_id_set AS (SELECT friend_id AS person_id FROM user_friend "
-                    "WHERE user_id = {0}), friend_data AS (SELECT username, person_id AS sharer_id FROM friend_id_set "
-                    "NATURAL JOIN person), friend_slip_id AS (SELECT * FROM (shared_bet_slip NATURAL JOIN (SELECT "
-                    "person_id AS sharer_id FROM friend_id_set) AS sharing_friend )), friend_slip_bet AS ( SELECT * "
-                    "FROM (included_bet NATURAL JOIN friend_slip_id)), friend_slip_bet_data AS (SELECT * FROM "
-                    "friend_slip_bet NATURAL JOIN bet), match_data AS (SELECT * FROM friend_slip_bet_data NATURAL JOIN "
-                    "competitor_match), all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT "
-                    "player_id AS competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM"
-                    " individual_player) AS temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id"
-                    " FROM team)) SELECT DISTINCT *  FROM match_data NATURAL JOIN all_competitors NATURAL JOIN (SELECT "
-                    "sharer_id, username FROM friend_data) AS friend_temp".format(input["user_id"]))
+        friend_slip_id_query = "WITH friend_id_set AS (SELECT friend_id AS person_id FROM user_friend " \
+                               "WHERE user_id = {0}), friend_data AS (SELECT username, person_id AS sharer_id FROM friend_id_set " \
+                               "NATURAL JOIN person), friend_slip_id AS (SELECT * FROM (shared_bet_slip NATURAL JOIN (SELECT " \
+                               "person_id AS sharer_id FROM friend_id_set) AS sharing_friend ))".format(
+            input["user_id"])
 
-        results = []
+        cur.execute(friend_slip_id_query + " SELECT bet_slip_id, comment_id, comment, username FROM friend_slip_id"
+                                           " NATURAL JOIN bet_slip_comment NATURAL JOIN comment NATURAL JOIN person")
+
+        comment_results = []
+
+        comment_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            comment_results.append(dict(zip(comment_columns, row)))
+
+        cur.execute(friend_slip_id_query + " SELECT bet_slip_id, Count(bet_slip_id) as like_count FROM friend_slip_id"
+                                           " NATURAL JOIN bet_slip_like GROUP BY bet_slip_id")
+
+        like_results = []
+
+        like_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            like_results.append(dict(zip(like_columns, row)))
+
+        cur.execute(friend_slip_id_query + ", friend_slip_bet AS ( SELECT * "
+                                           "FROM (included_bet NATURAL JOIN friend_slip_id)), friend_slip_bet_data AS (SELECT * FROM "
+                                           "friend_slip_bet NATURAL JOIN bet), match_data AS (SELECT * FROM friend_slip_bet_data NATURAL JOIN "
+                                           "competitor_match), all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT "
+                                           "player_id AS competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM"
+                                           " individual_player) AS temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id"
+                                           " FROM team)) SELECT DISTINCT *  FROM match_data NATURAL JOIN all_competitors NATURAL JOIN (SELECT "
+                                           "sharer_id, username FROM friend_data) AS friend_temp")
+
+        bet_slip_results = []
 
         feed_columns = [column[0] for column in cur.description]
 
         for row in cur.fetchall():
-            results.append(dict(zip(feed_columns, row)))
+            bet_slip_results.append(dict(zip(feed_columns, row)))
+
+        bet_slips = []
+
+        for row in bet_slip_results:
+
+            composite_already_added = False
+            bet_slip_found = False
+
+            if row["side"] == "HOME":
+                home_side = row["competitor_name"]
+                away_side = ""
+
+            else:
+                home_side = ""
+                away_side = row["competitor_name"]
+
+            total_odd = row["odd"]
+
+            for bet_slip in bet_slips:
+
+                if bet_slip["bet_slip_id"] == row["bet_slip_id"]:
+                    bet_slip_found = True
+                    for bet in bet_slip["bets"]:
+                        if bet["bet_id"] == row["bet_id"] and bet["match_id"] == row["match_id"]:
+                            composite_already_added = True
+
+                            if bet["home_side"] == "":
+                                bet["home_side"] = row["competitor_name"]
+                            else:
+                                bet["away_side"] = row["competitor_name"]
+                    if not composite_already_added:
+
+                        bet_to_add = {
+                            "bet_id": row["bet_id"],
+                            "match_id": row["match_id"],
+                            "home_side": home_side,
+                            "away_side": away_side,
+                            "odd": total_odd,
+                            "bet_type": row["bet_type"]
+                        }
+                        bet_slip["bets"].append(bet_to_add)
+
+            if not bet_slip_found:
+
+                bets = [{
+                    "bet_id": row["bet_id"],
+                    "match_id": row["match_id"],
+                    "home_side": home_side,
+                    "away_side": away_side,
+                    "odd": total_odd,
+                    "bet_type": row["bet_type"]
+                }]
+                bet_slips.append({
+                    "bet_slip_id": row["bet_slip_id"],
+                    "bets": bets
+                })
 
         return {
-            "response": results
+            "bet_slips": bet_slips,
+            "comments": comment_results,
+            "likes": like_results
         }
+
+    elif input["request_type"] == "user_like_bet_slip":
+        cur.execute("INSERT INTO bet_slip_like (user_id, bet_slip_id) VALUES"
+                    " ({0}, {1})".format(input["user_id"], input["focused_bet_slip_id"]))
+
+    elif input["request_type"] == "comment_on_bet_slip":
+
+        cur.execute("INSERT INTO comment (comment, person_id, comment_date) VALUES ('{0}', {1}, NOW())"
+                    .format(input["comment_text"], input["user_id"]))
+
+        cur.execute("SELECT LAST_INSERT_ID()")
+
+        last_comment_id = cur.fetchone()[0]
+
+        cur.execute("INSERT INTO bet_slip_comment(comment_id, bet_slip_id) VALUES ({0}, {1})"
+                    .format(last_comment_id, input["focused_bet_slip_id"]))
+
+    cur.connection.commit()
+
+    return {
+        "status": "success"
+    }
 
 
 @app.route('/time')
