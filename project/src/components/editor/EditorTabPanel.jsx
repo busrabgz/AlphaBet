@@ -30,22 +30,27 @@ function EditorHeader(props){
     return(
         <Box>
             <Card style={cardStyle}>
+                {props.editor.name == "" ? "" :
                 <CardMedia
                 height='25'
                 style={cardMediaStyle}
                 image={avatarIcon}
                 />
+                }
+                {props.editor.name == "" ? "" :
                 <div style={{display: "inherit"}}>
                     <CardContent>
                         <Typography component="h5" variant="h5">
-                            {props.editorName}
+                            {props.editor.name + " " + props.editor.surname}
                         </Typography>
                     </CardContent>
                     <CardContent>
-                        <FormControlLabel control={<Switch checked={followed}/>} 
+                        <FormControlLabel onChange={props.onSwitch}
+                                          control={<Switch checked={followed}/>} 
                                           label={ followed ? "Followed" : "Not Followed"} />
                     </CardContent>
                 </div>
+                }
             </Card>
         </Box>
     );
@@ -83,15 +88,19 @@ function EditorTabs(props) {
                 <Tab label="Performance"  />
                 </Tabs>
             </AppBar>
-            <TabPanel value={value} index={0}>
-                {props.editor.followed ? <BetSlips/> : <NotFollowed/>}
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                {props.editor.followed ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                {props.editor.followed ? <Performance editor={props.editor}/> : <NotFollowed/>}
-            </TabPanel>
+            {props.editor.name == "" ? "" :
+                <div>
+                    <TabPanel value={value} index={0}>
+                    {props.followed == "true" ? <BetSlips/> : <NotFollowed/>}
+                    </TabPanel>
+                    <TabPanel value={value} index={1}>
+                        {props.followed == "true" ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
+                    </TabPanel>
+                    <TabPanel value={value} index={2}>
+                        {props.followed == "true" ? <Performance editor={props.editor}/> : <NotFollowed/>}
+                    </TabPanel>
+                </div>
+            }
         </div>
     );
 }
@@ -101,9 +110,8 @@ class EditorTabPanel extends React.Component {
     render() {
         return(
         <Paper>
-            <EditorHeader followed={this.props.editor.followed} 
-                          editorName={this.props.editor.name + " " + this.props.editor.surname}/>
-            <EditorTabs editor={this.props.editor}/>
+            <EditorHeader onSwitch={this.props.onSwitch} followed={this.props.followed} editor={this.props.editor}/>
+            <EditorTabs followed={this.props.followed} editor={this.props.editor}/>
         </Paper>
         );
     }

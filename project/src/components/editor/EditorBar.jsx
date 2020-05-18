@@ -6,6 +6,7 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import avatarIcon from './avatar.png';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import { Button } from '@material-ui/core';
 
 
 const rootStyle = {
@@ -72,7 +73,10 @@ class EditorBar extends Component {
                 {tileData.map((tile) => (
                 <GridListTile key={tile.img}>
                     <img src={tile.img} style={avatarStyle} alt={tile.title} />
-                    <GridListTileBar title={tile.author}/>
+                    <GridListTileBar
+                        actionPosition="left"
+                        actionIcon={<Button onClick={this.props.onClick} style={{backgroundColor:"white", float:"center"}}>{tile.author}</Button>}
+                    />
                 </GridListTile>
                 ))}
             </GridList>

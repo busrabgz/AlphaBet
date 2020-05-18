@@ -20,7 +20,6 @@ const rootStyle = {
 }
 
 const editor = {
-    followed: "false",
     name: "Mustafa",
     surname: "Çavdar",
     SBSuccessRate: 80,
@@ -29,9 +28,35 @@ const editor = {
     winRate: 84,
 }
 
+
+
 class Editor extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            followed: "true",
+            currentEditor : {
+                name: "",
+                surname: "",
+                SBSuccessRate: "",
+                noOfSlipsWon: "",
+                noOfSlipsLost: "",
+                winRate: "",
+            },
+        }
+        this.onClick = this.handleClick.bind(this);
+        this.onSwitch = this.handleSwitch.bind(this);
+    }
+
+    handleClick = (followed) => {
+        this.setState({ currentEditor : editor});
+    }
+
+    handleSwitch = () => {
+        this.setState({
+            followed: this.state.followed == "true" ? "false" : "true"
+        });
+        console.log(this.state);
     }
 
     render() {
@@ -41,8 +66,8 @@ class Editor extends React.Component {
                 <div>
                     <BetSlip/>
                     <div style={rootStyle}>
-                        <EditorBar />
-                        <EditorTabPanel editor={editor}/>
+                        <EditorBar onClick={this.onClick}/>
+                        <EditorTabPanel editor={this.state.currentEditor} followed={this.state.followed} onSwitch={this.onSwitch}/>
                     </div>
                 </div>
             </div>
