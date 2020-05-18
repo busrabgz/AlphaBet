@@ -21,10 +21,11 @@ CORS(app)
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Credentials', 'true')
-  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-  return response
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
 
 @app.route('/', methods=['POST'])
 def home():
@@ -247,10 +248,11 @@ def register():
             return jsonify({"result": result})
         cur = mysql.connection.cursor()
         password = personDetails.get('confirm_password')
-        #bcrypt.generate_password_hash(personDetails.get('password')).decode('utf-8')
-        cur.execute("INSERT INTO person(username, password, forename, surname, email) " 
+        # bcrypt.generate_password_hash(personDetails.get('password')).decode('utf-8')
+        cur.execute("INSERT INTO person(username, password, forename, surname, email) "
                     "VALUES(%s,%s,%s,%s,%s)", (personDetails.get('username'), password,
-                                               personDetails.get('forename'), personDetails.get('surname'), personDetails.get('email')))
+                                               personDetails.get('forename'), personDetails.get('surname'),
+                                               personDetails.get('email')))
         mysql.connection.commit()
 
         cur.execute("SELECT person_id FROM person WHERE username = %s", ([personDetails['username']]))
@@ -260,17 +262,17 @@ def register():
         cur.execute("INSERT INTO bet_slip_creator(creator_id) VALUES({0})".format(id))
         mysql.connection.commit()
 
-        #cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
-        #mysql.connection.commit()
+        # cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
+        # mysql.connection.commit()
 
         if personDetails.get('type') == "user":
-            cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) " 
+            cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) "
                         "VALUES(%s,%s,%s,%s)", (id, 0, 0, 0))
             mysql.connection.commit()
 
         if personDetails.get('type') == "editor":
             cur.execute("INSERT INTO editor(editor_id, winrate, total_winnings) "
-                        "VALUES(%s,%s,%s)", (id, 0, 0, 0))
+                        "VALUES(%s,%s,%s)", (id, 0, 0))
             mysql.connection.commit()
 
         result = {
@@ -303,7 +305,7 @@ def login():
                         type = "admin"
 
                 result = {
-                    "success" : "true",
+                    "success": "true",
                     "type": type,
                     "user_id": person[0],
                     "username": personDetails['username']
@@ -315,9 +317,223 @@ def login():
             }
         return jsonify(({"result": result}))
 
-@app.route('/time')
-def get_current_time():
-    return {'time': time.time()}
+
+@app.route('/profile', methods=["GET", "POST", "DELETE", "UPDATE"])
+def profile():
+    input = request.get_json()
+    if input["request_type"] == "get_user_info":
+        cur = mysql.connection.cursor()
+        cur.execute("WITH user_person AS (SELECT user_id AS person_id, account_balance, total_winnings, alpha_coins, "
+                    "username, forename, surname FROM user NATURAL JOIN person WHERE user_id = {0}) "
+                    "SELECT username, forename, surname, account_balance, total_winnings, alpha_coins "
+                    "FROM user_person".format(input["user_id"]))
+
+        user = cur.fetchone()
+        result = {
+            "username": user[0],
+            "forename": user[1],
+            "surname": user[2],
+            "account_balance": user[3],
+            "total_winnings": user[4],
+            "alpha_coins": user[5]
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_pending_bet_slips":
+        cur = mysql.connection.cursor()
+
+        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND "
+                    "placed = TRUE), pending_slip AS (SELECT DISTINCT bet_slip_id FROM user_bet_slips NATURAL JOIN "
+                    "included_bet NATURAL JOIN bet WHERE result = 'PENDING'), all_bet_data AS (SELECT * "
+                    "FROM pending_slip NATURAL JOIN included_bet NATURAL JOIN bet), match_data AS "
+                    "(SELECT * FROM all_bet_data NATURAL JOIN competitor_match), all_competitors AS "
+                    "(SELECT competitor_name, competitor_id FROM (SELECT player_id AS competitor_id, "
+                    "CONCAT(forename, ' ', surname) AS competitor_name FROM individual_player) AS temp UNION "
+                    "(SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM "
+                    "match_data NATURAL JOIN all_competitors".format(input["user_id"]))
+
+
+        bet_slips = cur.fetchall()
+        slips = []
+
+        for row in bet_slips:
+            slips.append(row[0])
+
+        result = {
+            "pending_bet_slips": slips
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_ended_bet_slips":
+        cur = mysql.connection.cursor()
+
+        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0}), "
+                    "ended_slip AS (SELECT DISTINCT bet_slip_id FROM user_bet_slips NATURAL JOIN "
+                    "included_bet NATURAL JOIN bet WHERE result = 'WON' OR result = 'LOST'), all_bet_data AS (SELECT * "
+                    "FROM ended_slip NATURAL JOIN included_bet NATURAL JOIN bet), match_data AS "
+                    "(SELECT * FROM all_bet_data NATURAL JOIN competitor_match), all_competitors AS "
+                    "(SELECT competitor_name, competitor_id FROM (SELECT player_id AS competitor_id, "
+                    "CONCAT(forename, ' ', surname) AS competitor_name FROM individual_player) AS temp UNION "
+                    "(SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM "
+                    "match_data NATURAL JOIN all_competitors".format(input["user_id"]))
+
+        bet_slips = cur.fetchall()
+        slips = []
+
+        for row in bet_slips:
+            slips.append(row[0])
+
+        result = {
+            "ended_bet_slips": slips
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_gained_achievements":
+        cur = mysql.connection.cursor()
+        cur.execute("WITH achieved_id AS (SELECT achievement_id, user_id FROM gained_achievement "
+                    "NATURAL JOIN user WHERE user_id = {0}) "
+                    "SELECT achievement_name, achievement_description FROM achieved_id NATURAL JOIN achievement"
+                    .format(input["user_id"]))
+
+        val = cur.fetchall()
+        gained_achievements = []
+
+        for row in val:
+            achievement = [row[0], row[1]]
+            gained_achievements.append(achievement)
+
+        result = {
+            "gained_achievements": gained_achievements
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_total_achievement_count":
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT COUNT(achievement_id) AS total_count FROM achievement")
+
+        val = cur.fetchone()
+
+        result = {
+            "total_achievement_count": val[0]
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_gained_achievement_count":
+        cur = mysql.connection.cursor()
+        cur.execute("WITH achieved_id AS (SELECT achievement_id, user_id FROM gained_achievement NATURAL JOIN user "
+                    "WHERE user_id = {0}) SELECT COUNT(achievement_id) AS gained_count FROM achieved_id"
+                    .format(input["user_id"]))
+
+        val = cur.fetchone()
+
+        result = {
+            "gained_achievement_count": val[0]
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_friends":
+        cur = mysql.connection.cursor()
+
+        cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id "
+                    "FROM user_friend) SELECT username FROM friends NATURAL JOIN person "
+                    "WHERE user_id = '{0}'".format(input["user_id"]))
+
+        user = cur.fetchall()
+        friends = []
+
+        for row in user:
+            friends.append(row[0])
+
+        result = {
+            "friends": friends
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "search_users":
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT user_id, username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id "
+                    "WHERE username LIKE {0} AND u.user_id <> {1}"
+                    .format('\'' + input["search_text"] + '%\'', input["user_id"]))
+
+        val = cur.fetchall()
+        users = []
+
+        for row in val:
+            friend = [row[0], row[1]]
+            users.append(friend)
+
+        result = {
+            "searched_users": users
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "add_friend":
+        cur = mysql.connection.cursor()
+        val1 = cur.execute("INSERT INTO user_friend (user_id, friend_id) VALUES ({0}, {1})"
+                           .format(input["user_id"], input["friend_id"]))
+        mysql.connection.commit()
+
+        val2 = cur.execute("INSERT INTO user_friend (user_id, friend_id) VALUES ({1}, {0})"
+                           .format(input["user_id"], input["friend_id"]))
+        mysql.connection.commit()
+
+        if val1 > 0 and val2 > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+
+        return jsonify({"result": result})
+
+    if input["request_type"] == "update_balance":
+        cur = mysql.connection.cursor()
+        val = cur.execute("UPDATE user SET account_balance = ( account_balance + {1} ) "
+                          "WHERE user_id = {0}".format(input["user_id"], input["balance_change"]))
+
+        mysql.connection.commit()
+
+        if val > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+
+        return jsonify({"result": result})
+
+    if input["request_type"] == "edit_profile":
+        cur = mysql.connection.cursor()
+
+        check = cur.execute("SELECT * FROM person WHERE username = '{0}'".format(input["new_username"]))
+        if check > 0:
+            result = {
+                "success": False
+            }
+            return jsonify({"result": result})
+        else:
+            val1 = cur.execute("UPDATE person SET username = '{1}' WHERE person_id = '{0}'"
+                               .format(input["user_id"], input["new_username"]))
+            mysql.connection.commit()
+
+            val2 = cur.execute("UPDATE person SET password = '{1}' WHERE person_id = '{0}'"
+                               .format(input["user_id"], input["new_password"]))
+            mysql.connection.commit()
+
+            if val1 > 0 and val2 > 0:
+                result = {
+                    "success": True
+                }
+            else:
+                result = {
+                    "success": False
+                }
+
+            return jsonify({"result": result})
 
 
 if __name__ == "__main__":

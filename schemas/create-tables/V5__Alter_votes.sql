@@ -1,3 +1,5 @@
+ALTER TABLE votes DROP COLUMN side;
+
 ALTER TABLE votes
 ADD COLUMN side varchar(8);
 
