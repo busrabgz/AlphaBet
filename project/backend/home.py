@@ -134,7 +134,7 @@ def home():
         }
 
 
-    elif input["request_type"] == "play_betslip": #Requires the input["played_amount"]
+    elif input["request_type"] == "play_betslip":  # Requires the input["played_amount"]
 
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
             person_id = cur.fetchone()[0]
@@ -323,16 +323,17 @@ def profile():
 
     if input["request_type"] == "get_pending_bet_slips":
         cur = mysql.connection.cursor()
-        # TODO
-        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND placed "
-                    "= TRUE), pending_slip AS (SELECT bet_slip_id FROM (user_bet_slips NATURAL JOIN included_bet) "
-                    "AS keys NATURAL JOIN bet) WHERE result = ‘PENDING’), all_bet_data AS (SELECT * FROM (pending_slip "
-                    "NATURAL JOIN included_bet) AS bet_keys NATURAL JOIN bet), match_data AS (SELECT * FROM "
-                    "all_bet_data NATURAL JOIN competitor_match), all_competitors AS (SELECT competitor_name, "
-                    "competitor_id FROM (SELECT player_id AS competitor_id, CONCAT(forename, ' ', surname) "
-                    "AS competitor_name FROM individual_player) AS temp UNION (SELECT team_id AS competitor_id, "
-                    "team_name AS competitor_name FROM team)) "
-                    "SELECT * FROM match_data NATURAL JOIN all_competitors".format(input["user_id"]))
+
+        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND "
+                    "placed = TRUE), pending_slip AS (SELECT DISTINCT bet_slip_id FROM user_bet_slips NATURAL JOIN "
+                    "included_bet NATURAL JOIN bet WHERE result = 'PENDING'), all_bet_data AS (SELECT * "
+                    "FROM pending_slip NATURAL JOIN included_bet NATURAL JOIN bet), match_data AS "
+                    "(SELECT * FROM all_bet_data NATURAL JOIN competitor_match), all_competitors AS "
+                    "(SELECT competitor_name, competitor_id FROM (SELECT player_id AS competitor_id, "
+                    "CONCAT(forename, ' ', surname) AS competitor_name FROM individual_player) AS temp UNION "
+                    "(SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM "
+                    "match_data NATURAL JOIN all_competitors".format(input["user_id"]))
+
 
         bet_slips = cur.fetchall()
         slips = []
@@ -342,6 +343,30 @@ def profile():
 
         result = {
             "pending_bet_slips": slips
+        }
+        return jsonify({"result": result})
+
+    if input["request_type"] == "get_ended_bet_slips":
+        cur = mysql.connection.cursor()
+
+        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0}), "
+                    "ended_slip AS (SELECT DISTINCT bet_slip_id FROM user_bet_slips NATURAL JOIN "
+                    "included_bet NATURAL JOIN bet WHERE result = 'WON' OR result = 'LOST'), all_bet_data AS (SELECT * "
+                    "FROM ended_slip NATURAL JOIN included_bet NATURAL JOIN bet), match_data AS "
+                    "(SELECT * FROM all_bet_data NATURAL JOIN competitor_match), all_competitors AS "
+                    "(SELECT competitor_name, competitor_id FROM (SELECT player_id AS competitor_id, "
+                    "CONCAT(forename, ' ', surname) AS competitor_name FROM individual_player) AS temp UNION "
+                    "(SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM "
+                    "match_data NATURAL JOIN all_competitors".format(input["user_id"]))
+
+        bet_slips = cur.fetchall()
+        slips = []
+
+        for row in bet_slips:
+            slips.append(row[0])
+
+        result = {
+            "ended_bet_slips": slips
         }
         return jsonify({"result": result})
 
@@ -390,10 +415,10 @@ def profile():
 
     if input["request_type"] == "get_friends":
         cur = mysql.connection.cursor()
-        ## TODO RETURNS WHOLE PERSON LIST
-        cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id, username "
-                    "FROM user_friend NATURAL JOIN person WHERE user_id = {0})"
-                    "SELECT username FROM friends".format(input["user_id"]))
+
+        cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id "
+                    "FROM user_friend) SELECT username FROM friends NATURAL JOIN person "
+                    "WHERE user_id = '{0}'".format(input["user_id"]))
 
         user = cur.fetchall()
         friends = []
@@ -406,18 +431,92 @@ def profile():
         }
         return jsonify({"result": result})
 
-    if input["request_type"] == "search_friends":
+    if input["request_type"] == "search_users":
         cur = mysql.connection.cursor()
-        cur.execute("SELECT username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id "
-                    "WHERE username LIKE ‘%@friend_search_text%’ AND u.user_id <> @user_id"
-                    .format(input["user_id"]))
+        cur.execute("SELECT user_id, username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id "
+                    "WHERE username LIKE {0} AND u.user_id <> {1}"
+                    .format('\'' + input["search_text"] + '%\'', input["user_id"]))
 
-        val = cur.fetchone()
+        val = cur.fetchall()
+        users = []
+
+        for row in val:
+            friend = [row[0], row[1]]
+            users.append(friend)
 
         result = {
-            "gained_achievement_count": val[0]
+            "searched_users": users
         }
         return jsonify({"result": result})
+
+    if input["request_type"] == "add_friend":
+        cur = mysql.connection.cursor()
+        val1 = cur.execute("INSERT INTO user_friend (user_id, friend_id) VALUES ({0}, {1})"
+                           .format(input["user_id"], input["friend_id"]))
+        mysql.connection.commit()
+
+        val2 = cur.execute("INSERT INTO user_friend (user_id, friend_id) VALUES ({1}, {0})"
+                           .format(input["user_id"], input["friend_id"]))
+        mysql.connection.commit()
+
+        if val1 > 0 and val2 > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+
+        return jsonify({"result": result})
+
+    if input["request_type"] == "update_balance":
+        cur = mysql.connection.cursor()
+        val = cur.execute("UPDATE user SET account_balance = ( account_balance + {1} ) "
+                          "WHERE user_id = {0}".format(input["user_id"], input["balance_change"]))
+
+        mysql.connection.commit()
+
+        if val > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+
+        return jsonify({"result": result})
+
+    if input["request_type"] == "edit_profile":
+        cur = mysql.connection.cursor()
+
+        check = cur.execute("SELECT * FROM person WHERE username = '{0}'".format(input["new_username"]))
+        if check > 0:
+            result = {
+                "success": False
+            }
+            return jsonify({"result": result})
+        else:
+            val1 = cur.execute("UPDATE person SET username = '{1}' WHERE person_id = '{0}'"
+                               .format(input["user_id"], input["new_username"]))
+            mysql.connection.commit()
+
+            val2 = cur.execute("UPDATE person SET password = '{1}' WHERE person_id = '{0}'"
+                               .format(input["user_id"], input["new_password"]))
+            mysql.connection.commit()
+
+            if val1 > 0 and val2 > 0:
+                result = {
+                    "success": True
+                }
+            else:
+                result = {
+                    "success": False
+                }
+
+            return jsonify({"result": result})
+
 
 if __name__ == "__main__":
     app.secret_key = 'super secret key'
