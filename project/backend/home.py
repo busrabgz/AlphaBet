@@ -21,12 +21,13 @@ CORS(app)
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Credentials', 'true')
-  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-  return response
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
-@app.route('/', methods=['POST'])
+
+@app.route('/', methods=['GET', 'POST'])
 def home():
     cur = mysql.connection.cursor()
 
@@ -133,7 +134,7 @@ def home():
             "response": results
         }
 
-    elif input["request_type"] == "play_betslip": #Requires the input["played_amount"]
+    elif input["request_type"] == "play_betslip":  # Requires the input["played_amount"]
 
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
             person_id = cur.fetchone()[0]
@@ -189,7 +190,7 @@ def home():
         cur.execute("INSERT INTO suggested_bet (editor_id, bet_id, match_id, comment) VALUES ({0}, {1}, {2}, '{3}')"
                     .format(person_id, input["bet_id"], input["match_id"], input["editor_comment"]))
 
-    elif input["request_type"] == "add_bet_to_betslip": #Editor also adds bet to betslip using this request
+    elif input["request_type"] == "add_bet_to_betslip":  # Editor also adds bet to betslip using this request
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
             person_id = cur.fetchone()[0]
 
@@ -247,10 +248,11 @@ def register():
             return jsonify({"result": result})
         cur = mysql.connection.cursor()
         password = personDetails.get('confirm_password')
-        #bcrypt.generate_password_hash(personDetails.get('password')).decode('utf-8')
-        cur.execute("INSERT INTO person(username, password, forename, surname, email) " 
+        # bcrypt.generate_password_hash(personDetails.get('password')).decode('utf-8')
+        cur.execute("INSERT INTO person(username, password, forename, surname, email) "
                     "VALUES(%s,%s,%s,%s,%s)", (personDetails.get('username'), password,
-                                               personDetails.get('forename'), personDetails.get('surname'), personDetails.get('email')))
+                                               personDetails.get('forename'), personDetails.get('surname'),
+                                               personDetails.get('email')))
         mysql.connection.commit()
 
         cur.execute("SELECT person_id FROM person WHERE username = %s", ([personDetails['username']]))
@@ -260,11 +262,11 @@ def register():
         cur.execute("INSERT INTO bet_slip_creator(creator_id) VALUES({0})".format(id))
         mysql.connection.commit()
 
-        #cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
-        #mysql.connection.commit()
+        # cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
+        # mysql.connection.commit()
 
         if personDetails.get('type') == "user":
-            cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) " 
+            cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) "
                         "VALUES(%s,%s,%s,%s)", (id, 0, 0, 0))
             mysql.connection.commit()
 
@@ -303,7 +305,7 @@ def login():
                         type = "admin"
 
                 result = {
-                    "success" : "true",
+                    "success": "true",
                     "type": type,
                     "user_id": person[0],
                     "username": personDetails['username']
@@ -314,6 +316,43 @@ def login():
                 "username": personDetails['username']
             }
         return jsonify(({"result": result}))
+
+
+@app.route('/feed', methods=['GET', 'POST'])
+def feed():
+    cur = mysql.connection.cursor()
+
+    input = {
+        "user_id": request.get_json(force=True)["user_id"],
+        "request_type": request.get_json(force=True)["request_type"],
+        "comment_text": request.get_json(force=True)["comment_text"]
+    }
+
+    if input["request_type"] == "display_shared_bets":
+
+        cur.execute("WITH friend_id_set AS (SELECT friend_id AS person_id FROM user_friend "
+                    "WHERE user_id = {0}), friend_data AS (SELECT username, person_id AS sharer_id FROM friend_id_set "
+                    "NATURAL JOIN person), friend_slip_id AS (SELECT * FROM (shared_bet_slip NATURAL JOIN (SELECT "
+                    "person_id AS sharer_id FROM friend_id_set) AS sharing_friend )), friend_slip_bet AS ( SELECT * "
+                    "FROM (included_bet NATURAL JOIN friend_slip_id)), friend_slip_bet_data AS (SELECT * FROM "
+                    "friend_slip_bet NATURAL JOIN bet), match_data AS (SELECT * FROM friend_slip_bet_data NATURAL JOIN "
+                    "competitor_match), all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT "
+                    "player_id AS competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM"
+                    " individual_player) AS temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id"
+                    " FROM team)) SELECT DISTINCT *  FROM match_data NATURAL JOIN all_competitors NATURAL JOIN (SELECT "
+                    "sharer_id, username FROM friend_data) AS friend_temp".format(input["user_id"]))
+
+        results = []
+
+        feed_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            results.append(dict(zip(feed_columns, row)))
+
+        return {
+            "response": results
+        }
+
 
 @app.route('/time')
 def get_current_time():
