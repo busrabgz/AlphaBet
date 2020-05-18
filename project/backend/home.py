@@ -71,12 +71,9 @@ def register():
 
         result = {
             "success": "true",
-            "username": personDetails.get('username'),
-            "password": password,
-            "forename": personDetails.get('forename'),
-            "surname": personDetails.get('surname'),
-            "email": personDetails.get('email'),
-            "type": personDetails.get('type')
+            "type": personDetails.get('type'),
+            "user_id": id,
+            "username": personDetails.get('username')
         }
         return jsonify({"result": result})
 
@@ -104,6 +101,7 @@ def login():
                 result = {
                     "success" : "true",
                     "type": type,
+                    "user_id": person[0],
                     "username": personDetails['username']
                 }
         else:

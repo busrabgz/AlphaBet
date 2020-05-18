@@ -15,27 +15,20 @@ import { UserContext, userInfo } from './user-context.js';
 const URL = "http://localhost:5000/signin";
 
 class SignIn extends Component {
-  static contextType = UserContext
  
   constructor(props) {
     super(props)
-    this.state = {username: '', password: ''}
+    this.state = {username: '', password: '', updateLogIn: this.props.updateLogIn}
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
    }
 
    componentDidMount() {
-     const userInfo = this.context
-     console.log(userInfo)
-     console.log(userInfo.loggedIn)
-     this.setState({
-       username: userInfo.username,
-       password: userInfo.password,
-     })
    }
 
    
    handleSubmit(event){
+    const userInfo = this.context
     axios.post(URL,
         {
             username: this.state.username,
@@ -45,7 +38,7 @@ class SignIn extends Component {
         .then( res => {
             if(res.data.result.success == "true"){
                 console.log("login", res);
-                userInfo.updateLogInState(res.data.result.success, res.data.result.type, res.data.result.username);
+                this.props.updateLogIn(res.data.result.success,res.data.result.type, res.data.result.username, res.data.result.user_id)
                  }
             })
          .catch(error => {
@@ -61,13 +54,13 @@ class SignIn extends Component {
    }
 
   render() {
-    if (userInfo.loggedIn) {
+    if (this.props.isLogged) {
       // redirect to home if logged in
       return <Redirect to = {{ pathname: "/profile" }} />;
     }
     return (
         <div>
-            <NavBar />
+            <NavBar userSuccess={this.props.isLogged} userBalance={this.props.balance}/>
             <h1>Login Page</h1>
             <form onSubmit={this.handleSubmit}>
                 <input

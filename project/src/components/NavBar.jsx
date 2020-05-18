@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '0.8em',
   },
   logoutButton: {
-    marginLeft: theme.spacing(5),
+    marginLeft: theme.spacing(10),
 
   },
   buttonGroup: {
@@ -46,6 +46,10 @@ const useStyles = makeStyles((theme) => ({
 export default function NavBar(props) {
   const classes = useStyles();
   const balanceStr = "Balance: " + props.userBalance;
+  let button
+  let registerButton
+  console.log('success: ',props.userSuccess)
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -87,17 +91,21 @@ export default function NavBar(props) {
               </Box>
             </List>
           </Box>
-
-          <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.buttonGroup}>
-          <Link to='/register' style={{textDecoration: 'none'}}>
-            <Button size="small" variant="contained" color="secondary" >Register</Button>
-          </Link>
-          <Link to='/signin' style={{textDecoration: 'none'}}>
-            <Button size="small" variant="contained" color="secondary" >Sign In</Button>
-          </Link>
-          </ButtonGroup> 
+          <div style={{float:"right"}}>
+             {props.userSuccess
+                ? <Button className={classes.logoutButton} size="small" variant="contained" color="secondary"> Logout</Button>
+                : <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.buttonGroup}>
+                  <Link to='/register' style={{textDecoration: 'none'}}>
+                  <Button size="small" variant="contained" color="secondary" >Register</Button>
+                   </Link>
+                  <Link to='/signin' style={{textDecoration: 'none'}}>
+                    <Button size="small" variant="contained" color="secondary">Login</Button>
+                  </Link>
+              </ButtonGroup>
+             }
+         </div>
         </Toolbar>
       </AppBar>
     </div>
-    ); 
-  }   
+    );
+  }

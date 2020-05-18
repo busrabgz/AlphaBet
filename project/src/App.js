@@ -14,21 +14,24 @@ class App extends React.Component {
     constructor(props){
     super(props)
 
-    this.updateBalance = (amount) => {
+    this.updateBalance = () => {
         this.setState( state => ({
             balance: state.balance + 1
         }));
     };
 
-    this.updateLogInState = (newState, newType, newName) => {
+    this.updateLogInState = (newState, newType, newName,newId) => {
         this.setState( state => ({
             loggedIn: newState,
             type: newType,
             username: newName,
+            userId: newId
         }));
+        return true
     };
 
     this.state = {
+        userId: userInfo.userId,
         username: userInfo.username,
         password: userInfo.password,
         balance: userInfo.balance,
@@ -37,7 +40,6 @@ class App extends React.Component {
         loggedIn: userInfo.loggedIn,
         updateLogInState: this.updateLogInState 
         };
-
     }
 
   render(){
