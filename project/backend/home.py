@@ -66,7 +66,7 @@ def register():
 
         if personDetails.get('type') == "editor":
             cur.execute("INSERT INTO editor(editor_id, winrate, total_winnings) "
-                        "VALUES(%s,%s,%s)", (id, 0, 0, 0))
+                        "VALUES(%s,%s,%s)", (id, 0, 0))
             mysql.connection.commit()
 
         result = {
