@@ -1,56 +1,84 @@
-import React from 'react'
-import { Paper, Card, CardActionArea, CardMedia, CardContent, Typography, Grid, CardActions, Button} from '@material-ui/core'
+import React, { Component } from 'react';
+import Paper from '@material-ui/core/Paper';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import IconButton from '@material-ui/core/IconButton';
+import avatarIcon from './avatar.png';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
-const mediaStyle = {
-    height: 110,
-}
+
 const rootStyle = {
-    maxWidth: 150,
-    maxHeight:220,
+    paddingRight: 20,
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+    width: "100%",
 }
-const content = {
-    maxHeight: 40
+const gridListStyle = {
+    flexWrap: 'nowrap',
+    transform: 'translateZ(0)',
+    width: "100%",
 }
-class EditorBar extends React.Component {
+const titleStyle = {
+    color: '#AAAAAA',
+}
+const titleBarStyle = {
+    background:
+      'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            editorList: [{imageURL: '', editorName: 'Mustafa Can Çavdar'}, {imageURL: '', editorName: 'Ozan German'}, {imageURL: '', editorName: 'Mert Hasan Büyükgebiz'}]
-        }
-    }
-    render() {
-        const cards = []
-        console.log(this.state.editorList[0].editorName)
-        for (var i = 0; i < this.state.editorList.length; i++) {
-            //imageUrl = this.state.editorList[i].imageURL
-           
-            cards[i] = 
-            <Card style={rootStyle}>
-                <CardActionArea  >
-                    <CardMedia style={mediaStyle} image="https://img2.pngindir.com/20180614/ywk/kisspng-aang-avatar-the-last-airbender-the-promise-ka-avatar-aang-5b225fac9ce273.1192537415289793726426.jpg"/>
-                    <CardContent style={content}>
-                        <h3>
-                            { this.state.editorList[i].editorName}
-                        </h3>
-                    </CardContent>
-                </CardActionArea>
-                <CardActions>
-                    <Button size='small' color='primary'>
-                        Follow
-                    </Button>
-                </CardActions>
-            </Card>
-        }
-
-        return(
-            <div>
-                <Grid container direction="row" md={12}>
-                    {cards}
-                </Grid>
+const avatarStyle = {
+    height: "100%",
+    width: "auto",
+}
+ 
+  const tileData = [
+    {
+        img: avatarIcon, title: 'Image', author: 'Ozan Güven',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'Rıdvan Dilmen',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'Fatih Terim',
+    },
+    {
+        img: avatarIcon,  title: 'Image', author: 'author',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'author',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'author',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'author',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'author',
+    },
+    {
+        img: avatarIcon, title: 'Image', author: 'author',
+    },
+  ];
+ 
+class EditorBar extends Component {
+    render(){
+        return (
+            <div style={rootStyle}>
+            <GridList style={gridListStyle} cols={0}>
+                {tileData.map((tile) => (
+                <GridListTile key={tile.img}>
+                    <img src={tile.img} style={avatarStyle} alt={tile.title} />
+                    <GridListTileBar title={tile.author}/>
+                </GridListTile>
+                ))}
+            </GridList>
             </div>
-        )
+        );
     }
 }
 
-export default EditorBar
+export default withWidth()(EditorBar)
