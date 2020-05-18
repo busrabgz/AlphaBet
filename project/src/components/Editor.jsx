@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import NavBar from './NavBar.jsx'
 import EditorBar from './editor/EditorBar.jsx'
 import EditorTabPanel from './editor/EditorTabPanel.jsx'
-import BetSlip from './feed/BetSlip';
+import BetSlip from './feed/BetSlip.jsx';
 import {
   BrowserRouter as Router,
   Switch,
@@ -61,17 +61,20 @@ class Editor extends React.Component {
 
     render() {
         return(
+            <UserContext.Consumer>
+            { ( {username, balance, updateBalance, betslip} ) => (
             <div>
                 <NavBar />
                 <div>
-                    <BetSlip/>
+                    <BetSlip slip={betslip}/>
                     <div style={rootStyle}>
                         <EditorBar onClick={this.onClick}/>
                         <EditorTabPanel editor={this.state.currentEditor} followed={this.state.followed} onSwitch={this.onSwitch}/>
                     </div>
                 </div>
             </div>
-
+            )}
+        </UserContext.Consumer>
         )
     }
 }
