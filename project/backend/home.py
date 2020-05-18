@@ -40,11 +40,13 @@ def home():
         "played_amount": request.get_json(force=True)["played_amount"],
         "match_id": request.get_json(force=True)["match_id"],
         "bet_id": request.get_json(force=True)["bet_id"],
+        "vote_side": request.get_json(force=True)["vote_side"],
         "filter": request.get_json(force=True)["filter"]
     }
 
-    if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
-        person_id = cur.fetchone()[0]
+    '''
+    Filter request uses input["filter], 
+    '''
 
     if input["request_type"] == "filter":
 
@@ -91,9 +93,9 @@ def home():
         for row in cur.fetchall():
             results.append(dict(zip(match_data_columns, row)))
 
-        cur.execute(filter + "SELECT match_id, bet_type, MAX(change_date) AS change_date FROM (SELECT * FROM bet "
+        cur.execute(filter + "SELECT match_id, bet_type, MAX(change_date) AS change_date, odd FROM (SELECT * FROM bet "
                              "NATURAL JOIN final_filter WHERE active = FALSE) AS inactive_bets GROUP BY "
-                             "match_id, bet_type")
+                             "match_id, bet_type, odd")
 
         old_odds_columns = [column[0] for column in cur.description]
 
@@ -116,7 +118,11 @@ def home():
             "response": results
         }
 
-    elif input["request_type"] == "play_betslip":
+
+    elif input["request_type"] == "play_betslip": #Requires the input["played_amount"]
+
+        if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
+            person_id = cur.fetchone()[0]
 
         if cur.execute("WITH user_bet_slip AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = "
                        "{0} AND placed = FALSE ),user_current_bets AS (SELECT * FROM user_bet_slip NATURAL JOIN "
@@ -144,6 +150,7 @@ def home():
                                     "user.account_balance - {1} WHERE user_id = {2}".format(input["played_amount"],
                                                                                             input["played_amount"],
                                                                                             person_id))
+                        mysql.connection.commit()
                         return {"status": "success"}
                     else:
                         return {"status": "not_enough_credits"}
@@ -151,6 +158,8 @@ def home():
                 return {"status": "mbn_not_satisfied"}
 
     elif input["request_type"] == "add_bet_to_betslip":
+        if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
+            person_id = cur.fetchone()[0]
 
         if cur.execute(
                 "SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}".format(person_id)) > 0:
@@ -158,6 +167,38 @@ def home():
 
         cur.execute("INSERT INTO included_bet (bet_slip_id, bet_id, match_id) VALUES "
                     "({0}, {1}, {2})".format(bet_slip_id, input["bet_id"], input["match_id"]))
+
+    elif input["request_type"] == "view_votes":
+
+        home_votes = 0
+        away_votes = 0
+        tie_votes = 0
+
+        if cur.execute("SELECT COUNT(side) AS home_vote_count FROM votes GROUP BY side, match_id HAVING side = 'HOME'"
+                       " AND match_id = {0}".format(input["match_id"])) > 0:
+            home_votes = cur.fetchone()[0]
+
+        if cur.execute("SELECT COUNT(side) AS away_vote_count FROM votes GROUP BY side, match_id HAVING side = 'AWAY'"
+                       " AND match_id = {0}".format(input["match_id"])) > 0:
+            away_votes = cur.fetchone()[0]
+
+        if cur.execute("SELECT COUNT(side) AS tie_vote_count FROM votes GROUP BY side, match_id HAVING side = 'TIE'"
+                       " AND match_id = {0}".format(input["match_id"])) > 0:
+            tie_votes = cur.fetchone()[0]
+
+        return {
+            "home_votes": home_votes,
+            "away_votes": away_votes,
+            "tie_votes": tie_votes
+        }
+
+    elif input["request_type"] == "insert_vote":
+
+        if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
+            person_id = cur.fetchone()[0]
+
+        cur.execute("INSERT INTO votes (match_id, user_id, side) VALUES ({0}, {1}, '{2}')"
+                    .format(input["match_id"], person_id, input["vote_side"]))
 
     mysql.connection.commit()
     return "Hello World!"
