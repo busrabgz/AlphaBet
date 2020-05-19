@@ -312,10 +312,9 @@ def login():
                 }
         else:
             result = {
-                "success": "false",
-                "username": personDetails['username']
+                "success": "false"
             }
-        return jsonify(({"result": result}))
+        return jsonify({"result": result})
 
 
 @app.route('/profile', methods=["GET", "POST", "DELETE", "UPDATE"])
@@ -323,10 +322,9 @@ def profile():
     input = request.get_json()
     if input["request_type"] == "get_user_info":
         cur = mysql.connection.cursor()
-        cur.execute("WITH user_person AS (SELECT user_id AS person_id, account_balance, total_winnings, alpha_coins, "
-                    "username, forename, surname FROM user NATURAL JOIN person WHERE user_id = {0}) "
-                    "SELECT username, forename, surname, account_balance, total_winnings, alpha_coins "
-                    "FROM user_person".format(input["user_id"]))
+        cur.execute("WITH user_person AS (SELECT user_id AS person_id, account_balance, total_winnings, alpha_coins "
+                    "FROM user) SELECT username, forename, surname, account_balance, total_winnings, alpha_coins, "
+                    "email FROM user_person NATURAL JOIN person WHERE person_id = {0}".format(input["user_id"]))
 
         user = cur.fetchone()
         result = {
@@ -335,7 +333,8 @@ def profile():
             "surname": user[2],
             "account_balance": user[3],
             "total_winnings": user[4],
-            "alpha_coins": user[5]
+            "alpha_coins": user[5],
+            "email": user[6]
         }
         return jsonify({"result": result})
 
@@ -437,6 +436,7 @@ def profile():
         cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id "
                     "FROM user_friend) SELECT username FROM friends NATURAL JOIN person "
                     "WHERE user_id = '{0}'".format(input["user_id"]))
+
 
         user = cur.fetchall()
         friends = []
