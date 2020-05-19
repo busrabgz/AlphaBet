@@ -29,38 +29,39 @@ class AchievementsPanel extends Component {
             console.log("total achievement count", error);
             });
 
+        if(this.props.userSuccess){
+            axios.post(URL,
+            {
+                "request_type": "get_gained_achievement_count",
+                "user_id": this.props.userId
+             },
+            {withCredentials: false})
+            .then( res => {
+                this.setState({gained_achievement_count: res.data.result.gained_achievement_count});
+                })
+             .catch(error => {
+                console.log("gained achievement count", error);
+                });
+
+            axios.post(URL,
+            {
+                "request_type": "get_gained_achievements",
+                "user_id": this.props.userId
+             },
+            {withCredentials: false})
+            .then( res => {
+                for(var i = 0; i < res.data.result.gained_achievements.length; i++){
+                    this.ach[i] = {key: i, achName: res.data.result.gained_achievements[i][0], achDesc:res.data.result.gained_achievements[i][1], achieved:"true"};
+                }
+              })
+             .catch(error => {
+                console.log("achievements", error);
+                });
+            }
+
     };
 
     render(){
-        if(this.props.userSuccess){
-                axios.post(URL,
-                {
-                    "request_type": "get_gained_achievement_count",
-                    "user_id": this.props.userId
-                 },
-                {withCredentials: false})
-                .then( res => {
-                    this.setState({gained_achievement_count: res.data.result.gained_achievement_count});
-                    })
-                 .catch(error => {
-                    console.log("gained achievement count", error);
-                    });
-
-                axios.post(URL,
-                {
-                    "request_type": "get_gained_achievements",
-                    "user_id": this.props.userId
-                 },
-                {withCredentials: false})
-                .then( res => {
-                    for(var i = 0; i < res.data.result.gained_achievements.length; i++){
-                        this.ach[i] = {key: i, achName: res.data.result.gained_achievements[i][0], achDesc:res.data.result.gained_achievements[i][1], achieved:"true"};
-                    }
-                  })
-                 .catch(error => {
-                    console.log("achievements", error);
-                    });
-                }
         return(
             <div>
                  <Typography style={titleStyle} component="h5" variant="h5">

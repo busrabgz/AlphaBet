@@ -459,7 +459,7 @@ def profile():
         users = []
 
         for row in val:
-            friend = [row[0], row[1]]
+            friend = {"user_id": row[0], "username": row[1]}
             users.append(friend)
 
         result = {

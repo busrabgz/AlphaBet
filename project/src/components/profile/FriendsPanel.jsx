@@ -54,9 +54,7 @@ class FriendsPanel extends Component{
     constructor(props){
         super(props);
         this.state = {friends: []};
-    }
 
-    render(){
         if(this.props.userSuccess){
             axios.post(URL,
             {
@@ -74,7 +72,9 @@ class FriendsPanel extends Component{
                 console.log("friends", error);
                 });
          }
+    }
 
+    render(){
         return(
             <Paper style={paperStyle} elevation={3}>
                 <Title />

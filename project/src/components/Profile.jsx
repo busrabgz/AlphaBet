@@ -41,7 +41,7 @@ class Profile extends Component {
                           <FriendsPanel userId={this.props.id} userSuccess={loggedIn} />
                       </Paper>
                       <Paper elevation={10}>
-                          <SearchResultsPanel userId={this.props.id}/>
+                          <SearchResultsPanel userId={this.props.id} userSuccess={loggedIn}/>
                       </Paper>
                     </Grid>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
