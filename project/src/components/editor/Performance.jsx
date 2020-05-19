@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { Box, Paper, CircularProgress, Typography } from '@material-ui/core';
-import 'react-circular-progressbar/dist/styles.css';
+
 
 const paperStyle = {
     padding: 20,
 }
 
 class Performance extends Component {
-
 
     render(){
         return (
