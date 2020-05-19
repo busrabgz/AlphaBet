@@ -10,6 +10,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
+import FriendsPanel from './FriendsPanel.jsx';
 
 const URL = "http://localhost:5000/profile";
 
@@ -49,7 +50,7 @@ function Result(props){
                   </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button contained color='primary' size="small">+Add Friend</Button>
+                    <Button contained color='primary' size="small" onClick={props.handleAddClick} value1={props.user_id} value={props.id}>+Add Friend</Button>
                 </CardActions>
             </div>
         </Card>
@@ -65,14 +66,33 @@ function Title(){
 class SearchResultsPanel extends Component{
     constructor(props){
         super(props);
-        this.state = {search_text: '', search_results: []};
+        this.state = {search_text: '', search_results: [], showButton: true};
         this.handleClick = this.handleClick.bind(this);
+        this.handleAddClick = this.handleAddClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
+    handleAddClick(value){
+        this.setState({showButton:false})
+        axios.post(URL,
+            {
+                "request_type": "add_friend",
+                "user_id": this.props.userId,
+                "friend_id": value
+             },
+            {withCredentials: false})
+            .then( res => {
+                if(res.data.result.success){
+                    this.props.dummyFunc()
+                }
+                })
+             .catch(error => {
+                console.log("add friend", error);
+                });
+    }
+
     handleClick(event){
-        this.setState({search_results: []});
-        console.log("searchtext", this.state.search_text);
+        this.setState({search_results: [], showButton:true});
         axios.post(URL,
             {
                 "request_type": "search_users",
@@ -82,7 +102,6 @@ class SearchResultsPanel extends Component{
             {withCredentials: false})
             .then( res => {
                 this.setState({search_results: res.data.result.searched_users});
-                console.log("result ", res.data.result.searched_users);
                 })
              .catch(error => {
                 console.log("search results", error);
@@ -108,7 +127,18 @@ class SearchResultsPanel extends Component{
             {this.props.userSuccess &&
                     this.state.search_results.map( (res) => {
                         return(
-                            <Result name={res.username}/>
+                             <Card style={cardStyle} width={1}>
+                                <div style={{width: "100%", display:"flex",}}>
+                                    <CardContent style={{padding: 5, width: "90%"}}>
+                                      <Typography align="center" component="h5" variant="subtitle1">
+                                        {res.username}
+                                      </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        {this.state.showButton && <Button contained color='primary' size="small" value={res.user_id} onClick={() => this.handleAddClick(res.user_id)} >+Add Friend</Button> }
+                                    </CardActions>
+                                </div>
+                            </Card>
                         );
                         })
                     }

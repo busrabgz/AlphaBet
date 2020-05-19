@@ -14,6 +14,16 @@ class App extends React.Component {
     constructor(props){
     super(props)
 
+    this.updateFriends = () => {
+        this.setState( state => ({
+            dummyFriend: 
+             state.dummyFriend === false
+             ?  true
+             :  false
+        }))
+        
+    }
+
     this.updateBalance = () => {
         this.setState( state => ({
             balance: state.balance + 1
@@ -39,7 +49,9 @@ class App extends React.Component {
         type: userInfo.type,
         loggedIn: userInfo.loggedIn,
         updateLogInState: this.updateLogInState,
-        betslip: userInfo.betslip
+        betslip: userInfo.betslip,
+        dummyFriend: userInfo.dummyFriend,
+        updateFriends: this.updateFriends
         };
     }
 
