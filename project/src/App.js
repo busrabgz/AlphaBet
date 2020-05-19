@@ -21,7 +21,15 @@ class App extends React.Component {
              ?  true
              :  false
         }))
-        
+    }
+    
+    this.updateUserInfo = () => {
+        this.setState( state => ({
+            changeUserInfo: 
+             state.changeUserInfo === false
+             ?  true
+             :  false
+        }))
     }
 
     this.updateBalance = () => {
@@ -51,7 +59,9 @@ class App extends React.Component {
         updateLogInState: this.updateLogInState,
         betslip: userInfo.betslip,
         dummyFriend: userInfo.dummyFriend,
-        updateFriends: this.updateFriends
+        updateFriends: this.updateFriends,
+        changeUserInfo: userInfo.changeUserInfo,
+        updateUserInfo: this.updateUserInfo
         };
     }
 

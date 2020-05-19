@@ -52,180 +52,226 @@ const paperStyle = {
     width: "100%",
 }
 
-function WithdrawCash() {
-  const [open, setOpen] = React.useState(false);
+class WithdrawCash extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: false
+    }
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+  }
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  handleClickOpen() {
+    console.log("Im here")
+    this.setState({
+      open: true
+    }) 
+  }
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  handleClose() {
+    this.setState({
+      open: false
+    })
+  }
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          Withdraw Cash
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To withdraw cash, please enter the amount here. We will update the balance as you confirm.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="amount"
+              label="Withdraw Amount"
+              type="amount"
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+  
+}
+class AddBalance extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open:false
+    }
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+  }
 
-  return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Withdraw Cash
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To withdraw cash, please enter the amount here. We will update the balance as you confirm.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="amount"
-            label="Withdraw Amount"
-            type="amount"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+  handleClickOpen() {
+    this.setState({
+      open: true
+    })
+  }
+
+  handleClose() {
+    this.setState({
+      open: false
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          Add Balance
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Add Balance</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To update your balance, please enter the amount here. We will update the balance as you confirm.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="balance"
+              label="Enter Balance"
+              type="balance"
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
-function EditProfile(props) {
-  const [username, setUsername] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+class EditProfile extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: "",
+      password: "",
+      open: false
+    }
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleUsernameChange = this.handleUsernameChange.bind(this)
+    this.handlePasswordChange = this.handlePasswordChange.bind(this)
+  }
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  handleClickOpen() {
+    this.setState({
+      open: true
+    })
+  }
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  handleClose() {
+    this.setState({
+      open: false
+    })
+  }
 
-  const handleSubmit = () => {
+  handleSubmit() {
     axios.post(URL,
-        {
-            "request_type": "edit_profile",
-            "user_id": props.userId,
-            "new_username": username,
-            "new_password": password
-         },
-        {withCredentials: false})
-        .then( res => {
-            if(res.data.result.success){
-                console.log("aaa");
-            }
-            })
-         .catch(error => {
-            console.log("info", error);
-            });
-
-     handleClose();
+      {
+          "request_type": "edit_profile",
+          "user_id": this.props.userId,
+          "new_username": this.state.username,
+          "new_password": this.state.password
+       },
+      {withCredentials: false})
+      .then( res => {
+          if(res.data.result.success){
+              console.log("aaa");
+          }
+          })
+       .catch(error => {
+          console.log("info", error);
+          });
+   this.handleClose();
   }
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+  handleUsernameChange(event) {
+    this.setState({
+      username: event.target.value
+    })
   }
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+  handlePasswordChange(event) {
+    this.setState({
+      password: event.target.value
+    })
   }
 
-  return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Edit Profile
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To edit your profile, please enter information here. We will update as you confirm.
-          </DialogContentText>
-          <TextField
-            margin="dense"
-            id="username"
-            name="username"
-            label="Username"
-            type="username"
-            value={username}
-            onChange={handleUsernameChange}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="password"
-            name="password"
-            label="Password"
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          Edit Profile
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To edit your profile, please enter information here. We will update as you confirm.
+            </DialogContentText>
+            <TextField
+              margin="dense"
+              id="username"
+              name="username"
+              label="Username"
+              type="username"
+              value={this.state.username}
+              onChange={this.handleUsernameChange}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={this.state.password}
+              onChange={this.handlePasswordChange}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSubmit} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
-function AddBalance() {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Add Balance
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add Balance</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To update your balance, please enter the amount here. We will update the balance as you confirm.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="balance"
-            label="Enter Balance"
-            type="balance"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
-}
 
 class UserInfoPanel extends Component {
     constructor(props){
@@ -253,38 +299,38 @@ class UserInfoPanel extends Component {
 
   render() {
     return (
-            <div>
-                <Grid container spacing={3}>
-                    <Grid item lg={8} md={8} sm={12} xs={12}>
-                        <Paper style={paperStyle}>
-                            <div style={divStyle}>
-                                <Avatar style={avatarStyle} alt="Remy Sharp" src={avatarIcon} />
-                                <div style={{paddingLeft: 200, position: "relative", float: "center"}}>
-                                  <Typography align="left" variant="h5" color="initial">{this.state.username}</Typography>
-                                  <Typography align="left" variant="h5" color="initial">{this.state.name}</Typography>
-                                  <Typography align="left" variant="h5" color="initial">{this.state.email}</Typography>
-                                  <Typography align="left" variant="h5" color="initial">{this.state.total_winnings}</Typography>
-                                </div>
-                            </div>
-                        </Paper>
-                    </Grid>
-                    <Grid item lg={4} md={4} sm={12} xs={12}>
-                          <ButtonGroup
-                            style={buttonGroupStyle}
-                            orientation="vertical"
-                            color="primary"
-                            aria-label="vertical contained primary button group"
-                            variant="contained"
-                            fullWidth={true}
-                            size="large"
-                          >
-                                <EditProfile userId={this.props.userId} />
-                                <AddBalance/>
-                                <WithdrawCash/>
-                          </ButtonGroup>
-                    </Grid>
+      <div>
+          <Grid container spacing={3}>
+              <Grid item lg={8} md={8} sm={12} xs={12}>
+                  <Paper style={paperStyle}>
+                      <div style={divStyle}>
+                          <Avatar style={avatarStyle} alt="Remy Sharp" src={avatarIcon} />
+                          <div style={{paddingLeft: 200, position: "relative", float: "center"}}>
+                            <Typography align="left" variant="h5" color="initial">{this.state.username}</Typography>
+                            <Typography align="left" variant="h5" color="initial">{this.state.name}</Typography>
+                            <Typography align="left" variant="h5" color="initial">{this.state.email}</Typography>
+                            <Typography align="left" variant="h5" color="initial">{this.state.total_winnings}</Typography>
+                          </div>
+                      </div>
+                  </Paper>
               </Grid>
-            </div>);
+              <Grid item lg={4} md={4} sm={12} xs={12}>
+                    <ButtonGroup
+                      style={buttonGroupStyle}
+                      orientation="vertical"
+                      color="primary"
+                      aria-label="vertical contained primary button group"
+                      variant="contained"
+                      fullWidth={true}
+                      size="large"
+                    >
+                          <EditProfile userId={this.props.userId} />
+                          <AddBalance/>
+                          <WithdrawCash/>
+                    </ButtonGroup>
+              </Grid>
+        </Grid>
+      </div>);
   }
 }
 
