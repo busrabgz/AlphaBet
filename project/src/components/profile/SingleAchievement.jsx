@@ -16,15 +16,18 @@ const cardMediaStyle = {
 class SingleAchievement extends Component {
     constructor(props){
         super(props);
+        console.log(this.props.achName);
     }
 
     render(){
         const renderMedia = () => {
             let component = '';
-            if(this.props.achieved = "true")
-                component = this.props.achName + "_true";
+            if(this.props.achieved == "true"){
+                console.log(this.props.achName);
+                component = require("./" + this.props.achName + "_true.png");
+                }
             else
-                component = this.props.achName + "_false";
+                component = require("./" + this.props.achName + "_false.png");
 
          return (<CardMedia
                 height='auto'
@@ -37,8 +40,8 @@ class SingleAchievement extends Component {
         const renderTitle = () => {
             let title = '';
             let description = '';
-            title = this.props.title;
-            description = this.props.description;
+            title = this.props.achName;
+            description = this.props.achDesc;
 
              return (<CardContent>
                   <Typography component="h5" variant="h5">

@@ -13,7 +13,9 @@ class AchievementsPanel extends Component {
     constructor(props){
         super(props);
         this.updateBalance = props.update;
-        this.state = {total_achievement_count: '', gained_achievement_count: '', gained_achievements: []}
+        this.ach = [];
+
+        this.state = {total_achievement_count: '', gained_achievement_count: ''}
 
         axios.post(URL,
         {
@@ -27,43 +29,50 @@ class AchievementsPanel extends Component {
             console.log("total achievement count", error);
             });
 
-        axios.post(URL,
-        {
-            "request_type": "get_gained_achievements",
-            "user_id": this.props.userId
-         },
-        {withCredentials: false})
-        .then( res => {
-            this.setState({gained_achievement_count: res.data.result.gained_achievement_count});
-            })
-         .catch(error => {
-            console.log("gained achievement count", error);
-            });
-
-        axios.post(URL,
-        {
-            "request_type": "get_gained_achievements"
-         },
-        {withCredentials: false})
-        .then( res => {
-            this.setState({gained_achievements: res.data.result.gained_achievements});
-            })
-         .catch(error => {
-            console.log("total achievement count", error);
-            });
     };
 
     render(){
-        var achievements = [];
-        for (var i = 0; i < this.state.gained_achievements.length; i++) {
-            achievements.push(<SingleAchievement achName={i[0]} achDesc={i[1]} achieved="true" />);
-        }
+        if(this.props.userSuccess){
+                axios.post(URL,
+                {
+                    "request_type": "get_gained_achievement_count",
+                    "user_id": this.props.userId
+                 },
+                {withCredentials: false})
+                .then( res => {
+                    this.setState({gained_achievement_count: res.data.result.gained_achievement_count});
+                    })
+                 .catch(error => {
+                    console.log("gained achievement count", error);
+                    });
+
+                axios.post(URL,
+                {
+                    "request_type": "get_gained_achievements",
+                    "user_id": this.props.userId
+                 },
+                {withCredentials: false})
+                .then( res => {
+                    for(var i = 0; i < res.data.result.gained_achievements.length; i++){
+                        this.ach[i] = {key: i, achName: res.data.result.gained_achievements[i][0], achDesc:res.data.result.gained_achievements[i][1], achieved:"true"};
+                    }
+                  })
+                 .catch(error => {
+                    console.log("achievements", error);
+                    });
+                }
         return(
             <div>
                  <Typography style={titleStyle} component="h5" variant="h5">
-                    Achievements {this.state.gained_achievement_count} / {this.state.total_achievement_count}
+                 Achievements {this.state.gained_achievement_count} / {this.state.total_achievement_count}
                  </Typography>
-                 <tbody> {achievements} </tbody>;
+                 {this.props.userSuccess &&
+                    this.ach.map( (single) => {
+                        return(
+                            <SingleAchievement key={single.key} achName={single.achName} achDesc= {single.achDesc} achieved={single.achieved} />
+                        );
+                        })
+                    }
             </div>
         );
     }
