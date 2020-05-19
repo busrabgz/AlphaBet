@@ -18,7 +18,7 @@ class Home extends Component {
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, loggedIn} ) => (
         <div>
-            <NavBar userBalance={balance} userSuccess={loggedIn}/>
+            <NavBar userBalance={balance} userSuccess={loggedIn} type={this.props.type}/>
             <h1>Home Page</h1>
             <p>"WELCOME " {this.props.id}</p>
         </div>

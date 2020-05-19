@@ -21,22 +21,22 @@ class Landing extends React.Component {
         <div>
           <Switch>
               <Route path="/profile">
-                <Profile id={userId}/>
+                <Profile id={userId} type={type}/>
               </Route>
               <Route path="/register">
-                <Register id={userId}/>
+                <Register id={userId} type={type} userSuccess={loggedIn} balance={balance}/>
               </Route>
               <Route path="/feed">
-                <Feed />
+                <Feed id={userId} type={type}/>
               </Route>
               <Route path="/signin">
-                <SignIn id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} userType={type} balanceFunc={updateBalance} balance={balance} />
+                <SignIn id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} type={type} balanceFunc={updateBalance} balance={balance} />
               </Route>
               <Route path="/market">
-                <Market />
+                <Market id={userId} type={type}/>
               </Route>
               <Route exact path="/">
-                <Home id={userId}/>
+                <Home id={userId} type={type}/>
               </Route>
           </Switch>
         </div>
