@@ -53,7 +53,7 @@ class FriendsPanel extends Component{
 
     constructor(props){
         super(props);
-        this.state = {friends: []};
+        this.state = {friends: [], dummy: this.props.dummy};
     }
 
     componentDidMount() {
@@ -75,6 +75,28 @@ class FriendsPanel extends Component{
                 console.log("friends", error);
                 });
          }
+    }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.dummy != this.props.dummy) {
+            if(this.props.userSuccess){
+                axios.post(URL,
+                {
+                    "request_type": "get_friends",
+                    "user_id": this.props.userId
+                 },
+                {withCredentials: false})
+                .then( res => {
+                    let temp = []
+                    for(var i = 0; i < res.data.result.friends.length; i++){
+                       temp[i] = <Friend key={i} name={res.data.result.friends[i]} />;
+                    }
+                    this.setState({friends: temp})
+                    })
+                 .catch(error => {
+                    console.log("friends", error);
+                    });
+             }
+        }
     }
 
     render(){

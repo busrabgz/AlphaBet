@@ -66,14 +66,14 @@ function Title(){
 class SearchResultsPanel extends Component{
     constructor(props){
         super(props);
-        this.state = {search_text: '', search_results: []};
+        this.state = {search_text: '', search_results: [], showButton: true};
         this.handleClick = this.handleClick.bind(this);
         this.handleAddClick = this.handleAddClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleAddClick(value){
-        console.log("friend id: ", value);
+        this.setState({showButton:false})
         axios.post(URL,
             {
                 "request_type": "add_friend",
@@ -83,7 +83,7 @@ class SearchResultsPanel extends Component{
             {withCredentials: false})
             .then( res => {
                 if(res.data.result.success){
-                    React.render(<FriendsPanel />);
+                    this.props.dummyFunc()
                 }
                 })
              .catch(error => {
@@ -92,7 +92,7 @@ class SearchResultsPanel extends Component{
     }
 
     handleClick(event){
-        this.setState({search_results: []});
+        this.setState({search_results: [], showButton:true});
         axios.post(URL,
             {
                 "request_type": "search_users",
@@ -135,7 +135,7 @@ class SearchResultsPanel extends Component{
                                       </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Button contained color='primary' size="small" value={res.user_id} onClick={() => this.handleAddClick(res.user_id)} >+Add Friend</Button>
+                                        {this.state.showButton && <Button contained color='primary' size="small" value={res.user_id} onClick={() => this.handleAddClick(res.user_id)} >+Add Friend</Button> }
                                     </CardActions>
                                 </div>
                             </Card>
