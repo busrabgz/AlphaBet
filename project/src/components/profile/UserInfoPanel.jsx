@@ -21,7 +21,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import expandLess from './expandless.png';
 import expandMore from './expandmore.png';
+import axios from 'axios';
 
+const URL = "http://localhost:5000/profile";
 
 const avatarStyle = {
     height: 127,
@@ -60,6 +62,24 @@ class UserInfoPanel extends Component {
     constructor(props){
         super(props);
         this.updateBalance = props.update;
+        this.state = {username: '', name: '', total_winnings: '', email: ''}
+
+        console.log(this.props.userId);
+        axios.post(URL,
+        {
+            "request_type": "get_user_info",
+            "user_id": this.props.userId
+         },
+        {withCredentials: false})
+        .then( res => {
+            this.setState({username: res.data.result.username,
+                            name: res.data.result.forename + "  " + res.data.result.surname,
+                            total_winnings: res.data.result.total_winnings,
+                            email: res.data.result.email})
+            })
+         .catch(error => {
+            console.log("info", error);
+            });
     };
 
   render() {
@@ -76,11 +96,11 @@ class UserInfoPanel extends Component {
                                 >
                                   <ListItem>
                                     <ListItemIcon><Avatar style={iconStyle} alt="Remy Sharp" src={avatarIcon} /></ListItemIcon>
-                                    <ListItemText primary={this.props.username} />
+                                    <ListItemText primary={this.state.username} />
                                   </ListItem>
                                   <ListItem>
                                     <ListItemIcon><Avatar style={iconStyle} alt="Remy Sharp" src={avatarIcon} /></ListItemIcon>
-                                    <ListItemText primary="User Forename and Surname" />
+                                    <ListItemText primary={this.state.name} />
                                   </ListItem>
                                 </List>
                                 <List
@@ -89,11 +109,11 @@ class UserInfoPanel extends Component {
                                 >
                                   <ListItem>
                                     <ListItemIcon><Avatar style={iconStyle} alt="Remy Sharp" src={avatarIcon} /></ListItemIcon>
-                                    <ListItemText primary="Total Winnings" />
+                                    <ListItemText primary={this.state.total_winnings} />
                                   </ListItem>
                                   <ListItem>
                                     <ListItemIcon><Avatar style={iconStyle} alt="Remy Sharp" src={avatarIcon} /></ListItemIcon>
-                                    <ListItemText primary="Bişi daha" />
+                                    <ListItemText primary={this.state.email} />
                                   </ListItem>
                                 </List>
                             </div>
