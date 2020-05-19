@@ -62,6 +62,8 @@ export default function NavBar(props) {
               Home
               </Button>
             </Link>
+            {props.type != "admin"
+              ? <div>
               <Button color="inherit">
                 <Link to="/about">About</Link>
               </Button>
@@ -71,12 +73,23 @@ export default function NavBar(props) {
               <Button color="inherit">
                 <Link to="/editors">Editors</Link>
               </Button>
-              <Button color="white">
-                    <Link to="/feed">Feed</Link>
-              </Button>
-              <Button className={classes.menuButton} color="inherit">
-                    <Link to="/market">Market</Link>
-              </Button>
+              </div>
+              :<Button color="inherit">
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>  
+            }
+
+              {props.type != "admin" &&
+                <div>
+                  <Button color="white">
+                        <Link to="/feed">Feed</Link>
+                  </Button>
+                  <Button className={classes.menuButton} color="inherit">
+                        <Link to="/market">Market</Link>
+                  </Button>
+                </div>
+                
+              }
           <Box className={classes.box} my={-5}>
             <List component="nav">
               <Box mb={-2}>
@@ -95,12 +108,12 @@ export default function NavBar(props) {
              {props.userSuccess
                 ? <Button className={classes.logoutButton} size="small" variant="contained" color="secondary"> Logout</Button>
                 : <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.buttonGroup}>
-                  <Link to='/register' style={{textDecoration: 'none'}}>
-                  <Button size="small" variant="contained" color="secondary" >Register</Button>
+                    <Link to='/register' style={{textDecoration: 'none'}}>
+                      <Button size="small" variant="contained" color="secondary" >Register</Button>
                    </Link>
-                  <Link to='/signin' style={{textDecoration: 'none'}}>
-                    <Button size="small" variant="contained" color="secondary">Login</Button>
-                  </Link>
+                    <Link to='/signin' style={{textDecoration: 'none'}}>
+                      <Button size="small" variant="contained" color="secondary">Login</Button>
+                      </Link>
               </ButtonGroup>
              }
          </div>

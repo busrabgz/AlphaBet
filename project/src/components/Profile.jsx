@@ -22,32 +22,36 @@ import Avatar from '@material-ui/core/Avatar';
 
 class Profile extends Component {
 
+    constructor(props){
+        super(props);
+    }
+
   render() {
     return (
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, loggedIn} ) => (
         <div>
-            <NavBar userBalance={balance} userSuccess={loggedIn}/>
+            <NavBar userBalance={balance} userSuccess={loggedIn} type={this.props.type} />
             <h1>Profile Page of {username}</h1>
-            <UserInfoPanel username={username} update={updateBalance}/>
+            <UserInfoPanel userId={this.props.id} update={updateBalance}/>
             <div>
                 <Grid container spacing={3}>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
                       <Paper elevation={10}>
-                          <FriendsPanel />
+                          <FriendsPanel userId={this.props.id} userSuccess={loggedIn} />
                       </Paper>
                       <Paper elevation={10}>
-                          <SearchResultsPanel />
-                      </Paper>
-                    </Grid>
-                    <Grid item lg={3} md={6} sm={12} xs={12}>
-                      <Paper elevation={10}>
-                        <AchievementsPanel />
+                          <SearchResultsPanel userId={this.props.id} userSuccess={loggedIn}/>
                       </Paper>
                     </Grid>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
                       <Paper elevation={10}>
-                        <PendingPanel />
+                        <AchievementsPanel userId={this.props.id} userSuccess={loggedIn} />
+                      </Paper>
+                    </Grid>
+                    <Grid item lg={3} md={6} sm={12} xs={12}>
+                      <Paper elevation={10}>
+                        <PendingPanel userId={this.props.id}/>
                       </Paper>
                     </Grid>
                      <Grid item lg={3} md={6} sm={12} xs={12}>

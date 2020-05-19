@@ -7,6 +7,9 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
+import axios from 'axios';
+
+const URL = "http://localhost:5000/profile";
 
 const cardStyle = {
     border: "solid 1px",
@@ -48,16 +51,41 @@ function Title(){
 
 class FriendsPanel extends Component{
 
+    constructor(props){
+        super(props);
+        this.state = {friends: []};
+    }
 
+    componentDidMount() {
+        if(this.props.userSuccess){
+            axios.post(URL,
+            {
+                "request_type": "get_friends",
+                "user_id": this.props.userId
+             },
+            {withCredentials: false})
+            .then( res => {
+                let temp = []
+                for(var i = 0; i < res.data.result.friends.length; i++){
+                   temp[i] = <Friend key={i} name={res.data.result.friends[i]} />;
+                }
+                this.setState({friends: temp})
+                })
+             .catch(error => {
+                console.log("friends", error);
+                });
+         }
+    }
 
     render(){
-    return(
-        <Paper style={paperStyle} elevation={3}>
-            <Title />
-            <Friend name="Yüce Hasan Kılıç"/>
-            <Friend name="Mert Aslan"/>
-        </Paper>
-    );
+        return(
+            <Paper style={paperStyle} elevation={3}>
+                <Title />
+                {this.props.userSuccess &&
+                        this.state.friends
+                }
+            </Paper>
+        );
     }
 }
 

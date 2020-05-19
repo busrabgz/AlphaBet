@@ -14,8 +14,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import expandLess from './expandless.png';
 import expandMore from './expandmore.png';
+import axios from 'axios';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from '@material-ui/core';
 
+const URL = "http://localhost:5000/profile";
 
 const avatarStyle = {
     height: 127,
@@ -214,6 +216,24 @@ class UserInfoPanel extends Component {
     constructor(props){
         super(props);
         this.updateBalance = props.update;
+        this.state = {username: '', name: '', total_winnings: '', email: ''}
+
+        console.log(this.props.userId);
+        axios.post(URL,
+        {
+            "request_type": "get_user_info",
+            "user_id": this.props.userId
+         },
+        {withCredentials: false})
+        .then( res => {
+            this.setState({username: res.data.result.username,
+                            name: res.data.result.forename + "  " + res.data.result.surname,
+                            total_winnings: res.data.result.total_winnings,
+                            email: res.data.result.email})
+            })
+         .catch(error => {
+            console.log("info", error);
+            });
     };
 
   render() {
