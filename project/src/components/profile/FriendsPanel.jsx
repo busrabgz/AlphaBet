@@ -54,7 +54,9 @@ class FriendsPanel extends Component{
     constructor(props){
         super(props);
         this.state = {friends: []};
+    }
 
+    componentDidMount() {
         if(this.props.userSuccess){
             axios.post(URL,
             {
@@ -63,10 +65,11 @@ class FriendsPanel extends Component{
              },
             {withCredentials: false})
             .then( res => {
+                let temp = []
                 for(var i = 0; i < res.data.result.friends.length; i++){
-                    this.state.friends[i] = <Friend key={i} name={res.data.result.friends[i]} />;
+                   temp[i] = <Friend key={i} name={res.data.result.friends[i]} />;
                 }
-                console.log(this.friends);
+                this.setState({friends: temp})
                 })
              .catch(error => {
                 console.log("friends", error);
