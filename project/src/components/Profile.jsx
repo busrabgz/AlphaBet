@@ -38,7 +38,7 @@ class Profile extends Component {
                 <Grid container spacing={3}>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
                       <Paper elevation={10}>
-                          <FriendsPanel userId={this.props.id}/>
+                          <FriendsPanel userId={this.props.id} userSuccess={loggedIn} />
                       </Paper>
                       <Paper elevation={10}>
                           <SearchResultsPanel userId={this.props.id}/>
@@ -46,7 +46,7 @@ class Profile extends Component {
                     </Grid>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
                       <Paper elevation={10}>
-                        <AchievementsPanel userId={this.props.id}/>
+                        <AchievementsPanel userId={this.props.id} userSuccess={loggedIn} />
                       </Paper>
                     </Grid>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
