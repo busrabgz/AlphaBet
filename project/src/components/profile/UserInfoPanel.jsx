@@ -96,7 +96,9 @@ function WithdrawCash() {
   );
 }
 
-function EditProfile() {
+function EditProfile(props) {
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -106,6 +108,35 @@ function EditProfile() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleSubmit = () => {
+    axios.post(URL,
+        {
+            "request_type": "edit_profile",
+            "user_id": props.userId,
+            "new_username": username,
+            "new_password": password
+         },
+        {withCredentials: false})
+        .then( res => {
+            if(res.data.result.success){
+                console.log("aaa");
+            }
+            })
+         .catch(error => {
+            console.log("info", error);
+            });
+
+     handleClose();
+  }
+
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
+  }
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  }
 
   return (
     <div>
@@ -119,39 +150,23 @@ function EditProfile() {
             To edit your profile, please enter information here. We will update as you confirm.
           </DialogContentText>
           <TextField
-            autoFocus
-            margin="dense"
-            id="forename"
-            label="Foreame"
-            type="forename"
-            fullWidth
-          />          
-          <TextField
-            margin="dense"
-            id="surname"
-            label="Surname"
-            type="surname"
-            fullWidth
-          />
-          <TextField
             margin="dense"
             id="username"
+            name="username"
             label="Username"
             type="username"
+            value={username}
+            onChange={handleUsernameChange}
             fullWidth
           />
           <TextField
             margin="dense"
             id="password"
+            name="password"
             label="Password"
             type="password"
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
+            value={password}
+            onChange={handlePasswordChange}
             fullWidth
           />
         </DialogContent>
@@ -159,7 +174,7 @@ function EditProfile() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleSubmit} color="primary">
             Confirm
           </Button>
         </DialogActions>
@@ -245,10 +260,10 @@ class UserInfoPanel extends Component {
                             <div style={divStyle}>
                                 <Avatar style={avatarStyle} alt="Remy Sharp" src={avatarIcon} />
                                 <div style={{paddingLeft: 200, position: "relative", float: "center"}}>
-                                  <Typography align="left" variant="h5" color="initial">Username</Typography>
-                                  <Typography align="left" variant="h5" color="initial">Forename and Surname</Typography>
-                                  <Typography align="left" variant="h5" color="initial">Email</Typography>
-                                  <Typography align="left" variant="h5" color="initial">Total Winnings</Typography>
+                                  <Typography align="left" variant="h5" color="initial">{this.state.username}</Typography>
+                                  <Typography align="left" variant="h5" color="initial">{this.state.name}</Typography>
+                                  <Typography align="left" variant="h5" color="initial">{this.state.email}</Typography>
+                                  <Typography align="left" variant="h5" color="initial">{this.state.total_winnings}</Typography>
                                 </div>
                             </div>
                         </Paper>
@@ -263,7 +278,7 @@ class UserInfoPanel extends Component {
                             fullWidth={true}
                             size="large"
                           >
-                                <EditProfile/>
+                                <EditProfile userId={this.props.userId} />
                                 <AddBalance/>
                                 <WithdrawCash/>
                           </ButtonGroup>
