@@ -30,11 +30,13 @@ const slip =  {
         comments : [
             {
                 commentor: "Yüce",
-                comment  : "Bu kupon tutar"
+                comment  : "Bu kupon tutar",
+                likeCount: 15
             },
             {
                 commentor: "Ozan",
-                comment  : "Bu kupon tutmaz"
+                comment  : "Bu kupon tutmaz",
+                likeCount: 22
             },
         ],
     }
