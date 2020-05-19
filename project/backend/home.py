@@ -430,6 +430,16 @@ def feed():
         for row in cur.fetchall():
             comment_results.append(dict(zip(comment_columns, row)))
 
+        cur.execute(friend_slip_id_query + " SELECT comment_id, Count(user_id) as comment_like_count FROM"
+                                           " friend_slip_id NATURAL JOIN bet_slip_comment NATURAL JOIN comment_likes GROUP BY comment_id")
+
+        comment_like_results = []
+
+        comment_like_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            comment_like_results.append(dict(zip(comment_like_columns, row)))
+
         cur.execute(friend_slip_id_query + " SELECT bet_slip_id, Count(bet_slip_id) as like_count FROM friend_slip_id"
                                            " NATURAL JOIN bet_slip_like GROUP BY bet_slip_id")
 
@@ -456,7 +466,7 @@ def feed():
         for row in cur.fetchall():
             friend_bet_slip_results.append(dict(zip(feed_columns, row)))
 
-        friend_bet_slip_map =[]
+        friend_bet_slip_map = []
 
         for row in friend_bet_slip_results:
             composite_already_added = False
@@ -537,40 +547,50 @@ def feed():
 
                 friend_bet_slip_map.append(friend_to_add)
 
-
-        comment_map = [{
-            "bet_slip_id": 2,
-            "comment": [
-            {
-
-            }
-        ]
-        }
-        ]
+        comment_map = []
 
         for row in comment_results:
             bet_slip_found = False
 
             comment_to_add = {
                 "username": row["username"],
-                "comment": row["comment"]
+                "comment_id": row["comment_id"],
+                "comment": row["comment"],
+                "comment_like_count": ""
             }
+
+            for liked_comment in comment_like_results:
+                if liked_comment["comment_id"] == comment_to_add["comment_id"]:
+                    comment_to_add["comment_like_count"] = liked_comment["comment_like_count"]
 
             for bet_slip in comment_map:
 
                 if row["bet_slip_id"] == bet_slip["bet_slip_id"]:
                     bet_slip_found = True
 
-                    comment_to_add
+                    bet_slip["comment"].append(comment_to_add)
+            if not bet_slip_found:
+                comment_map_to_add = {
+                    "bet_slip_id": row["bet_slip_id"],
+                    "bet_slip_comments": [comment_to_add]
+                }
 
+                comment_map.append(comment_map_to_add)
 
+        for friend in friend_bet_slip_map:
 
+            for friend_bet_slip in friend["bet_slips"]:
 
+                for like in bet_slip_like_results:
+                    if like["bet_slip_id"] == friend_bet_slip["bet_slip_id"]:
+                        friend_bet_slip["like_count"] = like["like_count"]
 
+                for bet_slip_comments in comment_map:
 
+                    if bet_slip_comments["bet_slip_id"] == friend_bet_slip["bet_slip_id"]:
+                        friend_bet_slip["comments"] = bet_slip_comments["bet_slip_comments"]
 
-        return {"test": friend_bet_slip_map}
-
+        return {"users": friend_bet_slip_map}
 
     elif input["request_type"] == "user_like_bet_slip":
         cur.execute("INSERT INTO bet_slip_like (user_id, bet_slip_id) VALUES"
@@ -863,6 +883,72 @@ def editor():
         for row in cur.fetchall():
             editor_slips_results.append(dict(zip(editor_slip_columns, row)))
 
+        editor_bet_slip_comment_query = \
+            "WITH editor_bet_slips AS (SELECT bet_slip_id, sharer_id as editor_id FROM shared_bet_slip WHERE" \
+            " sharer_id IN (SELECT editor_id FROM editor)) "
+
+        cur.execute(editor_bet_slip_comment_query + " SELECT bet_slip_id, comment_id, comment, username "
+                                                    "FROM editor_bet_slips NATURAL JOIN"
+                                                    " bet_slip_comment NATURAL JOIN comment NATURAL JOIN person")
+
+        bet_slip_comments_results = []
+
+        bet_slip_comments_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            bet_slip_comments_results.append(dict(zip(bet_slip_comments_columns, row)))
+
+        cur.execute(editor_bet_slip_comment_query + " SELECT bet_slip_id, Count(bet_slip_id) as like_count FROM"
+                                                    " editor_bet_slips NATURAL JOIN bet_slip_like GROUP BY bet_slip_id")
+
+        bet_slip_like_results = []
+
+        bet_slip_like_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            bet_slip_like_results.append(dict(zip(bet_slip_like_columns, row)))
+
+        cur.execute(editor_bet_slip_comment_query + " SELECT comment_id, Count(user_id) as comment_like_count FROM"
+                                                    " editor_bet_slips NATURAL JOIN bet_slip_comment "
+                                                    "NATURAL JOIN comment_likes GROUP BY comment_id")
+
+        bet_slip_comments_likes_results = []
+
+        bet_slip_comments_likes_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            bet_slip_comments_likes_results.append(dict(zip(bet_slip_comments_likes_columns, row)))
+
+        bet_slip_comment_map = []
+
+        for row in bet_slip_comments_results:
+            bet_slip_found = False
+
+            comment_to_add = {
+                "username": row["username"],
+                "comment_id": row["comment_id"],
+                "comment": row["comment"],
+                "comment_like_count": ""
+            }
+
+            for liked_comment in bet_slip_comments_likes_results:
+                if liked_comment["comment_id"] == comment_to_add["comment_id"]:
+                    comment_to_add["comment_like_count"] = liked_comment["comment_like_count"]
+
+            for bet_slip in bet_slip_comment_map:
+
+                if row["bet_slip_id"] == bet_slip["bet_slip_id"]:
+                    bet_slip_found = True
+
+                    bet_slip["comment"].append(comment_to_add)
+            if not bet_slip_found:
+                comment_map_to_add = {
+                    "bet_slip_id": row["bet_slip_id"],
+                    "bet_slip_comments": [comment_to_add]
+                }
+
+                bet_slip_comment_map.append(comment_map_to_add)
+
         cur.execute("WITH suggested_bet_data AS (SELECT * FROM ((SELECT * FROM suggested_bet) as suggested NATURAL JOIN"
                     " bet)), match_data AS (SELECT * FROM suggested_bet_data NATURAL JOIN "
                     "competitor_match), all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT"
@@ -994,7 +1080,9 @@ def editor():
                         }]
                         editor["bet_slips"].append({
                             "bet_slip_id": row["bet_slip_id"],
-                            "bets": bets
+                            "bets": bets,
+                            "comments": [],
+                            "bet_slip_like_count": 0
                         })
             if not editor_found:
                 editor_to_add = {
@@ -1013,10 +1101,25 @@ def editor():
 
                 editor_to_add["bet_slips"].append({
                     "bet_slip_id": row["bet_slip_id"],
-                    "bets": bets
+                    "bets": bets,
+                    "comments": [],
+                    "bet_slip_like_count": 0
                 })
 
                 editor_bet_slip_map.append(editor_to_add)
+
+        for editor in editor_bet_slip_map:
+
+            for editor_bet_slip in editor["bet_slips"]:
+
+                for like in bet_slip_like_results:
+                    if like["bet_slip_id"] == editor_bet_slip["bet_slip_id"]:
+                        editor_bet_slip["bet_slip_like_count"] = like["like_count"]
+
+                for bet_slip_comments in bet_slip_comment_map:
+
+                    if bet_slip_comments["bet_slip_id"] == editor_bet_slip["bet_slip_id"]:
+                        editor_bet_slip["comments"] = bet_slip_comments["bet_slip_comments"]
 
         editor_final = []
 
