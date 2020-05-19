@@ -44,7 +44,7 @@ function RenderComments(props){
             <Paper style={{minHeight: 40, padding: 10, border: "0.5px solid"}}>
                 <Box style={{float:"left"}}><Typography variant="h7" color="initial">{comment.commentor + " says: \n"}</Typography></Box>
                 <Box style={{float:"center"}}><Typography variant="subtitle" color="initial">{comment.comment}</Typography></Box>
-                <Box style={{float:"right"}}><Button style={{bottom: 20, backgroundColor: "#FC498A"}}>Like ({comment.likeCount})</Button></Box>
+                <Box style={{float:"right"}}><Button style={{color: "white", bottom: 20, backgroundColor: "#FC498A"}}>Like ({comment.likeCount})</Button></Box>
             </Paper>
         )})
     );
@@ -60,8 +60,8 @@ class SingleSlip extends Component {
             <Grid item lg={6} md={6} sm={12} xs={12}>
                 <Paper>
                     <Paper style={buttonPaperStyle} elevation={10}>
-                        <Button style={{backgroundColor: "#FC498A", float:"left", width:"50%"}}>LIKE ({this.props.slip.likeCount})</Button>
-                        <Button style={{backgroundColor: "#49AEFC", float:"right", width:"50%"}}>SHARE</Button>
+                        <Button style={{color: "white", backgroundColor: "#FC498A", float:"left", width:"50%"}}>LIKE ({this.props.slip.likeCount})</Button>
+                        <Button style={{color: "white", backgroundColor: "#49AEFC", float:"right", width:"50%"}}>SHARE</Button>
                     </Paper>
                     <Paper style={outerPaperStyle} elevation={10}>
                         Bet Slip With Total Odd {this.props.slip.totalOdd}
@@ -78,7 +78,7 @@ class SingleSlip extends Component {
                         <RenderComments comments={this.props.slip.comments}/>
                         <form>
                             <TextField placeholder="Your comment here"></TextField>
-                            <Button style={{align: "right",}}>ADD COMMENT</Button>
+                            <Button style={{color: "white", backgroundColor: "#49AEFC", align: "right",}}>ADD COMMENT</Button>
                         </form>
                     </Paper>
                 </Paper>
