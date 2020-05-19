@@ -736,16 +736,72 @@ def profile():
                     "(SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM "
                     "match_data NATURAL JOIN all_competitors".format(input["user_id"]))
 
-        bet_slips = cur.fetchall()
-        slips = []
+        ended_bet_slips_results = []
 
-        for row in bet_slips:
-            slips.append(row[0])
+        ended_bet_slips_columns = [column[0] for column in cur.description]
 
-        result = {
-            "ended_bet_slips": slips
+        for row in cur.fetchall():
+            ended_bet_slips_results.append(dict(zip(ended_bet_slips_columns, row)))
+
+        user_map = {
+            "user_id": input["user_id"],
+            "bet_slips": []
         }
-        return jsonify({"result": result})
+
+        for row in ended_bet_slips_results:
+            composite_already_added = False
+            bet_slip_found = False
+
+            if row["side"] == "HOME":
+                home_side = row["competitor_name"]
+                away_side = ""
+
+            else:
+                home_side = ""
+                away_side = row["competitor_name"]
+
+            total_odd = row["odd"]
+
+            for bet_slip in user_map["bet_slips"]:
+
+                if bet_slip["bet_slip_id"] == row["bet_slip_id"]:
+                    bet_slip_found = True
+                    for bet in bet_slip["bets"]:
+                        if bet["bet_id"] == row["bet_id"] and bet["match_id"] == row["match_id"]:
+                            composite_already_added = True
+
+                            if bet["home_side"] == "":
+                                bet["home_side"] = row["competitor_name"]
+                            else:
+                                bet["away_side"] = row["competitor_name"]
+                    if not composite_already_added:
+                        bet_to_add = {
+                            "bet_id": row["bet_id"],
+                            "match_id": row["match_id"],
+                            "home_side": home_side,
+                            "away_side": away_side,
+                            "result": row["result"],
+                            "odd": total_odd,
+                            "bet_type": row["bet_type"]
+                        }
+                        bet_slip["bets"].append(bet_to_add)
+
+            if not bet_slip_found:
+                bets = [{
+                    "bet_id": row["bet_id"],
+                    "match_id": row["match_id"],
+                    "home_side": home_side,
+                    "away_side": away_side,
+                    "result": row["result"],
+                    "odd": total_odd,
+                    "bet_type": row["bet_type"]
+                }]
+                user_map["bet_slips"].append({
+                    "bet_slip_id": row["bet_slip_id"],
+                    "bets": bets
+                })
+
+        return user_map
 
     if input["request_type"] == "get_gained_achievements":
         cur = mysql.connection.cursor()
