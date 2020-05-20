@@ -1242,10 +1242,10 @@ def market():
         items = []
 
         for row in val:
-            item = {"item_id": row[0],
-                    "item_type": row[1],
-                    "item_description": row[2],
-                    "cost": row[3]}
+            item = [{"item_id": row[0],
+                     "item_type": row[1],
+                     "item_description": row[2],
+                     "cost": row[3]}]
             items.append(item)
 
         result = {
