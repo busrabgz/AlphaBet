@@ -34,48 +34,22 @@ const avatarStyle = {
     height: "100%",
     width: "auto",
 }
- 
-  const tileData = [
-    {
-        img: avatarIcon, title: 'Image', author: 'Ozan Güven',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'Rıdvan Dilmen',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'Fatih Terim',
-    },
-    {
-        img: avatarIcon,  title: 'Image', author: 'author',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'author',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'author',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'author',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'author',
-    },
-    {
-        img: avatarIcon, title: 'Image', author: 'author',
-    },
-  ];
- 
+
 class EditorBar extends Component {
+    constructor(props) {
+        super(props)
+    }
+
     render(){
         return (
             <div style={rootStyle}>
             <GridList style={gridListStyle} cols={0}>
-                {tileData.map((tile) => (
-                <GridListTile key={tile.img}>
-                    <img src={tile.img} style={avatarStyle} alt={tile.title} />
+                {this.props.editors.map((tile) => (
+                <GridListTile key={avatarIcon}>
+                    <img src={avatarIcon} style={avatarStyle} alt={'Image'} />
                     <GridListTileBar
                         actionPosition="left"
-                        actionIcon={<Button onClick={this.props.onClick} style={{backgroundColor:"white", float:"center"}}>{tile.author}</Button>}
+                        actionIcon={<Button onClick={() => this.props.onClick(tile)} style={{backgroundColor:"white", float:"center"}}>{tile.name}</Button>}
                     />
                 </GridListTile>
                 ))}
