@@ -87,6 +87,8 @@ def home():
             temp = cur.fetchall()
 
             contest = tuple([contest[0] for contest in temp])
+            if len(contest) == 1:
+                contest = str(contest).replace(",", "")
 
         else:
             contest = str(tuple(input["filter"]["contest"]))

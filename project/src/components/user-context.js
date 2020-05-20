@@ -10,7 +10,8 @@ export const userInfo = {
     betslip: [{matchname: "Real Madrid - Galatasaray",  bet: "MS-1", odd: "1.5"},
     {matchname: "Beşiktaş - Liverpool", bet: "MS-0", odd: "1.1"}],
     dummyFriend: false,
-    filterInfo: {mbn:"", contest: [], sport: "", sort: "", inputText: ""}
+    filterInfo: {mbn:"", contest: [], sport: "", sort: "", inputText: ""},
+    betsInfo: []
 }
 
 
@@ -19,5 +20,6 @@ export const UserContext = React.createContext({
     updateBalance: () => {},
     updateLogInState: () => {},
     updateFriends: () => {},
-    updateFilterInfo: () => {}
+    updateFilterInfo: () => {},
+    updateBetsInfo: () => {}
 });

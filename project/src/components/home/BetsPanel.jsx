@@ -241,12 +241,10 @@ function RenderMatchRow(props){
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails style={detailStyling}>
                         <Grid container spacing={3}>
-                            {renderVote()}
                             {renderFHMR()}
                             {renderOU2_5()}
                             {renderOU1_5()}
                             {renderRedCount()}
-                            {renderYellowCount()}
                             {renderCornerCount()}
                         </Grid>
                     </ExpansionPanelDetails>
@@ -276,7 +274,7 @@ class BetsPanel extends Component{
         return (
             <Paper style={{padding: 15,}} elevation={7}>
                 <RenderTitles/>
-                {this.props.matches.map( (match) => {
+                {this.props.betsInfo.map( (match) => {
                     return(
                         <RenderMatchRow match={match}/>
                 );})}

@@ -98,15 +98,15 @@ class Home extends Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, loggedIn, betslip, filterInfo, updateFilterInfo} ) => (
+    { ( {username, balance, updateBalance, loggedIn, betslip, filterInfo, updateFilterInfo, betsInfo, updateBetsInfo} ) => (
         <div>
             <NavBar userBalance={balance} userSuccess={loggedIn}/>
             <div style={divStyle}>
               <BetSlip slip={betslip} />
               <Box style={rootBoxStyle}>
                 <p>"WELCOME " {this.props.id}</p>
-                <FilterPanel contests={contests} filterInfo = {filterInfo} updateFilterInfo = {updateFilterInfo}  />
-                <BetsPanel matches={matches}/>
+                <FilterPanel contests={contests} filterInfo = {filterInfo} updateFilterInfo = {updateFilterInfo} updateBetsInfo={updateBetsInfo} />
+                <BetsPanel betsInfo={betsInfo}/>
             </Box>
            </div>
 

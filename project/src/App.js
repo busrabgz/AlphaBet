@@ -47,6 +47,16 @@ class App extends React.Component {
         return true
     };
 
+    this.updateBetsInfo = (bets) => {
+        var temp = this.state.betsInfo;
+        temp.push(bets);
+
+        this.setState( state => ({
+            betsInfo: temp
+            }
+        ))
+    }
+
     this.state = {
         userId: userInfo.userId,
         username: userInfo.username,
@@ -60,7 +70,9 @@ class App extends React.Component {
         dummyFriend: userInfo.dummyFriend,
         updateFriends: this.updateFriends,
         filterInfo: userInfo.filterInfo,
-        updateFilterInfo: this.updateFilterInfo
+        updateFilterInfo: this.updateFilterInfo,
+        betsInfo: userInfo.betsInfo,
+        updateBetsInfo: this.updateBetsInfo
         };
     }
 

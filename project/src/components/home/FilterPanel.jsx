@@ -117,7 +117,26 @@ function SportFilter(props){
     const handleChange = (event) => {
         var filterInfo = props.filterInfo;
         filterInfo.sport = event.target.value;
-        props.updateFilterInfo(filterInfo)
+        props.updateFilterInfo(filterInfo);
+        var match = {home: "", away: "", bets: { mr_one: "",
+                                                  mr_draw         : "",
+                                                  mr_two          : "",
+                                                  over_2_5        : "",
+                                                  under_2_5       : "",
+                                                  one_one         :"",
+                                                  one_zero        :"",
+                                                  one_two         :"",
+                                                  zero_one        : "",
+                                                  zero_zero       : "",
+                                                  zero_two        : "",
+                                                  two_one         : "",
+                                                  two_zero        : "",
+                                                  two_two         : "",
+                                                  redCardCount_0  :"",
+                                                  redCardCount_1  :"",
+                                                  cornerCountOver_7_5  :"",
+                                                  cornerCountUnder_7_5 :""
+                                            } };
 
         axios.post(URL,
         {
@@ -130,23 +149,122 @@ function SportFilter(props){
             "vote_side": "",
             "filter": {
                 "sport_name": filterInfo.sport,
-                "max_mbn": "",
+                "max_mbn": "100",
                 "contest": [],
                 "sort_type": "",
                 "search_text": ""
             }
          })
         .then( res => {
-            if(res.data.result.success == "true"){
-                console.log("registration", res);
-                this.setState({ signed_up: true });
+                for( var i = 0; i < res.data.matches.length; i++) {
+                    match.home = res.data.matches[i].bets[0].home_side;
+                    match.away = res.data.matches[i].bets[0].away_side;
+
+                    for( var j = 0; j < res.data.matches[i].bets.length; j++){
+                        var type = res.data.matches[i].bets[j].bet_type;
+                        switch(type) {
+                            case "mr_one":
+                               match.bets.mr_one = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+
+                            case "mr_two":
+                               match.bets.mr_two = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+                            case "over_2_5":
+                               match.bets.over_2_5 = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+                            case "under_2_5":
+                               match.bets.under_2_5 = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+
+                            case "one_one":
+                               match.bets.one_one = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+
+                            case "one_zero":
+                               match.bets.one_two = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+
+                            case "zero_one":
+                               match.bets.zero_one = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+
+                            case "zero_zero":
+                               match.bets.zero_zero = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+
+                            case "zero_two":
+                               match.bets.zero_two = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+
+                            case "two_zero":
+                               match.bets.two_zero = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+
+                            case "two_one":
+                               match.bets.two_one = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+
+                            case "two_two":
+                               match.bets.two_two = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+
+                            case "redCardCount_0":
+                               match.bets.redCardCount_0 = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+
+                            case "redCardCount_1":
+                               match.bets.redCardCount_1 = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+
+                            case "cornerCountOver_7_5":
+                               match.bets.cornerCountOver_7_5 = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                               break;
+
+                            case "cornerCountUnder_7_5":
+                               match.bets.cornerCountUnder_7_5 = { MBN: res.data.matches[i].bets[j].mbn,
+                                                odd:res.data.matches[i].bets[j].odd,
+                                                oldOdd: res.data.matches[i].bets[j].old_odd};
+                                break;
+                            default: break;
+                        }
+                    }
                 }
+                props.updateBetsInfo(match);
             })
          .catch(error => {
             console.log("sports", error);
             });
-
-    }
+     }
 
     return(
         <Grid item lg={5} md={5} sm={12} xs={12}>
@@ -206,7 +324,7 @@ function TopPanel(props) {
     }
     return(
         <Grid container spacing={3} style={rootStyle}>
-            <SportFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
+            <SportFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} updateBetsInfo = {props.updateBetsInfo}/>
             <KeyWordFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
         </Grid>
     );
@@ -222,7 +340,7 @@ class FilterPanel extends Component{
         return(
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
-                    <TopPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} />
+                    <TopPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true">LIST</Button>
                 </form>
