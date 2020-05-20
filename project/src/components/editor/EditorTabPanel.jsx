@@ -26,7 +26,7 @@ const cardStyle = {
 }
 
 function EditorHeader(props){
-    const followed = props.followed == "true" ? true : false;
+    const followed = props.followed == true ? true : false;
     return(
         <Box>
             <Card style={cardStyle}>
@@ -41,7 +41,7 @@ function EditorHeader(props){
                 <div style={{display: "inherit"}}>
                     <CardContent>
                         <Typography component="h5" variant="h5">
-                            {props.editor.name + " " + props.editor.surname}
+                            {props.editor.name}
                         </Typography>
                     </CardContent>
                     <CardContent>
@@ -91,13 +91,13 @@ function EditorTabs(props) {
             {props.editor.name == "" ? "" :
                 <div>
                     <TabPanel value={value} index={0}>
-                    {props.followed == "true" ? <BetSlips/> : <NotFollowed/>}
+                    {props.followed == true ? <BetSlips/> : <NotFollowed/>}
                     </TabPanel>
                     <TabPanel value={value} index={1}>
-                        {props.followed == "true" ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
+                        {props.followed == true ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
                     </TabPanel>
                     <TabPanel value={value} index={2}>
-                        {props.followed == "true" ? <Performance editor={props.editor}/> : <NotFollowed/>}
+                        {props.followed == true ? <Performance editor={props.editor}/> : <NotFollowed/>}
                     </TabPanel>
                 </div>
             }
