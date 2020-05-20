@@ -8,11 +8,12 @@ import Card from '@material-ui/core/Card';
 const divStyle = {
   width: "19%",
   display : 'inline-block',
-  height: '80%',
   textAlign: 'center',
   backgroundColor: "#FFFFFF",
   textColor: "#000000",
   margin: "10px",
+  marginBottom: 10,
+  padding: 15
 };
 
 const compStyle = {
@@ -31,14 +32,38 @@ const iconStyle = {
 };
 
 class BetSummary extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      noOfMatches: this.props.noOfMatches,
+      totalOdd: this.props.totalOdd,
+      username: this.props.username,
+    }
+  }
 
+  componentDidMount(){
+    this.setState({
+      noOfMatches: this.props.noOfMatches,
+      totalOdd: this.props.totalOdd,
+      username: this.props.username,
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.bet_slip != this.props.bet_slip){
+      this.setState({
+        noOfMatches: this.props.noOfMatches,
+        totalOdd: this.props.totalOdd,
+        username: this.props.username,
+      })
+    } 
+  }
   render() {
     return (
         <Card style={compStyle}>
-            <Avatar style={iconStyle} src={avatarIcon}/>
-            <Card style={divStyle}>username here</Card>
-            <Card style={divStyle}>number of matches</Card>
-            <Card style={divStyle}>total odds:</Card>
+            <Card style={divStyle}>{this.state.username}</Card>
+            <Card style={divStyle}>Number of Matches : {this.state.noOfMatches}</Card>
+            <Card style={divStyle}>Total Odd: {this.state.totalOdd}</Card>
         </Card>
   )}
 }

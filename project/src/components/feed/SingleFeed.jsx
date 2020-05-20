@@ -8,7 +8,6 @@ import FeedSummary from './bet/FeedSummary.jsx'
 import FeedComments from './bet/FeedComments.jsx'
 import FeedDetails from './bet/FeedDetails.jsx'
 
-
 const divStyle = {
   border: "solid #000000",
   marginBottom: "10px",
@@ -20,28 +19,57 @@ const iconStyle = {
 };
 
 class SingleFeed extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      bet_slip: this.props.bet_slip,
+      username: this.props.username,
+    }
+  }
+
+  calculateTotalOdd(){
+    let totalOdd = 1;
+    for(let i = 0; i < this.state.bet_slip.bets.length; i++){
+      totalOdd = totalOdd *  this.state.bet_slip.bets[i].odd
+    }
+    return totalOdd;
+  }
+
+  componentDidMount(){
+    this.setState({
+      bet_slip: this.props.bet_slip,
+      username: this.props.username,
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.bet_slip != this.props.bet_slip){
+      this.setState({
+        bet_slip: this.props.bet_slip,
+        username: this.props.username,
+      })
+    } 
+  }
 
   render() {
+    console.log("id in single feed", this.state.bet_slip.bet_slip_id)
     return (
-    <UserContext.Consumer>
-    { ( {username, balance, updateBalance} ) => (
         <div style={divStyle}>
             <ExpansionPanel>
                 <ExpansionPanelSummary
-                  expandIcon= <img style={iconStyle} src={expandIcon}/>
                   aria-controls="panel1a-content"
                   id="panel1a-header"
                 >
-                    <FeedSummary/>
+                    <FeedSummary  username={this.state.username} totalOdd={this.calculateTotalOdd()} noOfMatches={this.state.bet_slip.bets.length}/>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <FeedDetails/>
+                    <FeedDetails bet_slip={this.state.bet_slip}/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
-            <FeedComments/>
+            <FeedComments bet_slip_id={this.state.bet_slip.bet_slip_id} userSuccess={this.props.userSuccess} id={this.props.id} likeCount={this.state.bet_slip.like_count} 
+            comments={this.state.bet_slip.comments} updateFriends = {this.props.updateFriends}/>
         </div>
-         )}
-     </UserContext.Consumer>);
+        );
   }
 }
 
