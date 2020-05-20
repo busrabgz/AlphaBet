@@ -27,9 +27,9 @@ class SingleBet extends Component{
     render(){
         const renderIcon = () => {
             let icon = '';
-            if(this.props.state == "won")
+            if(this.props.state == "WON")
                 icon = wonIcon
-            else if(this.props.state == "lost")
+            else if(this.props.state == "LOST")
                 icon = lostIcon
             else
                 icon = pendingIcon
@@ -48,10 +48,10 @@ class SingleBet extends Component{
                 <div>
                     <CardContent>
                       <Typography component="h5" variant="subtitle1">
-                        Real Madrid - Galatasaray
+                        {this.props.home + "-" + this.props.away}
                       </Typography>
                       <Typography variant="caption" color="textSecondary">
-                        FT : 2 - Odd : 5.6
+                        {this.props.type + ":" + this.props.odd}
                       </Typography>
                     </CardContent>
                 </div>

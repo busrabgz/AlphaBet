@@ -27,6 +27,7 @@ const lostExpSummaryStyle = {
 class SingleBetSlip extends Component {
     constructor(props){
         super(props);
+        console.log("şuan singlebetslip constructor")
         switch(this.props.state){
         case 'pending':
             this.style = pendingExpSummaryStyle;
@@ -40,6 +41,23 @@ class SingleBetSlip extends Component {
         default:
             break;
         }
+        this.state = {
+            id: 0,
+            bets: [],
+            total: 0
+        }
+    }
+
+    componentDidMount() {
+    }
+
+    componentDidUpdate(prevState, prevProps) {
+        if ( prevProps.bets != this.props.bets) {
+            this.setState({
+                bets: this.props.bets,
+                total: this.calculateTotalOdd()
+            })
+        }
     }
 
     render(){
@@ -47,13 +65,15 @@ class SingleBetSlip extends Component {
             <Paper elevation={3}>
                 <ExpansionPanel>
                   <ExpansionPanelSummary style={this.style}>
-                    <Typography>Bet Slip With Total Odd 6.5</Typography>
+                    <Typography>Bet Slip With Total Odd {this.props.total_odd}</Typography>
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails style={this.style}>
                     <Typography>
-                        <SingleBet state="won"/>
-                        <SingleBet state="lost"/>
-                        <SingleBet state="pending"/>
+                    {this.props.bets != undefined && this.props.bets.map((bet) => {
+                        return (
+                            <SingleBet state={bet.result} type={bet.bet_type} home={bet.home_side} away={bet.away_side} odd={bet.odd} />
+                        )
+                    })}
                     </Typography>
                   </ExpansionPanelDetails>
                 </ExpansionPanel>
