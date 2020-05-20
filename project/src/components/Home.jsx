@@ -54,6 +54,35 @@ const basketballResults = [
   },
 ]
 
+const tennisResults = [
+  {
+      home: "Maria Sharapova",
+      away: "Serena Williams", 
+      bets: { 
+      mr_one          : {odd: "1.4", MBN: "NBA", oldOdd: "ESK"},
+      mr_two          : {odd: "1.8", MBN: "NBA", oldOdd: "ESK"},
+      firstSetHome    : {odd: "4.1", MBN: "NBA", oldOdd: "ESK"},
+      firstSetAway    : {odd: "1.2", MBN: "NBA", oldOdd: "ESK"},
+      secondSetHome   : {odd: "3.1", MBN: "NBA", oldOdd: "ESK"},
+      secondSetAway   : {odd: "1.3", MBN: "NBA", oldOdd: "ESK"},
+          }, 
+      date  : "13/4/20",
+  },
+  {
+      home: "Maria Sharapova",
+      away: "Serena Williams", 
+      bets: { 
+      mr_one          : {odd: "1.4", MBN: "NBA", oldOdd: "ESK"},
+      mr_two          : {odd: "1.8", MBN: "NBA", oldOdd: "ESK"},
+      firstSetHome    : {odd: "4.1", MBN: "NBA", oldOdd: "ESK"},
+      firstSetAway    : {odd: "1.2", MBN: "NBA", oldOdd: "ESK"},
+      secondSetHome   : {odd: "3.1", MBN: "NBA", oldOdd: "ESK"},
+      secondSetAway   : {odd: "1.3", MBN: "NBA", oldOdd: "ESK"},
+          }, 
+      date  : "15/4/20",
+  },
+]
+
 const matches = [
   {
     home      : "Real Madrid",
@@ -138,7 +167,7 @@ class Home extends Component {
               <Box style={rootBoxStyle}>
                 <p>"WELCOME " {this.props.id}</p>
                 <FilterPanel contests={contests} filterInfo = {filterInfo} updateSelectedSport={updateSelectedSport} updateFilterInfo = {updateFilterInfo} updateBetsInfo={updateBetsInfo} />
-                <BetsPanel baskMatches={basketballResults} selectedSport={selectedSport} betsInfo={betsInfo}/>
+                <BetsPanel tennMatches={tennisResults} baskMatches={basketballResults} selectedSport={selectedSport} betsInfo={betsInfo}/>
             </Box>
            </div>
 

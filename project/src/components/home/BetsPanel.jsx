@@ -101,14 +101,12 @@ function RenderBasketballMatchRow(props){
         }
         return(
             <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
-            <Typography variant="subtitle2" color="initial">Rebound Over / Under 2.5</Typography>
+            <Typography variant="subtitle2" color="initial">Rebound Over / Under X</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
                 <Tooltip title={props.match.bets.reboundOverX.oldOdd && "Changed from " + props.match.bets.reboundOverX.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Over"} mbn={props.match.bets.reboundOverX.MBN} odd={props.match.bets.reboundOverX.odd}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 <Tooltip title={props.match.bets.reboundUnderX.oldOdd && "Changed from " + props.match.bets.reboundUnderX.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.reboundUnderX.MBN} odd={props.match.bets.reboundUnderX.odd}/></TableCell>
                 </Tooltip>
@@ -122,14 +120,12 @@ function RenderBasketballMatchRow(props){
         }
         return(
             <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
-            <Typography variant="subtitle2" color="initial">Total Score Over / Under 2.5</Typography>
+            <Typography variant="subtitle2" color="initial">Total Score Over / Under X</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
                 <Tooltip title={props.match.bets.totalScoreOverX.oldOdd && "Changed from " + props.match.bets.totalScoreOverX.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Over"} mbn={props.match.bets.totalScoreOverX.MBN} odd={props.match.bets.totalScoreOverX.odd}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 <Tooltip title={props.match.bets.totalScoreUnderX.oldOdd && "Changed from " + props.match.bets.totalScoreUnderX.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.totalScoreUnderX.MBN} odd={props.match.bets.totalScoreUnderX.odd}/></TableCell>
                 </Tooltip>
@@ -153,6 +149,105 @@ function RenderBasketballMatchRow(props){
                             {renderMR()}
                             {renderReboundOUX()}
                             {renderTotalScoreOUX()}
+                        </Grid>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+    )
+
+}
+
+function RenderTennisMatchRow(props){
+    function renderVote(){
+
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
+            <Tooltip><Typography variant="subtitle2" color="initial">Vote for Winning Side!</Typography></Tooltip>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title="add"><TableCell style={cellStyle}><VoteCard text={"Home"} votes={props.match.votes.home}/></TableCell></Tooltip>
+                    <TableCell style={cellStyle}><VoteCard text={"Draw"} votes={props.match.votes.draw}/></TableCell>
+                    <TableCell style={cellStyle}><VoteCard text={"Away"} votes={props.match.votes.away}/></TableCell>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+    function renderMR(){
+
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">Match Result</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.mr_one.oldOdd && "Changed from " + props.match.bets.mr_one.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Home"} mbn={props.match.bets.mr_one.MBN} odd={props.match.bets.mr_one.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.mr_two.oldOdd && "Changed from " + props.match.bets.mr_two.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.mr_two.MBN} odd={props.match.bets.mr_two.odd}/></TableCell>
+                </Tooltip>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+    function renderFirstSet(){
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">First Set Winner</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.firstSetHome.oldOdd && "Changed from " + props.match.bets.firstSetHome.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Home"} mbn={props.match.bets.firstSetHome.MBN} odd={props.match.bets.firstSetHome.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.firstSetAway.oldOdd && "Changed from " + props.match.bets.firstSetAway.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.firstSetAway.MBN} odd={props.match.bets.firstSetAway.odd}/></TableCell>
+                </Tooltip>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+    function renderSecondSet(){
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">Second Set Winner</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.secondSetHome.oldOdd && "Changed from " + props.match.bets.secondSetHome.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Home"} mbn={props.match.bets.secondSetHome.MBN} odd={props.match.bets.secondSetHome.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.secondSetAway.oldOdd && "Changed from " + props.match.bets.secondSetAway.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.secondSetAway.MBN} odd={props.match.bets.secondSetAway.odd}/></TableCell>
+                </Tooltip>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+
+    return(
+        <ExpansionPanel>
+                    <ExpansionPanelSummary style={summaryStyling}>
+                        <TableContainer><Table><TableHead><TableRow>
+                            <TableCell style={{width:"30%"}}>{props.match.home}</TableCell>
+                            <TableCell style={{width:"30%"}}>{props.match.away}</TableCell>
+                            <TableCell style={{width:"18%"}}>{props.match.date}</TableCell>
+                            <TableCell style={{width:"8%"}}>{props.match.vote}</TableCell>
+                        </TableRow></TableHead></Table></TableContainer>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails style={detailStyling}>
+                        <Grid container spacing={3}>
+                            {renderMR()}
+                            {renderFirstSet()}
+                            {renderSecondSet()}
                         </Grid>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
@@ -402,7 +497,7 @@ class BetsPanel extends Component{
                             return(<RenderBasketballMatchRow match={match}/>);
                             break;
                         case "TENNIS":
-                            return("<RenderMatchRow match={match}/>");
+                            return(<RenderTennisMatchRow match={match}/>);
                             break;
                         default:
                             break;
