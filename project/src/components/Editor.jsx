@@ -62,9 +62,9 @@ class Editor extends React.Component {
     render() {
         return(
             <UserContext.Consumer>
-            { ( {username, balance, updateBalance, betslip, loggedIn} ) => (
+            { ( {username, balance, updateBalance, betslip, loggedIn, alphaCoins} ) => (
             <div>
-                <NavBar id = {this.props.id} isLogged={loggedIn}/>
+                <NavBar id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins} />
                 <div>
                     <BetSlip slip={betslip} userBalance={balance} />
                     <div style={rootStyle}>

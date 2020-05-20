@@ -53,6 +53,7 @@ class NavBar extends React.Component {
     super(props)
     this.state = {
       balance: 0,
+      alphaCoins: 0
     }
   }
   //const classes = useStyles();
@@ -72,7 +73,7 @@ class NavBar extends React.Component {
         .then( res => {
             if (res.data.result.success) {
               console.log("why fail?")
-              this.setState({balance: res.data.result.account_balance,
+              this.setState({balance: res.data.result.account_balance, alphaCoins: res.data.result.alpha_coins
               })
             }
 
@@ -94,6 +95,23 @@ class NavBar extends React.Component {
           {withCredentials: false})
           .then( res => {
               this.setState({balance: res.data.result.account_balance,
+                })
+              })
+           .catch(error => {
+              console.log("info", error);
+              });
+      }
+    }
+    if (prevProps.alphaCoins != this.props.alphaCoins) {
+      if (this.props.id != -1) {
+        axios.post(URL,
+          {
+              "request_type": "get_user_info",
+              "user_id": this.props.id
+           },
+          {withCredentials: false})
+          .then( res => {
+              this.setState({alphaCoins: res.data.result.alpha_coins,
                 })
               })
            .catch(error => {
@@ -148,12 +166,12 @@ class NavBar extends React.Component {
               <List component="nav">
                 <Box mb={-2}>
                 <ListItem>
-                  <ListItemText style = {listItemText} primary={this.props.userBalance}></ListItemText>
+                  <ListItemText style = {listItemText} primary={"Balance: " + this.props.userBalance}></ListItemText>
                 </ListItem>
                 </Box>
                 <Box mt={-1}>
                 <ListItem>
-                  <ListItemText style = {listItemText} primary="AlphaBet: "></ListItemText>
+                  <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.props.alphaCoins}></ListItemText>
                 </ListItem>
                 </Box>
               </List>

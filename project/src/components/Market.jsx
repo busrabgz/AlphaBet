@@ -166,9 +166,9 @@ class Market extends Component {
   render() {
     return(
         <UserContext.Consumer>
-        { ( {username, balance, updateBalance, loggedIn} ) => (
+        { ( {username, balance, updateBalance, loggedIn, alphaCoins} ) => (
             <div>
-                <NavBar userBalance={balance} id = {this.props.id} isLogged={loggedIn}/>
+                <NavBar userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
                 <Title/>
                 <ItemsTable columns={columns} rows={rows}/>
             </div>
