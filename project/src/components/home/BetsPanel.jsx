@@ -483,39 +483,40 @@ class BetsPanel extends Component{
 
 
     render(){
-        
+
         console.log("selected",this.props.selectedSport)
         switch (this.state.selectedSport) {
             case "FOOTBALL":
-                return(
-                    this.props.footballMatches.map( match => {
+                var rows =
+                    <Paper style={{padding: 15,}} elevation={7}>"
+                        <RenderTitles/>
+                        {this.props.footballMatches.map( match => {
                         return(
-                        <Paper style={{padding: 15,}} elevation={7}>
-                            <RenderTitles/>
-                            <RenderFootballMatchRow match={match}/>  
-                        </Paper>) } ) )
-                    break;
+                            <RenderFootballMatchRow match={match}/> ) } ) }
+                    </Paper>
+                        break;
             case "BASKETBALL":
-                return(
-                    this.props.baskMatches.map( match => {
+                var rows =
+                    <Paper style={{padding: 15,}} elevation={7}>"
+                        <RenderTitles/>
+                        {this.props.baskMatches.map( match => {
                         return(
-                        <Paper style={{padding: 15,}} elevation={7}>
-                            <RenderTitles/>
-                            <RenderBasketballMatchRow match={match}/>
-                        </Paper>) } ) )
-                    break;
+                            <RenderBasketballMatchRow match={match}/> ) } ) }
+                    </Paper>
+                        break;
             case "TENNIS":
-                return(
-                    this.props.tennMatches.map( match => {
+                var rows =
+                    <Paper style={{padding: 15,}} elevation={7}>"
+                        <RenderTitles/>
+                    {this.props.tennMatches.map( match => {
                         return(
-                        <Paper style={{padding: 15,}} elevation={7}>
-                            <RenderTitles/>
-                            <RenderTennisMatchRow match={match}/>
-                        </Paper>) } ) )
-                    break;
+                            <RenderTennisMatchRow match={match}/> ) } ) }
+                    </Paper>
+                        break;
             default:
                 break;
             }
+            return rows;
         }
     }
 
