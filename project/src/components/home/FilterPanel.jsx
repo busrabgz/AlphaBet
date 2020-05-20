@@ -30,7 +30,7 @@ function ContestFilter(props) {
         props.updateFilterInfo(filterInfo)
     }
     return(
-        <Grid item lg={4} md={6} sm={12} xs={12}>
+        <Grid item lg={6} md={6} sm={12} xs={12}>
             <Typography variant="h5" color="initial">Select Contest</Typography>
             <FormControl style={props.style} component="fieldset">
                 <FormGroup>
@@ -61,7 +61,7 @@ function MBNFilter(props) {
         props.updateFilterInfo(filterInfo)
     }
     return(
-        <Grid item lg={4} md={6} sm={12} xs={12}>
+        <Grid item lg={6} md={6} sm={12} xs={12}>
             <Typography variant="h5" color="initial">Select MBN</Typography>
             <FormControl style={props.style} component="fieldset">
             <RadioGroup defaultValue="none" aria-label="gender" name="gender1" onChange = {handleChange} >
@@ -72,28 +72,6 @@ function MBNFilter(props) {
     );
 }
 
-function SortFilter(props) {
-    const handleChange = (event) => {
-        var filterInfo = props.filterInfo;
-        filterInfo.sort =  event.target.value;
-        props.updateFilterInfo(filterInfo)
-    }
-
-    return(
-        <Grid item lg={4} md={6} sm={12} xs={12}>
-            <Typography variant="h5" color="initial">Sort By</Typography>
-            <FormControl style={props.style} component="fieldset">
-            <RadioGroup defaultValue="none" aria-label="gender" name="gender1" onChange = {handleChange}>
-                <FormControlLabel value="oddDesc"   control={<Radio size="small"/>} label="Odd (High to Low)" />
-                <FormControlLabel value="oddAsc"    control={<Radio size="small"/>} label="Odd (Low to High)" />
-                <FormControlLabel value="popularity"       control={<Radio size="small"/>} label="Popularity" />
-                <FormControlLabel value="dateAsc"   control={<Radio size="small"/>} label="Date (Recent to Old)" />
-                <FormControlLabel value="dateDesc"  control={<Radio size="small"/>} label="Date (Old to Recent)" />
-            </RadioGroup>
-            </FormControl>
-        </Grid> 
-    );
-}
 
 function KeyWordFilter(props) {
     const handleChange = (event) => {
@@ -312,7 +290,6 @@ function BottomPanel(props){
             <Grid container spacing={3} style={rootStyle}>
                 <MBNFilter style={childStyle} updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
                 <ContestFilter style={childStyle} contests={props.contests} updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
-                <SortFilter style={childStyle} updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
             </Grid>
     );
 }
@@ -330,6 +307,27 @@ function TopPanel(props) {
     );
 }
 
+function SortPanel(props) {
+    const rootStyle = {
+        width: "100%"
+    }
+    return(
+        <Grid container spacing={3} style={rootStyle}>
+            <Grid item lg={4} md={6} sm={12} xs={12}>
+                <FormControl style={props.style} component="fieldset">
+                    <FormGroup>
+                        <FormControlLabel
+                        control={<Checkbox size="medium" value="popularitySort" checked={""} onCheck={""} name={""} />}
+                        label={"Sort by popularity"}
+                        />
+                    </FormGroup>
+                </FormControl>
+            </Grid>
+            <Grid item lg={8} md={6} sm={0} xs={0}></Grid>
+        </Grid>
+    );
+}
+
 class FilterPanel extends Component{
     constructor(props) {
         super(props)
@@ -341,6 +339,7 @@ class FilterPanel extends Component{
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
                     <TopPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
+                    <SortPanel/>
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true">LIST</Button>
                 </form>
