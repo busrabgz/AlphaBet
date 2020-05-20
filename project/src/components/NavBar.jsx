@@ -15,110 +15,168 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import axios from 'axios';
+const URL = "http://localhost:5000/profile";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(10),
-  },
-  title: {
-    flexGrow: 0.1,
-    marginRight: theme.spacing(5),
-  },
-  box: {
-    maxHeight: 100,
-    marginLeft: theme.spacing(20),
-  },
-  listItemText: {
-    fontSize: '0.8em',
-  },
-  logoutButton: {
-    marginLeft: theme.spacing(10),
+const root = {
+  flexGrow: 1,
+}
 
-  },
-  buttonGroup: {
-    marginLeft: theme.spacing(15),
-  },
-}));
+const menuButton = {
+  marginRight: "10px",
+}
 
-export default function NavBar(props) {
-  const classes = useStyles();
-  const balanceStr = "Balance: " + props.userBalance;
-  let button
-  let registerButton
-  console.log('success: ',props.userSuccess)
+const title = {
+  flexGrow: 0.1,
+  marginRight: "5px",
+}
 
-  return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h4" className={classes.title}>
-            AlphaBet
-          </Typography>
-            <Link to='/'>
-              <Button color="white">
-              Home
-              </Button>
-            </Link>
-            {props.type != "admin"
-              ? <div>
-              <Button color="inherit">
-                <Link to="/about">About</Link>
-              </Button>
-              <Button color="inherit">
-                <Link to="/profile">Profile</Link>
-              </Button>
-              <Button color="inherit">
-                <Link to="/editors">Editors</Link>
-              </Button>
-              </div>
-              :<Button color="inherit">
-                <Link to="/dashboard">Dashboard</Link>
-              </Button>  
+const box = {
+  maxHeight: 100,
+  marginLeft: "20px",
+}
+
+const listItemText = {
+  fontSize: '0.8em',
+}
+
+const logoutButton = {
+  marginLeft: "10px",
+}
+
+const buttonGroup = {
+  marginLeft: "30px",
+}
+
+class NavBar extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      balance: 0,
+    }
+  }
+  //const classes = useStyles();
+  //const balanceStr = "Balance: " + props.userBalance;
+  //let button
+  //let registerButton
+  //console.log('success: ',props.userSuccess)
+
+  componentDidMount() {
+    if (this.props.id != -1) {
+      axios.post(URL,
+        {
+            "request_type": "get_user_info",
+            "user_id": this.props.id
+         },
+        {withCredentials: false})
+        .then( res => {
+            if (res.data.result.success) {
+              console.log("why fail?")
+              this.setState({balance: res.data.result.account_balance,
+              })
             }
 
-              {props.type != "admin" &&
-                <div>
-                  <Button color="white">
-                        <Link to="/feed">Feed</Link>
-                  </Button>
-                  <Button className={classes.menuButton} color="inherit">
-                        <Link to="/market">Market</Link>
-                  </Button>
-                </div>
-                
-              }
-          <Box className={classes.box} my={-5}>
-            <List component="nav">
-              <Box mb={-2}>
-              <ListItem>
-                <ListItemText classes={{primary:classes.listItemText}} primary={balanceStr}></ListItemText>
-              </ListItem>
-              </Box>
-              <Box mt={-1}>
-              <ListItem>
-                <ListItemText classes={{primary:classes.listItemText}} primary="AlphaBet: "></ListItemText>
-              </ListItem>
-              </Box>
-            </List>
-          </Box>
-          <div style={{float:"right"}}>
-             {props.userSuccess
-                ? <Button className={classes.logoutButton} size="small" variant="contained" color="secondary"> Logout</Button>
-                : <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.buttonGroup}>
-                    <Link to='/register' style={{textDecoration: 'none'}}>
-                      <Button size="small" variant="contained" color="secondary" >Register</Button>
-                   </Link>
-                    <Link to='/signin' style={{textDecoration: 'none'}}>
-                      <Button size="small" variant="contained" color="secondary">Login</Button>
-                      </Link>
-              </ButtonGroup>
-             }
-         </div>
-        </Toolbar>
-      </AppBar>
-    </div>
-    );
+            })
+         .catch(error => {
+            console.log("info", error);
+            });
+    }
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.userBalance != this.props.userBalance) {
+      if (this.props.id != -1) {
+        axios.post(URL,
+          {
+              "request_type": "get_user_info",
+              "user_id": this.props.id
+           },
+          {withCredentials: false})
+          .then( res => {
+              this.setState({balance: res.data.result.account_balance,
+                })
+              })
+           .catch(error => {
+              console.log("info", error);
+              });
+      }
+    }
+  }
+  
+  render() {
+    return (
+      <div style={root}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h4" style={title}>
+              AlphaBet
+            </Typography>
+              <Link to='/'>
+                <Button color="white">
+                Home
+                </Button>
+              </Link>
+              {this.props.type != "admin"
+                ? <div>
+                <Button color="inherit">
+                  <Link to="/about">About</Link>
+                </Button>
+                <Button color="inherit">
+                  <Link to="/profile">Profile</Link>
+                </Button>
+                <Button color="inherit">
+                  <Link to="/editors">Editors</Link>
+                </Button>
+                </div>
+                :<Button color="inherit">
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>  
+              }
+  
+                {this.props.type != "admin" &&
+                  <div>
+                    <Button color="white">
+                          <Link to="/feed">Feed</Link>
+                    </Button>
+                    <Button style = {menuButton} color="inherit">
+                          <Link to="/market">Market</Link>
+                    </Button>
+                  </div>
+                  
+                }
+            {this.props.type == 'user' && <Box style={box} my={-5}>
+              <List component="nav">
+                <Box mb={-2}>
+                <ListItem>
+                  <ListItemText style = {listItemText} primary={this.props.userBalance}></ListItemText>
+                </ListItem>
+                </Box>
+                <Box mt={-1}>
+                <ListItem>
+                  <ListItemText style = {listItemText} primary="AlphaBet: "></ListItemText>
+                </ListItem>
+                </Box>
+              </List>
+            </Box>}
+            
+            <div style={{float:"right"}}>
+               {this.props.isLogged
+                  ? <Button style={logoutButton} size="small" variant="contained" color="secondary"> Logout</Button>
+                  : <ButtonGroup color="primary" aria-label="outlined primary button group" style={buttonGroup}>
+                      <Link to='/register' style={{textDecoration: 'none'}}>
+                        <Button size="small" variant="contained" color="secondary" >Register</Button>
+                     </Link>
+                      <Link to='/signin' style={{textDecoration: 'none'}}>
+                        <Button size="small" variant="contained" color="secondary">Login</Button>
+                        </Link>
+                </ButtonGroup>
+               }
+           </div>
+          </Toolbar>
+        </AppBar>
+      </div>
+      );
+  }
+}
+
+export default NavBar

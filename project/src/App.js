@@ -32,18 +32,19 @@ class App extends React.Component {
         }))
     }
 
-    this.updateBalance = () => {
-        this.setState( state => ({
-            balance: state.balance + 1
-        }));
+    this.updateBalance = (newBalance) => {
+            this.setState( state => ({
+                balance: state.balance + newBalance
+            }))
     };
 
-    this.updateLogInState = (newState, newType, newName,newId) => {
+    this.updateLogInState = (newState, newType, newName,newId, newBalance) => {
         this.setState( state => ({
             loggedIn: newState,
             type: newType,
             username: newName,
-            userId: newId
+            userId: newId,
+            balance: newBalance
         }));
         return true
     };

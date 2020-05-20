@@ -56,10 +56,43 @@ class WithdrawCash extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      open: false
+      open: false,
+      balance: 0,
     }
     this.handleClickOpen = this.handleClickOpen.bind(this)
     this.handleClose = this.handleClose.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleBalanceChange = this.handleBalanceChange.bind(this)
+  }
+
+  handleSubmit() {
+    let temp = this.state.balance * -1
+    temp = parseInt(temp)
+    console.log("temp is: ", temp)
+    axios.post(URL,
+      {
+          "request_type": "update_balance",
+          "user_id": this.props.userId,
+          "balance_change": temp
+       },
+      {withCredentials: false})
+      .then( res => {
+          if(res.data.result.success){
+              console.log("success")
+              this.props.updateBalance(temp)
+          }
+          })
+       .catch(error => {
+          console.log("info", error);
+          });
+    this.handleClose();
+
+  }
+
+  handleBalanceChange(event) {
+    this.setState({
+      balance: event.target.value
+    })
   }
 
   handleClickOpen() {
@@ -92,6 +125,8 @@ class WithdrawCash extends React.Component {
               id="amount"
               label="Withdraw Amount"
               type="amount"
+              value={this.state.balance}
+              onChange={this.handleBalanceChange}
               fullWidth
             />
           </DialogContent>
@@ -99,7 +134,7 @@ class WithdrawCash extends React.Component {
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.handleSubmit} color="primary">
               Confirm
             </Button>
           </DialogActions>
@@ -113,10 +148,19 @@ class AddBalance extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      open:false
+      open: false,
+      balance: 0
     }
     this.handleClickOpen = this.handleClickOpen.bind(this)
     this.handleClose = this.handleClose.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleBalanceChange = this.handleBalanceChange.bind(this)
+  }
+
+  handleBalanceChange(event) {
+    this.setState({
+      balance: event.target.value
+    })
   }
 
   handleClickOpen() {
@@ -129,6 +173,25 @@ class AddBalance extends React.Component {
     this.setState({
       open: false
     })
+  }
+
+  handleSubmit() {
+    axios.post(URL,
+      {
+          "request_type": "update_balance",
+          "user_id": this.props.userId,
+          "balance_change":this.state.balance
+       },
+      {withCredentials: false})
+      .then( res => {
+          if(res.data.result.success){
+              this.props.updateBalance(parseInt(this.state.balance))
+          }
+          })
+       .catch(error => {
+          console.log("info", error);
+          });
+    this.handleClose();
   }
 
   render() {
@@ -149,6 +212,8 @@ class AddBalance extends React.Component {
               id="balance"
               label="Enter Balance"
               type="balance"
+              value={this.state.balance}
+              onChange={this.handleBalanceChange}
               fullWidth
             />
           </DialogContent>
@@ -156,7 +221,7 @@ class AddBalance extends React.Component {
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.handleSubmit} color="primary">
               Confirm
             </Button>
           </DialogActions>
@@ -204,7 +269,7 @@ class EditProfile extends React.Component {
       {withCredentials: false})
       .then( res => {
           if(res.data.result.success){
-              console.log("aaa");
+              this.props.updateUserInfo()
           }
           })
        .catch(error => {
@@ -280,7 +345,11 @@ class UserInfoPanel extends Component {
         this.state = {username: '', name: '', total_winnings: '', email: ''}
 
         console.log(this.props.userId);
-        axios.post(URL,
+  
+    };
+
+    componentDidMount() {
+      axios.post(URL,
         {
             "request_type": "get_user_info",
             "user_id": this.props.userId
@@ -295,7 +364,27 @@ class UserInfoPanel extends Component {
          .catch(error => {
             console.log("info", error);
             });
-    };
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+      if (prevProps.dummyUser != this.props.dummyUser) {
+        axios.post(URL,
+          {
+              "request_type": "get_user_info",
+              "user_id": this.props.userId
+           },
+          {withCredentials: false})
+          .then( res => {
+              this.setState({username: res.data.result.username,
+                              name: res.data.result.forename + "  " + res.data.result.surname,
+                              total_winnings: res.data.result.total_winnings,
+                              email: res.data.result.email})
+              })
+           .catch(error => {
+              console.log("info", error);
+              });
+      }
+    }
 
   render() {
     return (
@@ -324,9 +413,9 @@ class UserInfoPanel extends Component {
                       fullWidth={true}
                       size="large"
                     >
-                          <EditProfile userId={this.props.userId} />
-                          <AddBalance/>
-                          <WithdrawCash/>
+                          <EditProfile userId={this.props.userId} updateUserInfo={this.props.updateUserInfo}/>
+                          <AddBalance updateUserInfo={this.props.updateUserInfo} userId = {this.props.userId} updateBalance={this.props.updateBalance}/>
+                          <WithdrawCash updateUserInfo={this.props.updateUserInfo} userId = {this.props.userId} updateBalance={this.props.updateBalance}/>
                     </ButtonGroup>
               </Grid>
         </Grid>

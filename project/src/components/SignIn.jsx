@@ -38,7 +38,7 @@ class SignIn extends Component {
         .then( res => {
             if(res.data.result.success == "true"){
                 console.log("login", res);
-                this.props.updateLogIn(res.data.result.success,res.data.result.type, res.data.result.username, res.data.result.user_id)
+                this.props.updateLogIn(res.data.result.success,res.data.result.type, res.data.result.username, res.data.result.user_id, res.data.result.account_balance)
                  }
             })
          .catch(error => {

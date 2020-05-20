@@ -66,7 +66,7 @@ class Editor extends React.Component {
             <div>
                 <NavBar id = {this.props.id} isLogged={loggedIn}/>
                 <div>
-                    <BetSlip slip={betslip}/>
+                    <BetSlip slip={betslip} userBalance={balance} />
                     <div style={rootStyle}>
                         <EditorBar onClick={this.onClick}/>
                         <EditorTabPanel editor={this.state.currentEditor} followed={this.state.followed} onSwitch={this.onSwitch}/>
