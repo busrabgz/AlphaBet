@@ -35,20 +35,15 @@ function RenderTitleRows(props){
 }
 
 function RenderRow(props){
-    const [id, setId] = React.useState('');
-    const [type, setType] = React.useState('');
-
-    const handleClick = (event) => {
-        setId(event.target.value);
-        setType(event.target.value2);
-        console.log(id);
+    const [disabled, setDisabled] = React.useState(false);
+    const handleClick = (val1, val2) => (event) => {
 
         axios.post(URL,
             {
                 "request_type": "buy_item",
                 "user_id": props.id,
-                "shop_item_id": id,
-                "item_type": type
+                "shop_item_id": val1,
+                "item_type": val2
              },
             {withCredentials: false})
             .then( res => {
@@ -59,6 +54,7 @@ function RenderRow(props){
              .catch(error => {
                 console.log("search results", error);
                 });
+        setDisabled(true);
     }
 
     return props.items.map((cell) => {
@@ -76,7 +72,7 @@ function RenderRow(props){
                     {cell.item_id}
                 </TableCell>
                 <TableCell>
-                    <Button onClick={() => handleClick(column)} value={cell.item_id} value2={cell.item_type}>
+                    <Button disabled={disabled} onClick={handleClick(cell.item_id, cell.item_type)} >
                         BUY
                     </Button>
                 </TableCell>
