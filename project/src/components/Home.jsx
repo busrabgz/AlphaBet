@@ -23,6 +23,37 @@ const contests = [
   { name: "Bundesliga" },
 ]
 
+const basketballResults = [
+  {
+      home: "Oklahoma",
+      away: "Oklavino", 
+      bets: { 
+      mr_one          : {odd: "1.4", MBN: "NBA", oldOdd: "ESK"},
+      mr_zero         : {odd: "6.9", MBN: "NBA", oldOdd: "ESK"},
+      mr_two          : {odd: "1.8", MBN: "NBA", oldOdd: "ESK"},
+      reboundOverX    : {odd: "4.1", MBN: "NBA", oldOdd: "ESK"},
+      reboundUnderX   : {odd: "1.2", MBN: "NBA", oldOdd: "ESK"},
+      totalScoreOverX: {odd: "3.1", MBN: "NBA", oldOdd: "ESK"},
+      totalScoreUnderX: {odd: "1.3", MBN: "NBA", oldOdd: "ESK"},
+          }, 
+      date  : "13/4/20",
+  },
+  {
+      home: "ChicagoBulls",
+      away: "AngaraBoys", 
+      bets: { 
+      mr_one          : {odd: "1.4", MBN: "NBA", oldOdd: "ESK"},
+      mr_zero         : {odd: "6.9", MBN: "NBA", oldOdd: "ESK"},
+      mr_two          : {odd: "1.8", MBN: "NBA", oldOdd: "ESK"},
+      reboundOverX    : {odd: "4.1", MBN: "NBA", oldOdd: "ESK"},
+      reboundUnderX   : {odd: "1.2", MBN: "NBA", oldOdd: "ESK"},
+      totalScoreOverX: {odd: "3.1", MBN: "NBA", oldOdd: "ESK"},
+      totalScoreUnderX: {odd: "1.3", MBN: "NBA", oldOdd: "ESK"},
+          }, 
+      date  : "13/4/20",
+  },
+]
+
 const matches = [
   {
     home      : "Real Madrid",
@@ -96,17 +127,18 @@ class Home extends Component {
     }
 
   render() {
+    
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, loggedIn, betslip, filterInfo, updateFilterInfo, betsInfo, updateBetsInfo} ) => (
+    { ( {username, balance, updateBalance, loggedIn, betslip, filterInfo, updateFilterInfo, betsInfo, updateBetsInfo, selectedSport, updateSelectedSport} ) => (
         <div>
             <NavBar userBalance={balance} userSuccess={loggedIn}/>
             <div style={divStyle}>
               <BetSlip slip={betslip} />
               <Box style={rootBoxStyle}>
                 <p>"WELCOME " {this.props.id}</p>
-                <FilterPanel contests={contests} filterInfo = {filterInfo} updateFilterInfo = {updateFilterInfo} updateBetsInfo={updateBetsInfo} />
-                <BetsPanel betsInfo={betsInfo}/>
+                <FilterPanel contests={contests} filterInfo = {filterInfo} updateSelectedSport={updateSelectedSport} updateFilterInfo = {updateFilterInfo} updateBetsInfo={updateBetsInfo} />
+                <BetsPanel baskMatches={basketballResults} selectedSport={selectedSport} betsInfo={betsInfo}/>
             </Box>
            </div>
 

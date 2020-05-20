@@ -1,6 +1,13 @@
 import React, {Component} from 'react'
 import { Button, Card, Typography, Grid, TableBody, Table, TableContainer, Paper, TableHead, TableCell, TableRow, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Collapse, CardContent, CardActions, Tooltip } from '@material-ui/core'
 
+const summaryStyling = {
+    height: 40,
+}
+const detailStyling = {
+    border: "solid 1px",
+}
+
 function ActionCard(props){
     const contentStyle = {
         padding: 0, margin: 0,
@@ -47,7 +54,113 @@ function VoteCard(props){
     );
 }
 
-function RenderMatchRow(props){
+function RenderBasketballMatchRow(props){
+    function renderVote(){
+
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
+            <Tooltip><Typography variant="subtitle2" color="initial">Vote for Winning Side!</Typography></Tooltip>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title="add"><TableCell style={cellStyle}><VoteCard text={"Home"} votes={props.match.votes.home}/></TableCell></Tooltip>
+                    <TableCell style={cellStyle}><VoteCard text={"Draw"} votes={props.match.votes.draw}/></TableCell>
+                    <TableCell style={cellStyle}><VoteCard text={"Away"} votes={props.match.votes.away}/></TableCell>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+    function renderMR(){
+
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">Match Result</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.mr_one.oldOdd && "Changed from " + props.match.bets.mr_one.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Home"} mbn={props.match.bets.mr_one.MBN} odd={props.match.bets.mr_one.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.mr_two.oldOdd && "Changed from " + props.match.bets.mr_two.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.mr_two.MBN} odd={props.match.bets.mr_two.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.mr_zero.oldOdd && "Changed from " + props.match.bets.mr_zero.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Draw"} mbn={props.match.bets.mr_zero.MBN} odd={props.match.bets.mr_zero.odd}/></TableCell>
+                </Tooltip>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+    function renderReboundOUX(){
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">Rebound Over / Under 2.5</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.reboundOverX.oldOdd && "Changed from " + props.match.bets.reboundOverX.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Over"} mbn={props.match.bets.reboundOverX.MBN} odd={props.match.bets.reboundOverX.odd}/></TableCell>
+                </Tooltip>
+                </TableRow>
+                <TableRow> 
+                <Tooltip title={props.match.bets.reboundUnderX.oldOdd && "Changed from " + props.match.bets.reboundUnderX.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.reboundUnderX.MBN} odd={props.match.bets.reboundUnderX.odd}/></TableCell>
+                </Tooltip>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+    function renderTotalScoreOUX(){
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">Total Score Over / Under 2.5</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.totalScoreOverX.oldOdd && "Changed from " + props.match.bets.totalScoreOverX.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Over"} mbn={props.match.bets.totalScoreOverX.MBN} odd={props.match.bets.totalScoreOverX.odd}/></TableCell>
+                </Tooltip>
+                </TableRow>
+                <TableRow> 
+                <Tooltip title={props.match.bets.totalScoreUnderX.oldOdd && "Changed from " + props.match.bets.totalScoreUnderX.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.totalScoreUnderX.MBN} odd={props.match.bets.totalScoreUnderX.odd}/></TableCell>
+                </Tooltip>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+
+
+    return(
+        <ExpansionPanel>
+                    <ExpansionPanelSummary style={summaryStyling}>
+                        <TableContainer><Table><TableHead><TableRow>
+                            <TableCell style={{width:"30%"}}>{props.match.home}</TableCell>
+                            <TableCell style={{width:"30%"}}>{props.match.away}</TableCell>
+                            <TableCell style={{width:"18%"}}>{props.match.date}</TableCell>
+                            <TableCell style={{width:"8%"}}>{props.match.vote}</TableCell>
+                        </TableRow></TableHead></Table></TableContainer>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails style={detailStyling}>
+                        <Grid container spacing={3}>
+                            {renderMR()}
+                            {renderReboundOUX()}
+                            {renderTotalScoreOUX()}
+                        </Grid>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+    )
+
+}
+
+function RenderFootballMatchRow(props){
     
     function renderVote(){
 
@@ -62,6 +175,29 @@ function RenderMatchRow(props){
                 <Tooltip title="add"><TableCell style={cellStyle}><VoteCard text={"Home"} votes={props.match.votes.home}/></TableCell></Tooltip>
                     <TableCell style={cellStyle}><VoteCard text={"Draw"} votes={props.match.votes.draw}/></TableCell>
                     <TableCell style={cellStyle}><VoteCard text={"Away"} votes={props.match.votes.away}/></TableCell>
+                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
+        );
+    }
+    
+    function renderMR(){
+
+        const cellStyle={
+            padding: '0px 0px 0px 0px',
+        }
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Typography variant="subtitle2" color="initial">Match Result</Typography>
+            <TableContainer><Table><TableBody>
+                <TableRow> 
+                <Tooltip title={props.match.bets.two_one.oldOdd && "Changed from " + props.match.bets.mr_one.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Home"} mbn={props.match.bets.mr_one.MBN} odd={props.match.bets.mr_one.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.two_two.oldOdd && "Changed from " + props.match.bets.mr_two.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.mr_two.MBN} odd={props.match.bets.mr_two.odd}/></TableCell>
+                </Tooltip>
+                <Tooltip title={props.match.bets.two_zero.oldOdd && "Changed from " + props.match.bets.mr_zero.oldOdd}>
+                    <TableCell style={cellStyle}><ActionCard text={"Draw"} mbn={props.match.bets.mr_zero.MBN} odd={props.match.bets.mr_zero.odd}/></TableCell>
+                </Tooltip>
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
     }
@@ -126,26 +262,6 @@ function RenderMatchRow(props){
                 <TableRow> 
                 <Tooltip title={props.match.bets.under_2_5.oldOdd && "Changed from " + props.match.bets.under_2_5.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.under_2_5.MBN} odd={props.match.bets.under_2_5.odd}/></TableCell>
-                </Tooltip>
-                </TableRow></TableBody></Table></TableContainer></Paper></Grid>
-        );
-    }
-    function renderOU1_5(){
-        const cellStyle={
-            padding: '0px 0px 0px 0px',
-        }
-        return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
-            <Typography variant="subtitle2" color="initial">Over / Under 1.5</Typography>
-            <TableContainer><Table><TableBody>
-                <TableRow>
-                <Tooltip title={props.match.bets.over_1_5.oldOdd && "Changed from " + props.match.bets.over_1_5.oldOdd}>
-                    <TableCell style={cellStyle}><ActionCard text={"Over"} mbn={props.match.bets.over_1_5.MBN} odd={props.match.bets.over_1_5.odd}/></TableCell>
-                </Tooltip>
-                </TableRow>
-                <TableRow> 
-                <Tooltip title={props.match.bets.under_1_5.oldOdd && "Changed from " + props.match.bets.under_1_5.oldOdd}>
-                    <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.under_1_5.MBN} odd={props.match.bets.under_1_5.odd}/></TableCell>
                 </Tooltip>
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
@@ -223,12 +339,6 @@ function RenderMatchRow(props){
         );
     }
 
-    const summaryStyling = {
-        height: 40,
-    }
-    const detailStyling = {
-        border: "solid 1px",
-    }
     return(
         <ExpansionPanel>
                     <ExpansionPanelSummary style={summaryStyling}>
@@ -241,9 +351,9 @@ function RenderMatchRow(props){
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails style={detailStyling}>
                         <Grid container spacing={3}>
+                            {renderMR()}
                             {renderFHMR()}
                             {renderOU2_5()}
-                            {renderOU1_5()}
                             {renderRedCount()}
                             {renderCornerCount()}
                         </Grid>
@@ -269,15 +379,36 @@ function RenderTitles(){
 }
 
 class BetsPanel extends Component{
+    constructor(props){
+        super(props)
+        this.state = {
+            selectedSport: "BASKETBALL",
+        }
+    }
+
 
     render(){
+        
+        console.log("selected",this.props.selectedSport)
         return (
             <Paper style={{padding: 15,}} elevation={7}>
                 <RenderTitles/>
-                {this.props.betsInfo.map( (match) => {
-                    return(
-                        <RenderMatchRow match={match}/>
-                );})}
+                {this.props.baskMatches.map( (match) => {
+                    switch(this.state.selectedSport){
+                        case "FOOTBALL":
+                            return(<RenderFootballMatchRow match={match}/>);
+                            break;
+                        case "BASKETBALL":
+                            return(<RenderBasketballMatchRow match={match}/>);
+                            break;
+                        case "TENNIS":
+                            return("<RenderMatchRow match={match}/>");
+                            break;
+                        default:
+                            break;
+                        }
+                    })
+                }
             </Paper>
         )}
 }
