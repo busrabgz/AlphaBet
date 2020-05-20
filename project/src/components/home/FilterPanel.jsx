@@ -40,11 +40,18 @@ function RenderMBNs(props){
 }
 
 function MBNFilter(props) {
+
+    const handleChange = (event) => {
+        var filterInfo = {
+            mbn:event.target.value, contest: [], sport: "", sort: "", inputText: ""
+        }
+        props.updateFilterInfo(filterInfo)
+    }
     return(
         <Grid item lg={4} md={6} sm={12} xs={12}>
             <Typography variant="h5" color="initial">Select MBN</Typography>
             <FormControl style={props.style} component="fieldset">
-            <RadioGroup defaultValue="none" aria-label="gender" name="gender1">
+            <RadioGroup defaultValue="none" aria-label="gender" name="gender1" value="HEY" onChange = {handleChange} >
                 <RenderMBNs max={10}/>
             </RadioGroup>
             </FormControl>
@@ -69,7 +76,7 @@ function SortFilter(props) {
     );
 }
 
-function KeyWordFilter() {
+function KeyWordFilter(props) {
     return(
         <Grid item lg={7} md={7} sm={12} xs={12}>
                 <TextField fullWidth="true" variant="outlined" id="input-with-icon-grid" label="Search with text (etc. Beşiktaş)" />
@@ -77,7 +84,7 @@ function KeyWordFilter() {
     );
 }
 
-function SportFilter(){
+function SportFilter(props){
 
     const [value, setValue] = React.useState('');
 
@@ -137,35 +144,38 @@ function BottomPanel(props){
 
     return( 
             <Grid container spacing={3} style={rootStyle}>
-                <MBNFilter style={childStyle}/>
-                <ContestFilter style={childStyle} contests={props.contests}/>
-                <SortFilter style={childStyle}/>
+                <MBNFilter style={childStyle} updateFilterInfo = {props.updateFilterInfo}/>
+                <ContestFilter style={childStyle} contests={props.contests} updateFilterInfo = {props.updateFilterInfo}/>
+                <SortFilter style={childStyle} updateFilterInfo = {props.updateFilterInfo}/>
             </Grid>
     );
 }
 
-function TopPanel() {
+function TopPanel(props) {
     const rootStyle = {
         display: "inline-flex",
         width: "100%"
     }
     return(
         <Grid container spacing={3} style={rootStyle}>
-            <SportFilter/>
-            <KeyWordFilter/>
+            <SportFilter updateFilterInfo = {props.updateFilterInfo}/>
+            <KeyWordFilter updateFilterInfo = {props.updateFilterInfo}/>
         </Grid>
     );
 }
 
 class FilterPanel extends Component{
+    constructor(props) {
+        super(props)
+    }
 
     render(){
 
         return(
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
-                    <TopPanel/>
-                    <BottomPanel contests={this.props.contests}/>
+                    <TopPanel updateFilterInfo = {this.props.updateFilterInfo}/>
+                    <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true">LIST</Button>
                 </form>
             </Paper>

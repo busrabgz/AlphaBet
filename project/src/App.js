@@ -24,6 +24,13 @@ class App extends React.Component {
         
     }
 
+    this.updateFilterInfo = (filter) => {
+        console.log("Inside filter info")
+        this.setState( state => ({
+            filterInfo: filter
+        }))
+    }
+
     this.updateBalance = () => {
         this.setState( state => ({
             balance: state.balance + 1
@@ -51,7 +58,9 @@ class App extends React.Component {
         updateLogInState: this.updateLogInState,
         betslip: userInfo.betslip,
         dummyFriend: userInfo.dummyFriend,
-        updateFriends: this.updateFriends
+        updateFriends: this.updateFriends,
+        filterInfo: userInfo.filterInfo,
+        updateFilterInfo: this.updateFilterInfo
         };
     }
 
