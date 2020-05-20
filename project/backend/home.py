@@ -378,6 +378,7 @@ def login():
             person = cur.fetchone()
             if person[2] == personDetails['password']:
                 user = cur.execute("SELECT user_id FROM user WHERE user_id = %s", ([person[0]]))
+
                 if user > 0:
                     type = "user"
                 else:
@@ -717,8 +718,8 @@ def profile():
                     "bet_type": row["bet_type"]
                 }]
                 user_map["bet_slips"].append({
-                            "bet_slip_id": row["bet_slip_id"],
-                            "bets": bets
+                    "bet_slip_id": row["bet_slip_id"],
+                    "bets": bets
                 })
 
         return user_map
@@ -796,7 +797,6 @@ def profile():
         cur.execute("WITH friends AS (SELECT friend_id AS person_id, user_id "
                     "FROM user_friend) SELECT username FROM friends NATURAL JOIN person "
                     "WHERE user_id = '{0}'".format(input["user_id"]))
-
 
         user = cur.fetchall()
         friends = []
@@ -1224,6 +1224,50 @@ def editor():
                                                                                               input["editor_id"]))
 
         mysql.connection.commit()
+
+
+@app.route('/market', methods=["GET", "POST"])
+def market():
+    cur = mysql.connection.cursor()
+
+    input = request.get_json()
+
+    # get request_type, user_id
+    if input["request_type"] == "get_items":
+        cur.execute("WITH non_bought_items AS (SELECT shop_item_id FROM shop_item WHERE shop_item_id NOT IN ("
+                    "SELECT shop_item_id FROM bought_item WHERE user_id = {0})) "
+                    "SELECT * FROM shop_item NATURAL JOIN non_bought_items"
+                    .format(input["user_id"]))
+        val = cur.fetchall()
+        items = []
+
+        for row in val:
+            item = {"item_id": row[0],
+                    "item_type": row[1],
+                    "item_description": row[2],
+                    "cost": row[3]}
+            items.append(item)
+
+        result = {
+            "items": items
+        }
+        return jsonify({"result": result})
+
+    # get request_type, user_id, shop_item_id, item_type
+    if input["request_type"] == "buy_item":
+        val = cur.execute("INSERT INTO bought_item (shop_item_id, user_id, item_type) VALUES ('{0}', '{1}', '{2}')"
+                          .format(input["shop_item_id"], input["user_id"], input["item_type"]))
+        mysql.connection.commit()
+
+        if val > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+        return jsonify({"result": result})
 
 
 if __name__ == "__main__":
