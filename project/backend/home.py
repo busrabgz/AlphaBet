@@ -375,6 +375,7 @@ def login():
                         "user_id": person[0],
                         "username": personDetails['username'],
                         "account_balance": users[1],
+                        "alpha_coins": users[3]
                     }
                 else:
                     editor = cur.execute("SELECT editor_id FROM editor WHERE editor_id = %s", ([person[0]]))
