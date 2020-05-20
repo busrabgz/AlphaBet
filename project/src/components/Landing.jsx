@@ -18,7 +18,7 @@ class Landing extends React.Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, betslip} ) => (
+    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, betslip, dummyFriend, updateFriends} ) => (
         <div>
           <Switch>
               <Route path="/profile">
@@ -31,7 +31,7 @@ class Landing extends React.Component {
                 <Register id={userId} type={type} userSuccess={loggedIn} balance={balance}/>
               </Route>
               <Route path="/feed">
-                <Feed id={userId} betslip={betslip} id={userId} balance={balance} userSuccess={loggedIn} type={type}/>
+                <Feed id={userId} betslip={betslip} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
               </Route>
               <Route path="/signin">
                 <SignIn id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} type={type} balanceFunc={updateBalance} balance={balance} />

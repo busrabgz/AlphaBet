@@ -120,10 +120,14 @@ class FeedComments extends Component {
         },
         {withCredentials: false})
         .then( res => {
-          if(res.data.success != "true")
-              this.setState({updated: this.state.updated == "true" ? "false" : "true",
-                            commentOn: "false"
+          console.log("res is: ", res.data)
+          if(res.data.status == "success"){
+            this.setState({updated: this.state.updated == "true" ? "false" : "true",
+                            commentOn: false
             })
+            this.props.updateFriends()
+  
+          }   
           else
             console.log("already liked")
         })
@@ -150,6 +154,7 @@ class FeedComments extends Component {
               this.setState({
                 updated: this.state.updated === "true" ? "false" : "true",
             })
+            this.props.updateFriends()
         })
         .catch( (error) => {
           console.log("info", error)

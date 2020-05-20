@@ -40,7 +40,8 @@ class FeedPanel extends Component {
             { 
               const temp = []
               for(let i = 0; i < user.bet_slips.length; i++){
-                temp[i] = <SingleFeed userSuccess={this.props.userSuccess} id={this.props.id} username={user.username} bet_slip={user.bet_slips[i]}/>
+                console.log("userbetslips:", user.bet_slips[i])
+                temp[i] = <SingleFeed userSuccess={this.props.userSuccess} id={this.props.id} username={user.username} bet_slip={user.bet_slips[i]} updateFriends = {this.props.updateFriends}/>
               }
               return temp
             }})}

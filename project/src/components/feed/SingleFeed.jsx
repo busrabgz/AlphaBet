@@ -67,7 +67,7 @@ class SingleFeed extends Component {
                 </ExpansionPanelDetails>
             </ExpansionPanel>
             <FeedComments bet_slip_id={this.state.bet_slip.bet_slip_id} userSuccess={this.props.userSuccess} id={this.props.id} likeCount={this.state.bet_slip.like_count} 
-            comments={this.state.bet_slip.comments} />
+            comments={this.state.bet_slip.comments} updateFriends = {this.props.updateFriends}/>
         </div>
         );
   }

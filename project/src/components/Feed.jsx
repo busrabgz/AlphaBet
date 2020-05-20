@@ -26,13 +26,14 @@ class Feed extends Component {
     if(this.props.userSuccess){
       axios.post(URL, 
         {
-          "user_id": this.props.id,
           "request_type": "display_shared_bets",
+          "user_id": this.props.id,
           "comment_text": "",
           "focused_bet_slip_id": ""
         },
         {withCredentials: false})
         .then( res => {
+          console.log(res.data)
           let temp = [];
           for(var i = 0; i < res.data.users.length; i++){
             temp[i] = res.data.users[i]
@@ -46,7 +47,29 @@ class Feed extends Component {
   }
 
   componentDidUpdate(prevProps, prevState){
-    
+    if (prevProps.dummyFriend != this.props.dummyFriend) {
+      if(this.props.userSuccess){
+        axios.post(URL, 
+          {
+            "request_type": "display_shared_bets",
+            "user_id": this.props.id,
+            "comment_text": "",
+            "focused_bet_slip_id": ""
+          },
+          {withCredentials: false})
+          .then( res => {
+            console.log(res.data)
+            let temp = [];
+            for(var i = 0; i < res.data.users.length; i++){
+              temp[i] = res.data.users[i]
+            }
+            this.setState({users: temp})
+          })
+          .catch( (error) => {
+            console.log("info", error)
+          });
+      }
+    }
   }
 
   render() {
@@ -55,7 +78,7 @@ class Feed extends Component {
             <NavBar userSuccess={this.props.userSuccess} userBalance={this.props.balance}/>
             <div style={divStyle}>
                 <BetSlip slip={this.props.betslip} />
-                <FeedPanel userSuccess={this.props.userSuccess} id={this.props.id} username={this.props.username} users={this.state.users}/>
+                <FeedPanel userSuccess={this.props.userSuccess} id={this.props.id} username={this.props.username} users={this.state.users} updateFriends = {this.props.updateFriends}/>
             </div>
         </div>
       );
