@@ -9,7 +9,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # configure db
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_PASSWORD'] = '123456789'
+app.config['MYSQL_PASSWORD'] = '459150'
 app.config['MYSQL_DB'] = 'alpha'
 app.config['MYSQL_USER'] = 'root'
 app.config['JWT_SECRET_KEY'] = 'secret'
@@ -377,10 +377,18 @@ def login():
         if val > 0:
             person = cur.fetchone()
             if person[2] == personDetails['password']:
-                user = cur.execute("SELECT user_id FROM user WHERE user_id = %s", ([person[0]]))
-
+                user = cur.execute("SELECT * FROM user WHERE user_id = %s", ([person[0]]))
+                users = cur.fetchone()
                 if user > 0:
                     type = "user"
+                    result = {
+                        "success": "true",
+                        "type": type,
+                        "user_id": person[0],
+                        "username": personDetails['username'],
+                        "account_balance": users[1],
+                        "alpha_coins": users[3]
+                    }
                 else:
                     editor = cur.execute("SELECT editor_id FROM editor WHERE editor_id = %s", ([person[0]]))
                     if editor > 0:
@@ -388,12 +396,12 @@ def login():
                     else:
                         type = "admin"
 
-                result = {
-                    "success": "true",
-                    "type": type,
-                    "user_id": person[0],
-                    "username": personDetails['username']
-                }
+                    result = {
+                        "success": "true",
+                        "type": type,
+                        "user_id": person[0],
+                        "username": personDetails['username']
+                    }
         else:
             result = {
                 "success": "false"

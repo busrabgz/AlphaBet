@@ -29,11 +29,11 @@ class Profile extends Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, loggedIn, updateFriends, dummyFriend} ) => (
+    { ( {username, balance, updateBalance, loggedIn, updateFriends, dummyFriend, changeUserInfo, updateUserInfo, alphaCoins} ) => (
         <div>
-            <NavBar userBalance={balance} userSuccess={loggedIn} type={this.props.type} />
+            <NavBar userBalance={balance} isLogged={loggedIn} type={this.props.type} id = {this.props.id} alphaCoins={alphaCoins}/>
             <h1>Profile Page of {username}</h1>
-            <UserInfoPanel userId={this.props.id} update={updateBalance}/>
+            <UserInfoPanel userId={this.props.id} updateBalance={updateBalance} updateUserInfo={updateUserInfo} dummyUser={changeUserInfo}/>
             <div>
                 <Grid container spacing={3}>
                     <Grid item lg={3} md={6} sm={12} xs={12}>

@@ -52,165 +52,291 @@ const paperStyle = {
     width: "100%",
 }
 
-function WithdrawCash() {
-  const [open, setOpen] = React.useState(false);
+class WithdrawCash extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: false,
+      balance: 0,
+    }
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleBalanceChange = this.handleBalanceChange.bind(this)
+  }
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  handleSubmit() {
+    let temp = this.state.balance * -1
+    temp = parseInt(temp)
+    console.log("temp is: ", temp)
+    axios.post(URL,
+      {
+          "request_type": "update_balance",
+          "user_id": this.props.userId,
+          "balance_change": temp
+       },
+      {withCredentials: false})
+      .then( res => {
+          if(res.data.result.success){
+              console.log("success")
+              this.props.updateBalance(temp)
+          }
+          })
+       .catch(error => {
+          console.log("info", error);
+          });
+    this.handleClose();
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  }
 
-  return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Withdraw Cash
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To withdraw cash, please enter the amount here. We will update the balance as you confirm.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="amount"
-            label="Withdraw Amount"
-            type="amount"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+  handleBalanceChange(event) {
+    this.setState({
+      balance: event.target.value
+    })
+  }
+
+  handleClickOpen() {
+    console.log("Im here")
+    this.setState({
+      open: true
+    }) 
+  }
+
+  handleClose() {
+    this.setState({
+      open: false
+    })
+  }
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          Withdraw Cash
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To withdraw cash, please enter the amount here. We will update the balance as you confirm.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="amount"
+              label="Withdraw Amount"
+              type="amount"
+              value={this.state.balance}
+              onChange={this.handleBalanceChange}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSubmit} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+  
+}
+class AddBalance extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: false,
+      balance: 0
+    }
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleBalanceChange = this.handleBalanceChange.bind(this)
+  }
+
+  handleBalanceChange(event) {
+    this.setState({
+      balance: event.target.value
+    })
+  }
+
+  handleClickOpen() {
+    this.setState({
+      open: true
+    })
+  }
+
+  handleClose() {
+    this.setState({
+      open: false
+    })
+  }
+
+  handleSubmit() {
+    axios.post(URL,
+      {
+          "request_type": "update_balance",
+          "user_id": this.props.userId,
+          "balance_change":this.state.balance
+       },
+      {withCredentials: false})
+      .then( res => {
+          if(res.data.result.success){
+              this.props.updateBalance(parseInt(this.state.balance))
+          }
+          })
+       .catch(error => {
+          console.log("info", error);
+          });
+    this.handleClose();
+  }
+
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          Add Balance
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Add Balance</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To update your balance, please enter the amount here. We will update the balance as you confirm.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="balance"
+              label="Enter Balance"
+              type="balance"
+              value={this.state.balance}
+              onChange={this.handleBalanceChange}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSubmit} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
-function EditProfile() {
-  const [open, setOpen] = React.useState(false);
+class EditProfile extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: "",
+      password: "",
+      open: false
+    }
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleUsernameChange = this.handleUsernameChange.bind(this)
+    this.handlePasswordChange = this.handlePasswordChange.bind(this)
+  }
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  handleClickOpen() {
+    this.setState({
+      open: true
+    })
+  }
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  handleClose() {
+    this.setState({
+      open: false
+    })
+  }
 
-  return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Edit Profile
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To edit your profile, please enter information here. We will update as you confirm.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="forename"
-            label="Foreame"
-            type="forename"
-            fullWidth
-          />          
-          <TextField
-            margin="dense"
-            id="surname"
-            label="Surname"
-            type="surname"
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="username"
-            label="Username"
-            type="username"
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="password"
-            label="Password"
-            type="password"
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+  handleSubmit() {
+    axios.post(URL,
+      {
+          "request_type": "edit_profile",
+          "user_id": this.props.userId,
+          "new_username": this.state.username,
+          "new_password": this.state.password
+       },
+      {withCredentials: false})
+      .then( res => {
+          if(res.data.result.success){
+              this.props.updateUserInfo()
+          }
+          })
+       .catch(error => {
+          console.log("info", error);
+          });
+   this.handleClose();
+  }
+
+  handleUsernameChange(event) {
+    this.setState({
+      username: event.target.value
+    })
+  }
+
+  handlePasswordChange(event) {
+    this.setState({
+      password: event.target.value
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          Edit Profile
+        </Button>
+        <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To edit your profile, please enter information here. We will update as you confirm.
+            </DialogContentText>
+            <TextField
+              margin="dense"
+              id="username"
+              name="username"
+              label="Username"
+              type="username"
+              value={this.state.username}
+              onChange={this.handleUsernameChange}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={this.state.password}
+              onChange={this.handlePasswordChange}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSubmit} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
-function AddBalance() {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Add Balance
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add Balance</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To update your balance, please enter the amount here. We will update the balance as you confirm.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="balance"
-            label="Enter Balance"
-            type="balance"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
-}
 
 class UserInfoPanel extends Component {
     constructor(props){
@@ -219,7 +345,11 @@ class UserInfoPanel extends Component {
         this.state = {username: '', name: '', total_winnings: '', email: ''}
 
         console.log(this.props.userId);
-        axios.post(URL,
+  
+    };
+
+    componentDidMount() {
+      axios.post(URL,
         {
             "request_type": "get_user_info",
             "user_id": this.props.userId
@@ -234,42 +364,62 @@ class UserInfoPanel extends Component {
          .catch(error => {
             console.log("info", error);
             });
-    };
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+      if (prevProps.dummyUser != this.props.dummyUser) {
+        axios.post(URL,
+          {
+              "request_type": "get_user_info",
+              "user_id": this.props.userId
+           },
+          {withCredentials: false})
+          .then( res => {
+              this.setState({username: res.data.result.username,
+                              name: res.data.result.forename + "  " + res.data.result.surname,
+                              total_winnings: res.data.result.total_winnings,
+                              email: res.data.result.email})
+              })
+           .catch(error => {
+              console.log("info", error);
+              });
+      }
+    }
 
   render() {
     return (
-            <div>
-                <Grid container spacing={3}>
-                    <Grid item lg={8} md={8} sm={12} xs={12}>
-                        <Paper style={paperStyle}>
-                            <div style={divStyle}>
-                                <Avatar style={avatarStyle} alt="Remy Sharp" src={avatarIcon} />
-                                <div style={{paddingLeft: 200, position: "relative", float: "center"}}>
-                                  <Typography align="left" variant="h5" color="initial">Username</Typography>
-                                  <Typography align="left" variant="h5" color="initial">Forename and Surname</Typography>
-                                  <Typography align="left" variant="h5" color="initial">Email</Typography>
-                                  <Typography align="left" variant="h5" color="initial">Total Winnings</Typography>
-                                </div>
-                            </div>
-                        </Paper>
-                    </Grid>
-                    <Grid item lg={4} md={4} sm={12} xs={12}>
-                          <ButtonGroup
-                            style={buttonGroupStyle}
-                            orientation="vertical"
-                            color="primary"
-                            aria-label="vertical contained primary button group"
-                            variant="contained"
-                            fullWidth={true}
-                            size="large"
-                          >
-                                <EditProfile/>
-                                <AddBalance/>
-                                <WithdrawCash/>
-                          </ButtonGroup>
-                    </Grid>
+      <div>
+          <Grid container spacing={3}>
+              <Grid item lg={8} md={8} sm={12} xs={12}>
+                  <Paper style={paperStyle}>
+                      <div style={divStyle}>
+                          <Avatar style={avatarStyle} alt="Remy Sharp" src={avatarIcon} />
+                          <div style={{paddingLeft: 200, position: "relative", float: "center"}}>
+                            <Typography align="left" variant="h5" color="initial">{this.state.username}</Typography>
+                            <Typography align="left" variant="h5" color="initial">{this.state.name}</Typography>
+                            <Typography align="left" variant="h5" color="initial">{this.state.email}</Typography>
+                            <Typography align="left" variant="h5" color="initial">{this.state.total_winnings}</Typography>
+                          </div>
+                      </div>
+                  </Paper>
               </Grid>
-            </div>);
+              <Grid item lg={4} md={4} sm={12} xs={12}>
+                    <ButtonGroup
+                      style={buttonGroupStyle}
+                      orientation="vertical"
+                      color="primary"
+                      aria-label="vertical contained primary button group"
+                      variant="contained"
+                      fullWidth={true}
+                      size="large"
+                    >
+                          <EditProfile userId={this.props.userId} updateUserInfo={this.props.updateUserInfo}/>
+                          <AddBalance updateUserInfo={this.props.updateUserInfo} userId = {this.props.userId} updateBalance={this.props.updateBalance}/>
+                          <WithdrawCash updateUserInfo={this.props.updateUserInfo} userId = {this.props.userId} updateBalance={this.props.updateBalance}/>
+                    </ButtonGroup>
+              </Grid>
+        </Grid>
+      </div>);
   }
 }
 

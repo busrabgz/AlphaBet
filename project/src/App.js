@@ -21,21 +21,37 @@ class App extends React.Component {
              ?  true
              :  false
         }))
-        
+    }
+    
+    this.updateUserInfo = () => {
+        this.setState( state => ({
+            changeUserInfo: 
+             state.changeUserInfo === false
+             ?  true
+             :  false
+        }))
     }
 
-    this.updateBalance = () => {
-        this.setState( state => ({
-            balance: state.balance + 1
-        }));
+    this.updateBalance = (newBalance) => {
+            this.setState( state => ({
+                balance: state.balance + newBalance
+            }))
     };
 
-    this.updateLogInState = (newState, newType, newName,newId) => {
+    this.updateAlphaCoins = (newCoin) => {
+        this.setState( state => ({
+            alphaCoins: state.alphaCoins + newCoin
+        }))
+    }
+
+    this.updateLogInState = (newState, newType, newName,newId, newBalance, newCoins) => {
         this.setState( state => ({
             loggedIn: newState,
             type: newType,
             username: newName,
-            userId: newId
+            userId: newId,
+            balance: newBalance,
+            alphaCoins: newCoins
         }));
         return true
     };
@@ -51,7 +67,11 @@ class App extends React.Component {
         updateLogInState: this.updateLogInState,
         betslip: userInfo.betslip,
         dummyFriend: userInfo.dummyFriend,
-        updateFriends: this.updateFriends
+        updateFriends: this.updateFriends,
+        changeUserInfo: userInfo.changeUserInfo,
+        updateUserInfo: this.updateUserInfo,
+        alphaCoins: userInfo.alphaCoins,
+        updateAlphaCoins: this.updateAlphaCoins
         };
     }
 

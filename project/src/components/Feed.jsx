@@ -20,9 +20,9 @@ class Feed extends Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, betslip} ) => (
+    { ( {username, balance, updateBalance, betslip, loggedIn, alphaCoins} ) => (
         <div>
-            <NavBar userBalance={balance}/>
+            <NavBar userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
             <div style={divStyle}>
                 <BetSlip slip={betslip} />
                 <FeedPanel username={username}/>

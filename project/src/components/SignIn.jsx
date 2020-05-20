@@ -38,7 +38,8 @@ class SignIn extends Component {
         .then( res => {
             if(res.data.result.success == "true"){
                 console.log("login", res);
-                this.props.updateLogIn(res.data.result.success,res.data.result.type, res.data.result.username, res.data.result.user_id)
+                console.log("alpha during signin", res.data.result.alpha_coins)
+                this.props.updateLogIn(res.data.result.success,res.data.result.type, res.data.result.username, res.data.result.user_id, res.data.result.account_balance,res.data.result.alpha_coins)
                  }
             })
          .catch(error => {
@@ -60,7 +61,7 @@ class SignIn extends Component {
     }
     return (
         <div>
-            <NavBar userSuccess={this.props.isLogged} userBalance={this.props.balance}/>
+            <NavBar isLogged={this.props.isLogged} userBalance={this.props.balance} id = {this.props.id} alphaCoins = {this.props.alphaCoins}/>
             <h1>Login Page</h1>
             <form onSubmit={this.handleSubmit}>
                 <input
