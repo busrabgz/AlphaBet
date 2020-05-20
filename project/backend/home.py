@@ -9,7 +9,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # configure db
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_PASSWORD'] = '459150'
+app.config['MYSQL_PASSWORD'] = '123456789'
 app.config['MYSQL_DB'] = 'alpha'
 app.config['MYSQL_USER'] = 'root'
 app.config['JWT_SECRET_KEY'] = 'secret'
@@ -191,6 +191,7 @@ def home():
                             bets[0]["play_count"] = bet["play_count"]
                 matches.append({
                     "match_id": row["match_id"],
+                    "match_start_date": row["start_date"],
                     "bets": bets
                 })
 
@@ -998,7 +999,7 @@ def editor():
                     " player_id AS competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM"
                     " individual_player) AS temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id"
                     " FROM team)), match_date AS (SELECT match_id, start_date FROM `match` NATURAL JOIN "
-                    "editor_slip_data) SELECT * FROM match_data NATURAL JOIN editor_slip_data NATURAL JOIN"
+                    "editor_slip_data) SELECT DISTINCT * FROM match_data NATURAL JOIN editor_slip_data NATURAL JOIN"
                     " all_competitors NATURAL JOIN match_date")
 
         editor_slips_results = []
@@ -1099,8 +1100,7 @@ def editor():
                            " SELECT COUNT(bet_slip_id) AS won_bet_slip_count FROM editor_slips WHERE NOT EXISTS (SELECT"
                            " bet_id, match_id FROM editor_bet_id NATURAL JOIN bet WHERE bet_slip_id = bet_slip_id "
                            "AND (result = 'LOST' OR result = 'PENDING')) GROUP BY editor_id"
-                           .format(editor_id["editor_id"])) > 0:
-
+                                   .format(editor_id["editor_id"])) > 0:
                 won_count = cur.fetchone()[0]
                 editor_to_add["bet_slips_won"] = won_count
 
@@ -1109,22 +1109,19 @@ def editor():
                            "SELECT COUNT(bet_slip_id ) AS lost_bet_slip_count FROM editor_slips WHERE "
                            "EXISTS (SELECT bet_id, match_id FROM editor_bet_id NATURAL JOIN bet WHERE "
                            "editor_slips.bet_slip_id = bet_slip_id AND (result = 'LOST')) GROUP BY editor_id"
-                           .format(editor_id["editor_id"])) > 0:
-
+                                   .format(editor_id["editor_id"])) > 0:
                 lost_count = cur.fetchone()[0]
                 editor_to_add["bet_slips_lost"] = lost_count
 
             if cur.execute("WITH editor_bets AS (SELECT bet_id, match_id, editor_id FROM suggested_bet WHERE editor_id"
                            " = {0}) SELECT COUNT(bet_id) AS won_count FROM editor_bets NATURAL JOIN bet"
                            " GROUP BY editor_id, result HAVING result = 'WON'".format(editor_id["editor_id"])) > 0:
-
                 single_bet_win_count = cur.fetchone()[0]
                 editor_to_add["single_bet_win_count"] = single_bet_win_count
 
             if cur.execute("WITH editor_bets AS (SELECT bet_id, match_id, editor_id FROM suggested_bet WHERE editor_id"
                            " = {0}) SELECT COUNT(bet_id) AS won_count FROM editor_bets NATURAL JOIN bet"
                            " GROUP BY editor_id, result HAVING result = 'LOST'".format(editor_id["editor_id"])) > 0:
-
                 single_bet_lose_count = cur.fetchone()[0]
                 editor_to_add["single_bet_lose_count"] = single_bet_lose_count
 
@@ -1364,6 +1361,53 @@ def editor():
                                                                                               input["editor_id"]))
 
         mysql.connection.commit()
+
+
+@app.route('/admin-dashboard/modify-bets', methods=["POST"])
+def admin_dashboard():
+    cur = mysql.connection.cursor()
+
+    input = {
+        "bet_id": request.get_json(force=True)["bet_id"],
+        "match_id": request.get_json(force=True)["match_id"],
+        "request_type": request.get_json(force=True)["request_type"],
+    }
+    if input["request_type"] == "change_odd":
+
+        input["new_odd_value"] = request.get_json(force=True)["new_odd_value"]
+
+        cur.execute("SELECT bet_type, mbn FROM bet WHERE bet_id = {0} AND match_id = {1}"
+                    .format(input["bet_id"], input["match_id"]))
+
+        result_tuple = cur.fetchone()
+
+        bet_type = result_tuple[0]
+        mbn = result_tuple[1]
+
+        print(bet_type, mbn)
+
+        if cur.execute("UPDATE bet SET active = FALSE WHERE bet_id = {0} AND match_id = {1}"
+                               .format(input["bet_id"], input["match_id"])) > 0:
+            if cur.execute("INSERT INTO bet (match_id, bet_type, change_date, odd, mbn, result, active) VALUES ({0},"
+                           " '{1}', NOW(), {2}, {3}, 'PENDING', TRUE)".format(input["match_id"], bet_type,
+                                                                              input["new_odd_value"], mbn)) > 0:
+                mysql.connection.commit()
+                return {"status": "success"}
+
+            else:
+                return {"status": "New bet not added."}
+        else:
+            return {"status": "Bet not deactivated."}
+
+    elif input["request_type"] == "cancel_bet":
+
+        if cur.execute("UPDATE bet SET active = FALSE WHERE bet_id = {0} AND match_id = {1}"
+                                .format(input["bet_id"], input["match_id"])) > 0:
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Couldn't remove bet!"}
+
 
 
 @app.route('/market', methods=["GET", "POST"])
