@@ -48,10 +48,10 @@ class SingleBet extends Component{
                 <div>
                     <CardContent>
                       <Typography component="h5" variant="subtitle1">
-                        Real Madrid - Galatasaray
+                        {this.props.home + "-" + this.props.away}
                       </Typography>
                       <Typography variant="caption" color="textSecondary">
-                        FT : 2 - Odd : 5.6
+                        {this.props.type + ":" + this.props.odd}
                       </Typography>
                     </CardContent>
                 </div>
