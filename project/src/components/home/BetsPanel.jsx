@@ -477,7 +477,7 @@ class BetsPanel extends Component{
     constructor(props){
         super(props)
         this.state = {
-            selectedSport: "BASKETBALL",
+            selectedSport: "TENNIS",
         }
     }
 
@@ -485,27 +485,38 @@ class BetsPanel extends Component{
     render(){
         
         console.log("selected",this.props.selectedSport)
-        return (
-            <Paper style={{padding: 15,}} elevation={7}>
-                <RenderTitles/>
-                {this.props.baskMatches.map( (match) => {
-                    switch(this.state.selectedSport){
-                        case "FOOTBALL":
-                            return(<RenderFootballMatchRow match={match}/>);
-                            break;
-                        case "BASKETBALL":
-                            return(<RenderBasketballMatchRow match={match}/>);
-                            break;
-                        case "TENNIS":
-                            return(<RenderTennisMatchRow match={match}/>);
-                            break;
-                        default:
-                            break;
-                        }
-                    })
-                }
-            </Paper>
-        )}
-}
+        switch (this.state.selectedSport) {
+            case "FOOTBALL":
+                return(
+                    this.props.footballMatches.map( match => {
+                        return(
+                        <Paper style={{padding: 15,}} elevation={7}>
+                            <RenderTitles/>
+                            <RenderFootballMatchRow match={match}/>  
+                        </Paper>) } ) )
+                    break;
+            case "BASKETBALL":
+                return(
+                    this.props.baskMatches.map( match => {
+                        return(
+                        <Paper style={{padding: 15,}} elevation={7}>
+                            <RenderTitles/>
+                            <RenderBasketballMatchRow match={match}/>
+                        </Paper>) } ) )
+                    break;
+            case "TENNIS":
+                return(
+                    this.props.tennMatches.map( match => {
+                        return(
+                        <Paper style={{padding: 15,}} elevation={7}>
+                            <RenderTitles/>
+                            <RenderTennisMatchRow match={match}/>
+                        </Paper>) } ) )
+                    break;
+            default:
+                break;
+            }
+        }
+    }
 
 export default BetsPanel
