@@ -170,7 +170,7 @@ class FilterPanel extends Component{
     }
 
     render(){
-
+        console.log("filterInfo:" ,this.props.filterInfo)
         return(
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
