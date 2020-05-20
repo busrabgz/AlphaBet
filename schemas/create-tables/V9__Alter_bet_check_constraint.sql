@@ -1,0 +1,2 @@
+ALTER TABLE bet DROP CONSTRAINT bet_chk_1;
+

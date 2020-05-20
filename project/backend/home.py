@@ -113,8 +113,8 @@ def home():
                              ", current_competitors AS (SELECT competitor_id, side, match_id FROM competitor_match "
                              "NATURAL JOIN final_filter), all_sides AS (SELECT competitor_name, side, match_id FROM "
                              "all_competitors NATURAL JOIN current_competitors), bet_data AS (SELECT * FROM "
-                             "bet NATURAL JOIN final_filter WHERE active = TRUE) SELECT * FROM match_data NATURAL "
-                             "JOIN bet_data NATURAL JOIN all_sides"
+                             "bet NATURAL JOIN final_filter WHERE active = TRUE AND result = 'PENDING') SELECT * "
+                             "FROM match_data NATURAL JOIN bet_data NATURAL JOIN all_sides"
                     )
         match_data_columns = [column[0] for column in cur.description]
 
@@ -571,7 +571,7 @@ def feed():
                 if row["bet_slip_id"] == bet_slip["bet_slip_id"]:
                     bet_slip_found = True
 
-                    bet_slip["comment"].append(comment_to_add)
+                    bet_slip["bet_slip_comments"].append(comment_to_add)
             if not bet_slip_found:
                 comment_map_to_add = {
                     "bet_slip_id": row["bet_slip_id"],
@@ -989,7 +989,9 @@ def editor():
                     "competitor_match), all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT"
                     " player_id AS competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM"
                     " individual_player) AS temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id"
-                    " FROM team)) SELECT * FROM match_data NATURAL JOIN editor_slip_data NATURAL JOIN all_competitors")
+                    " FROM team)), match_date AS (SELECT match_id, start_date FROM `match` NATURAL JOIN "
+                    "editor_slip_data) SELECT * FROM match_data NATURAL JOIN editor_slip_data NATURAL JOIN"
+                    " all_competitors NATURAL JOIN match_date")
 
         editor_slips_results = []
 
@@ -1064,12 +1066,70 @@ def editor():
 
                 bet_slip_comment_map.append(comment_map_to_add)
 
+        cur.execute("SELECT editor_id FROM editor")
+
+        editor_id_results = []
+
+        editor_id_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            editor_id_results.append(dict(zip(editor_id_columns, row)))
+
+        editor_won_lost_results_dict = []
+
+        for editor_id in editor_id_results:
+
+            editor_to_add = {
+                "editor_id": editor_id["editor_id"],
+                "bet_slips_won": 0,
+                "bet_slips_lost": 0,
+                "single_bet_win_count": 0,
+                "single_bet_lose_count": 0
+            }
+            if cur.execute("WITH editor_slips AS (SELECT bet_slip_id, creator_id as editor_id FROM bet_slip WHERE "
+                           "creator_id = {0}), editor_bet_id AS (SELECT * FROM included_bet NATURAL JOIN editor_slips)"
+                           " SELECT COUNT(bet_slip_id) AS won_bet_slip_count FROM editor_slips WHERE NOT EXISTS (SELECT"
+                           " bet_id, match_id FROM editor_bet_id NATURAL JOIN bet WHERE bet_slip_id = bet_slip_id "
+                           "AND (result = 'LOST' OR result = 'PENDING')) GROUP BY editor_id"
+                           .format(editor_id["editor_id"])) > 0:
+
+                won_count = cur.fetchone()[0]
+                editor_to_add["bet_slips_won"] = won_count
+
+            if cur.execute("WITH editor_slips AS (SELECT bet_slip_id, creator_id as editor_id FROM bet_slip WHERE"
+                           " creator_id = {0}), editor_bet_id AS (SELECT * FROM included_bet NATURAL JOIN editor_slips)"
+                           "SELECT COUNT(bet_slip_id ) AS lost_bet_slip_count FROM editor_slips WHERE "
+                           "EXISTS (SELECT bet_id, match_id FROM editor_bet_id NATURAL JOIN bet WHERE "
+                           "editor_slips.bet_slip_id = bet_slip_id AND (result = 'LOST')) GROUP BY editor_id"
+                           .format(editor_id["editor_id"])) > 0:
+
+                lost_count = cur.fetchone()[0]
+                editor_to_add["bet_slips_lost"] = lost_count
+
+            if cur.execute("WITH editor_bets AS (SELECT bet_id, match_id, editor_id FROM suggested_bet WHERE editor_id"
+                           " = {0}) SELECT COUNT(bet_id) AS won_count FROM editor_bets NATURAL JOIN bet"
+                           " GROUP BY editor_id, result HAVING result = 'WON'".format(editor_id["editor_id"])) > 0:
+
+                single_bet_win_count = cur.fetchone()[0]
+                editor_to_add["single_bet_win_count"] = single_bet_win_count
+
+            if cur.execute("WITH editor_bets AS (SELECT bet_id, match_id, editor_id FROM suggested_bet WHERE editor_id"
+                           " = {0}) SELECT COUNT(bet_id) AS won_count FROM editor_bets NATURAL JOIN bet"
+                           " GROUP BY editor_id, result HAVING result = 'LOST'".format(editor_id["editor_id"])) > 0:
+
+                single_bet_lose_count = cur.fetchone()[0]
+                editor_to_add["single_bet_lose_count"] = single_bet_lose_count
+
+            editor_won_lost_results_dict.append(editor_to_add)
+
         cur.execute("WITH suggested_bet_data AS (SELECT * FROM ((SELECT * FROM suggested_bet) as suggested NATURAL JOIN"
                     " bet)), match_data AS (SELECT * FROM suggested_bet_data NATURAL JOIN "
                     "competitor_match), all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT"
                     " player_id AS competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM"
                     " individual_player) AS temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id "
-                    "FROM team)) SELECT * FROM match_data NATURAL JOIN suggested_bet_data NATURAL JOIN all_competitors")
+                    "FROM team)), match_date AS (SELECT match_id, start_date FROM `match` NATURAL JOIN "
+                    "suggested_bet_data) SELECT * FROM match_data NATURAL JOIN suggested_bet_data NATURAL JOIN"
+                    " all_competitors NATURAL JOIN match_date")
 
         suggested_bet_results = []
 
@@ -1115,6 +1175,7 @@ def editor():
                             "home_side": home_side,
                             "away_side": away_side,
                             "odd": total_odd,
+                            "start_date": row["start_date"],
                             "bet_type": row["bet_type"],
                             "comment": row["comment"]
                         }
@@ -1131,6 +1192,7 @@ def editor():
                     "home_side": home_side,
                     "away_side": away_side,
                     "odd": total_odd,
+                    "start_date": row["start_date"],
                     "bet_type": row["bet_type"],
                     "comment": row["comment"]
                 }
@@ -1180,6 +1242,7 @@ def editor():
                                     "home_side": home_side,
                                     "away_side": away_side,
                                     "odd": total_odd,
+                                    "start_date": row["start_date"],
                                     "result": row["result"],
                                     "bet_type": row["bet_type"]
                                 }
@@ -1192,6 +1255,7 @@ def editor():
                             "home_side": home_side,
                             "away_side": away_side,
                             "odd": total_odd,
+                            "start_date": row["start_date"],
                             "result": row["result"],
                             "bet_type": row["bet_type"]
                         }]
@@ -1213,6 +1277,7 @@ def editor():
                     "home_side": home_side,
                     "away_side": away_side,
                     "odd": total_odd,
+                    "start_date": row["start_date"],
                     "result": row["result"],
                     "bet_type": row["bet_type"]
                 }]
@@ -1248,12 +1313,23 @@ def editor():
                 "winrate": editor["winrate"],
                 "total_winnings": editor["total_winnings"],
                 "followed_by_user": False,
+                "single_bet_win_count": 0,
+                "single_bet_lose_count": 0,
+                "bet_slips_won": 0,
+                "bet_slips_lost": 0,
                 "bet_slips": [],
                 "suggested_bets": []
             }
             for row in user_follows_results:
                 if editor["editor_id"] == row["editor_id"]:
                     editor_to_add["followed_by_user"] = True
+
+            for row in editor_won_lost_results_dict:
+                if editor["editor_id"] == row["editor_id"]:
+                    editor_to_add["single_bet_win_count"] = row["single_bet_win_count"]
+                    editor_to_add["single_bet_lose_count"] = row["single_bet_lose_count"]
+                    editor_to_add["bet_slips_won"] = row["bet_slips_won"]
+                    editor_to_add["bet_slips_lost"] = row["bet_slips_lost"]
 
             for editor_map in editor_bet_slip_map:
                 if editor_map["editor_id"] == editor["editor_id"]:
