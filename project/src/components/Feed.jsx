@@ -83,6 +83,8 @@ class Feed extends Component {
                 <FeedPanel userSuccess={this.props.userSuccess} id={this.props.id} username={this.props.username} users={this.state.users} updateFriends = {this.props.updateFriends}/>
             </div>
         </div>
+        )}
+        </UserContext.Consumer>
       );
   }
 }

@@ -18,7 +18,7 @@ class Landing extends React.Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, betslip, dummyFriend, updateFriends} ) => (
+    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, betslip, dummyFriend, updateFriends, alphaCoins} ) => (
         <div>
           <Switch>
               <Route path="/profile">
