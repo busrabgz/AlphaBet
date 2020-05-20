@@ -60,7 +60,7 @@ class SignIn extends Component {
     }
     return (
         <div>
-            <NavBar userSuccess={this.props.isLogged} userBalance={this.props.balance}/>
+            <NavBar isLogged={this.props.isLogged} userBalance={this.props.balance} id = {this.props.id}/>
             <h1>Login Page</h1>
             <form onSubmit={this.handleSubmit}>
                 <input

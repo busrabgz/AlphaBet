@@ -31,9 +31,9 @@ class Profile extends Component {
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, loggedIn, updateFriends, dummyFriend, changeUserInfo, updateUserInfo} ) => (
         <div>
-            <NavBar userBalance={balance} userSuccess={loggedIn} type={this.props.type} />
+            <NavBar userBalance={balance} isLogged={loggedIn} type={this.props.type} id = {this.props.id}/>
             <h1>Profile Page of {username}</h1>
-            <UserInfoPanel userId={this.props.id} update={updateBalance} changeInfo={updateUserInfo} changeUser={changeUserInfo}/>
+            <UserInfoPanel userId={this.props.id} updateBalance={updateBalance} updateUserInfo={updateUserInfo} dummyUser={changeUserInfo}/>
             <div>
                 <Grid container spacing={3}>
                     <Grid item lg={3} md={6} sm={12} xs={12}>
