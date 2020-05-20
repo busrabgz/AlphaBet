@@ -23,6 +23,26 @@ const buttonStyle = {
 }
 
 class FeedDetails extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      bet_slip: this.props.bet_slip
+    }
+  }
+
+  componentDidMount(){
+    this.setState({
+      bet_slip: this.props.bet_slip
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.bet_slip != this.props.bet_slip){
+      this.setState({
+        bet_slip: this.props.bet_slip
+      })
+    } 
+  }
 
   render() {
     return (
@@ -37,24 +57,24 @@ class FeedDetails extends Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                    <TableRow>
-                      <TableCell align="left">Real Madrid - Galatasaray</TableCell>
-                      <TableCell align="right">MS-1</TableCell>
-                      <TableCell align="right">1.5</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell align="left">Beşiktaş - Galatasaray</TableCell>
-                      <TableCell align="right">MS-1</TableCell>
-                      <TableCell align="right">1.5</TableCell>
-                    </TableRow>
-                    <TableBody>
-                      <TableCell>
-                        <Button variant='contained' style={buttonStyle} >
-                          Bet on this now!
-                        </Button>
-                      </TableCell>
-                    </TableBody>
-                </TableBody>
+                    {
+                      this.state.bet_slip.bets.map( (bet) => {
+                        return(
+                          <TableRow>
+                            <TableCell align="left">{bet.home_side + " - " + bet.away_side}</TableCell>
+                            <TableCell align="right">{bet.bet_type}</TableCell>
+                            <TableCell align="right">{parseFloat(bet.odd)}</TableCell>
+                        </TableRow>
+                        )})
+                    }
+                  <TableBody>
+                    <TableCell>
+                      <Button variant='contained' style={buttonStyle} >
+                        Bet on this now!
+                      </Button>
+                    </TableCell>
+                  </TableBody>
+              </TableBody>
               </Table>
             </TableContainer>
 
