@@ -4,41 +4,81 @@ import axios from 'axios';
 
 const URL = "http://localhost:5000/";
 
-function RenderContests(props){
-    return(
-        props.contests.map((contest) => {
-            return(
-                <FormControlLabel
-                control={<Checkbox size="small" value={contest.name} checked={props.filterInfo.contest.includes(contest.name)} onCheck={props.onCheck} name={contest.name} />}
-                label={contest.name}
-                />
-        )})
-    );
-}
-
-function ContestFilter(props) {
-    const handleChange = (event) => {
-        var filterInfo = props.filterInfo;
-
-        if(event.target.checked) {
-            filterInfo.contest.push(event.target.value);
+class ContestFilter extends React.Component {
+    constructor(props) {
+        super(props)
+        console.log("constructor")
+        this.state = {
+            checkedItems: new Map(),
+            hideBox: {basketball: false, football: false, tennis: false },
         }
-        else{
-            var index = filterInfo.contest.indexOf(event.target.value);
-            filterInfo.contest.splice(index, 1);
-        }
-        props.updateFilterInfo(filterInfo)
+        this.handleChange = this.handleChange.bind(this)
+        this.handleButton = this.handleButton.bind(this)
     }
-    return(
-        <Grid item lg={6} md={6} sm={12} xs={12}>
-            <Typography variant="h5" color="initial">Select Contest</Typography>
-            <FormControl style={props.style} component="fieldset">
-                <FormGroup>
-                    <RenderContests contests={props.contests} onCheck={handleChange} filterInfo={props.filterInfo} />
-                </FormGroup>
-            </FormControl>
-        </Grid> 
-    );
+
+    componentDidUpdate(prevState, prevProps) {
+        if (prevProps.userInfo !== undefined) {
+            if (prevProps.filterInfo.sport != this.props.sport) {
+                console.log("updated")
+            }
+        }
+    }
+    
+    handleChange(event) {
+        const item = event.target.name
+        const isChecked = event.target.checked
+        console.log("item is", item)
+        console.log("isChecked is", isChecked)
+        this.setState( (state) => ({
+            checkedItems: state.checkedItems.set(item, isChecked)
+        }))
+    }
+
+    handleButton() {
+        var array = []
+            for (const [key,value] of this.state.checkedItems.entries()) {
+                if (value) {
+                    array.push(key)
+                }
+            }
+            var filterInfo = this.props.filterInfo
+            filterInfo.contest = array
+            this.props.updateFilterInfo(filterInfo)
+    }
+    render() {
+        return(
+            <Grid item lg={6} md={6} sm={12} xs={12}>
+                <Typography variant="h5" color="initial">Select Contest</Typography>
+                <FormControl style={this.props.style} component="fieldset">
+                    <FormGroup>
+                    {
+                        this.props.contests.map((contest) => {
+                            if (this.props.filterInfo !== undefined) {
+                                if (this.props.filterInfo.sport == contest.type) {
+                                    return(
+                                        <FormControlLabel
+                                        control={<Checkbox size="small" value={contest.name} checked={this.state.checkedItems.get(contest.name)} onChange= {this.handleChange} name={contest.name} />}
+                                        label={contest.name}
+                                        />
+                                    )
+                                }
+                                else {
+                                    return(
+                                        <FormControlLabel
+                                        control={<Checkbox size="small" value={contest.name} checked={this.state.checkedItems.get(contest.name)} onChange= {this.handleChange} name={contest.name} disabled={true}/>}
+                                        label={contest.name}
+                                        />
+                                    )
+                                }
+                            }
+})
+                    }    
+                    </FormGroup>
+                </FormControl>
+                <Button size="small" variant="contained" onClick={this.handleButton}>Okay</Button>
+            </Grid> 
+        );
+    }
 }
 
 function RenderMBNs(props){
@@ -89,159 +129,12 @@ function KeyWordFilter(props) {
 }
 
 function SportFilter(props){
-
-    const [value, setValue] = React.useState('');
+    console.log("sport filter: ", props.filterInfo)
 
     const handleChange = (event) => {
         var filterInfo = props.filterInfo;
         filterInfo.sport = event.target.value;
         props.updateFilterInfo(filterInfo);
-        var match = {home: "", away: "", bets: { mr_one: "",
-                                                  mr_draw         : "",
-                                                  mr_two          : "",
-                                                  over_2_5        : "",
-                                                  under_2_5       : "",
-                                                  one_one         :"",
-                                                  one_zero        :"",
-                                                  one_two         :"",
-                                                  zero_one        : "",
-                                                  zero_zero       : "",
-                                                  zero_two        : "",
-                                                  two_one         : "",
-                                                  two_zero        : "",
-                                                  two_two         : "",
-                                                  redCardCount_0  :"",
-                                                  redCardCount_1  :"",
-                                                  cornerCountOver_7_5  :"",
-                                                  cornerCountUnder_7_5 :""
-                                            } };
-
-        axios.post(URL,
-        {
-            "username": "",
-            "request_type": "filter",
-            "played_amount": "",
-            "match_id": "",
-            "bet_id": "",
-            "editor_comment": "",
-            "vote_side": "",
-            "filter": {
-                "sport_name": filterInfo.sport,
-                "max_mbn": "100",
-                "contest": [],
-                "sort_type": "",
-                "search_text": ""
-            }
-         })
-        .then( res => {
-                for( var i = 0; i < res.data.matches.length; i++) {
-                    match.home = res.data.matches[i].bets[0].home_side;
-                    match.away = res.data.matches[i].bets[0].away_side;
-
-                    for( var j = 0; j < res.data.matches[i].bets.length; j++){
-                        var type = res.data.matches[i].bets[j].bet_type;
-                        switch(type) {
-                            case "mr_one":
-                               match.bets.mr_one = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-
-                            case "mr_two":
-                               match.bets.mr_two = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-                            case "over_2_5":
-                               match.bets.over_2_5 = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-                            case "under_2_5":
-                               match.bets.under_2_5 = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-
-                            case "one_one":
-                               match.bets.one_one = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-
-                            case "one_zero":
-                               match.bets.one_two = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-
-                            case "zero_one":
-                               match.bets.zero_one = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-
-                            case "zero_zero":
-                               match.bets.zero_zero = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-
-                            case "zero_two":
-                               match.bets.zero_two = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-
-                            case "two_zero":
-                               match.bets.two_zero = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-
-                            case "two_one":
-                               match.bets.two_one = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-
-                            case "two_two":
-                               match.bets.two_two = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-
-                            case "redCardCount_0":
-                               match.bets.redCardCount_0 = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-
-                            case "redCardCount_1":
-                               match.bets.redCardCount_1 = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-
-                            case "cornerCountOver_7_5":
-                               match.bets.cornerCountOver_7_5 = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                               break;
-
-                            case "cornerCountUnder_7_5":
-                               match.bets.cornerCountUnder_7_5 = { MBN: res.data.matches[i].bets[j].mbn,
-                                                odd:res.data.matches[i].bets[j].odd,
-                                                oldOdd: res.data.matches[i].bets[j].old_odd};
-                                break;
-                            default: break;
-                        }
-                    }
-                }
-                props.updateBetsInfo(match);
-            })
-         .catch(error => {
-            console.log("sports", error);
-            });
      }
 
     return(

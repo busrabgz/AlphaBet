@@ -17,10 +17,10 @@ const rootBoxStyle = {
 }
 
 const contests = [
-  { name: "UEFA Champions League" },
-  { name: "Premier League" },
-  { name: "Turkish Super League" },
-  { name: "Bundesliga" },
+  { name: "UEFA Champions League", type:"FOOTBALL" },
+  { name: "Premier League", type: "FOOTBALL"},
+  { name: "Turkish Super League", type: "FOOTBALL"},
+  { name: "Bundesliga", type: "FOOTBALL" },
 ]
 
 const basketballResults = [
