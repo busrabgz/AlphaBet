@@ -56,7 +56,7 @@ class Profile extends Component {
                     </Grid>
                      <Grid item lg={3} md={6} sm={12} xs={12}>
                       <Paper elevation={10}>
-                        <EndedPanel/>
+                        <EndedPanel userId={this.props.id}/>
                       </Paper>
                     </Grid>
               </Grid>

@@ -27,29 +27,25 @@ class PendingPanel extends Component {
 
     constructor(props) {
         super(props)
-        console.log("pending constructordayız")
         this.state = {
             pendingSlips: []
         }
     }
 
     componentDidMount() {
-        console.log("şimdi de pending componentdidmount")
         axios.post(URL,{
             user_id: this.props.userId,
             request_type: "get_pending_bet_slips",
         }, 
         {withCredentials: false})
         .then( res => {
-            console.log("respone:", res)
             let temp = []
             for (var i = 0; i < res.data.bet_slips.length; i++) {
+                let totalOdd = 1
                 for (var j = 0; j < res.data.bet_slips[i].bets.length; j++) {
-                    if (res.data.bet_slips[i].bets[j].result == "PENDING") {
-                        temp.push( {key:i, bets: res.data.bet_slips[i].bets, id: res.data.bet_slips[i].bet_slip_id})
-                        break
-                    }
+                    totalOdd = totalOdd * res.data.bet_slips[i].bets[j].odd
                 }
+                temp.push( {total_odd: totalOdd, key:i, bets: res.data.bet_slips[i].bets, id: res.data.bet_slips[i].bet_slip_id})
             }
             this.setState({
                 pendingSlips: temp
@@ -68,7 +64,7 @@ class PendingPanel extends Component {
                  {this.state.pendingSlips.length != 0 && this.state.pendingSlips.map( (betslip) => {
                      console.log("betslips bets: ", betslip.bets) 
                      return(
-                         <SingleBetSlip state="pending" bets={betslip.bets} key={betslip.key} id={betslip.id}/>
+                         <SingleBetSlip state="pending" total_odd={betslip.total_odd} bets={betslip.bets} key={betslip.key} id={betslip.id}/>
                      )
                  })}
             </div>

@@ -46,16 +46,13 @@ class SingleBetSlip extends Component {
             bets: [],
             total: 0
         }
-        this.calculateTotalOdd = this.calculateTotalOdd.bind(this)
     }
 
     componentDidMount() {
-        console.log("mpounted")
     }
 
     componentDidUpdate(prevState, prevProps) {
         if ( prevProps.bets != this.props.bets) {
-            console.log("Im inside the component did update")
             this.setState({
                 bets: this.props.bets,
                 total: this.calculateTotalOdd()
@@ -63,31 +60,18 @@ class SingleBetSlip extends Component {
         }
     }
 
-    calculateTotalOdd() {
-        let total = 1
-        for( var i  = 0; i < this.props.bets; i++ ) {
-            total = total * this.props.bets[i].odd
-        }
-        console.log(total)
-        return total
-    }
-
     render(){
-        console.log("render of singlebet")
-        console.log("incoming bets ", this.props.bets )
         return(
             <Paper elevation={3}>
                 <ExpansionPanel>
                   <ExpansionPanelSummary style={this.style}>
-                    <Typography>{this.state.total}</Typography>
+                    <Typography>Bet Slip With Total Odd {this.props.total_odd}</Typography>
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails style={this.style}>
                     <Typography>
                     {this.props.bets != undefined && this.props.bets.map((bet) => {
-                        console.log("bet", bet)
                         return (
-                            //id'ler passlenmedi, dikkatli ol
-                            <SingleBet state={this.props.state} type={bet.bet_type} home={bet.home_side} away={bet.away_side} odd={bet.odd} />
+                            <SingleBet state={bet.result} type={bet.bet_type} home={bet.home_side} away={bet.away_side} odd={bet.odd} />
                         )
                     })}
                     </Typography>
