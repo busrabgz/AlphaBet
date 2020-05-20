@@ -41,7 +41,7 @@ const listItemText = {
 }
 
 const logoutButton = {
-  marginLeft: "10px",
+  marginRight: 50,
 }
 
 const buttonGroup = {
@@ -53,7 +53,8 @@ class NavBar extends React.Component {
     super(props)
     this.state = {
       balance: 0,
-      alphaCoins: 0
+      alphaCoins: 0,
+      type: this.props.type,
     }
   }
   //const classes = useStyles();
@@ -121,79 +122,79 @@ class NavBar extends React.Component {
     }
   }
   
-  render() {
-    return (
-      <div style={root}>
-        <AppBar position="static">
+  render() {  
+    switch(this.state.type){
+      case "admin":
+        var navbar =  
+        <AppBar style={{width: "100%"}} position="static">
+            <Toolbar style={{width: "100%"}}>
+              <Typography variant="h4" style={title}>AlphaBet</Typography>
+              <Link to="/dashboard"><Button color="inherit">Dashboard</Button></Link> 
+              <Typography variant="h6" style={{flexGrow: 1,}}>
+              </Typography>
+              <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>
+            </Toolbar>  
+          </AppBar>
+          break;
+
+        case "editor":
+          var navbar = 
+          <AppBar position="static">
           <Toolbar>
-            <Typography variant="h4" style={title}>
-              AlphaBet
-            </Typography>
-              <Link to='/'>
-                <Button color="white">
-                Home
-                </Button>
-              </Link>
-              {this.props.type != "admin"
-                ? <div>
-                <Button color="inherit">
-                  <Link to="/about">About</Link>
-                </Button>
-                <Button color="inherit">
-                  <Link to="/profile">Profile</Link>
-                </Button>
-                <Button color="inherit">
-                  <Link to="/editors">Editors</Link>
-                </Button>
-                </div>
-                :<Button color="inherit">
-                  <Link to="/dashboard">Dashboard</Link>
-                </Button>  
-              }
-  
-                {this.props.type != "admin" &&
-                  <div>
-                    <Button color="white">
-                          <Link to="/feed">Feed</Link>
-                    </Button>
-                    <Button style = {menuButton} color="inherit">
-                          <Link to="/market">Market</Link>
-                    </Button>
-                  </div>
-                  
-                }
-            {this.props.type == 'user' && <Box style={box} my={-5}>
-              <List component="nav">
-                <Box mb={-2}>
-                <ListItem>
-                  <ListItemText style = {listItemText} primary={"Balance: " + this.props.userBalance}></ListItemText>
-                </ListItem>
-                </Box>
-                <Box mt={-1}>
-                <ListItem>
-                  <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.props.alphaCoins}></ListItemText>
-                </ListItem>
-                </Box>
-              </List>
-            </Box>}
-            
-            <div style={{float:"right"}}>
-               {this.props.isLogged
-                  ? <Button style={logoutButton} size="small" variant="contained" color="secondary"> Logout</Button>
-                  : <ButtonGroup color="primary" aria-label="outlined primary button group" style={buttonGroup}>
-                      <Link to='/register' style={{textDecoration: 'none'}}>
-                        <Button size="small" variant="contained" color="secondary" >Register</Button>
-                     </Link>
-                      <Link to='/signin' style={{textDecoration: 'none'}}>
-                        <Button size="small" variant="contained" color="secondary">Login</Button>
-                        </Link>
-                </ButtonGroup>
-               }
-           </div>
+            <Typography variant="h4" style={title}>AlphaBet</Typography>
+              <Link to='/'><Button color="white">Home</Button></Link>
+              <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
+              <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>
           </Toolbar>
         </AppBar>
-      </div>
-      );
+        break;
+
+      case "user":
+        var navbar = 
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h4" style={title}>AlphaBet</Typography>
+            <Link to='/'><Button color="white">Home</Button></Link>
+            <Link to="/profile"><Button color="inherit">Profile</Button></Link>
+            <Link to="/editors"><Button color="inherit">Editors</Button></Link>
+            <Link to="/feed"><Button color="white">Feed</Button></Link>
+            <Link to="/market"><Button style = {menuButton} color="inherit"> Market</Button></Link>
+            <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
+            <Box style={box} my={-5}>
+              <List component="nav">
+                <Box mb={-2}><ListItem>
+                  <ListItemText style = {listItemText} primary={"Balance: " + this.props.userBalance}></ListItemText>
+                </ListItem></Box>
+                <Box mt={-1}><ListItem>
+                  <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.props.alphaCoins}></ListItemText>
+                </ListItem></Box>
+              </List></Box>
+              <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>
+          </Toolbar>
+        </AppBar>
+        break;
+
+      default:
+        var navbar = 
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h4" style={title}>AlphaBet</Typography>
+            <Link to='/'><Button color="white">Home</Button></Link>
+            <Link to="/editors"><Button color="inherit">Editors</Button></Link>
+            <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
+            <ButtonGroup color="primary" aria-label="outlined primary button group" style={buttonGroup}>
+              <Link to='/register' style={{textDecoration: 'none'}}>
+                <Button size="small" variant="contained" color="secondary" >Register</Button>
+              </Link>
+              <Link to='/signin' style={{textDecoration: 'none'}}>
+                <Button size="small" variant="contained" color="secondary">Login</Button>
+              </Link>
+            </ButtonGroup>
+          </Toolbar>
+        </AppBar>
+        break;
+    }
+    return(navbar);
   }
 }
 
