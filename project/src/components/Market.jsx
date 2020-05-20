@@ -11,10 +11,9 @@ import Button from '@material-ui/core/Button';
 import React, { Component } from 'react';
 import NavBar from './NavBar.jsx';
 import { UserContext } from './user-context';
-import kidneyIcon from './market/kidney.png';
-import gunIcon from './market/gun.png';
-import carIcon from './market/car.png';
-import toyIcon from './market/toy.png';
+import axios from 'axios';
+
+const URL = "http://localhost:5000/market";
 
 const titleStyle = {
     padding: 20,
@@ -27,33 +26,6 @@ const columns = [
     { id: 'buy', label:' ', minWidth: 170, align: 'right'},
   ];
 
-  const rows = [
-    [
-      {typeLabel: 'toy', 
-       descLabel: 'bu bir itemdir ve ilk sıradadır',      
-       priceLabel: '$1000',
-       buyLabel: 'buy'}
-    ],
-    [
-       {typeLabel: 'gun', 
-       descLabel: 'bu bir itemdir ve ikinci sıradadır',   
-       priceLabel: '$40',  
-       buyLabel: 'buy'},
-    ],
-    [
-        {typeLabel: 'car', 
-        descLabel: 'bu bir itemdir ve üçüncü sıradadır',   
-        priceLabel: '$140000',  
-        buyLabel: 'buy'},
-    ],
-    [
-        {typeLabel: 'kidney', 
-        descLabel: 'bu bir itemdir ve dördüncü sıradadır',   
-        priceLabel: '$995500',  
-        buyLabel: 'buy'},
-    ],
-  ];
-
 function RenderTitleRows(props){
     return props.cells.map((cell) => {
         return (<TableCell>
@@ -63,39 +35,48 @@ function RenderTitleRows(props){
 }
 
 function RenderRow(props){
-    return props.cells.map((cell) => {
-        let typeIcon = ''
-        switch(cell.typeLabel){
-            case 'gun':
-                typeIcon = gunIcon;
-                break;
-            case 'toy':
-                typeIcon = toyIcon;
-                break;
-            case 'car':
-                typeIcon = carIcon;
-                break;
-            case 'kidney':
-                typeIcon = kidneyIcon;
-                break;
-        }
+    const [disabled, setDisabled] = React.useState(false);
+    const handleClick = (val1, val2) => (event) => {
+
+        axios.post(URL,
+            {
+                "request_type": "buy_item",
+                "user_id": props.id,
+                "shop_item_id": val1,
+                "item_type": val2
+             },
+            {withCredentials: false})
+            .then( res => {
+                if(res.data.result.success){
+                    console.log("bought!");
+                }
+                })
+             .catch(error => {
+                console.log("search results", error);
+                });
+        setDisabled(true);
+    }
+
+    return props.items.map((cell) => {
+
+        let typeIcon = require("./market/" + cell.item_type + ".png");
         return (
             <TableRow>
                 <TableCell>
                     <img src={typeIcon} style={{height:100,}}/>
                 </TableCell>
                 <TableCell>
-                    {cell.descLabel}
+                    {cell.item_description}
                 </TableCell>
                 <TableCell>
-                    {cell.priceLabel}
+                    {cell.item_id}
                 </TableCell>
                 <TableCell>
-                    <Button>
-                        {cell.buyLabel}
+                    <Button disabled={disabled} onClick={handleClick(cell.item_id, cell.item_type)} >
+                        BUY
                     </Button>
                 </TableCell>
-            </TableRow>  
+            </TableRow>
         ); 
     });
 }
@@ -111,9 +92,9 @@ function TableColumns(props){
 }
 
 function TableRows(props){
-    return props.rows.slice(props.page * props.rowsPerPage, props.page * props.rowsPerPage + props.rowsPerPage).map( (row) => {
+    return props.items.slice(props.page * props.rowsPerPage, props.page * props.rowsPerPage + props.rowsPerPage).map( (item) => {
         return (
-            <RenderRow cells={row}/>
+            <RenderRow items={item} id = {props.id}/>
         );
     });
 }
@@ -135,7 +116,7 @@ function ItemsTable(props){
             <Table>
                 <TableColumns cells={props.columns}/>
                 <TableBody>
-                    <TableRows rowsPerPage={rowsPerPage} page={page} rows={props.rows}/>
+                    <TableRows rowsPerPage={rowsPerPage} page={page} items={props.items} id = {props.id}/>
                 </TableBody>
             </Table>
             </TableContainer>
@@ -143,7 +124,7 @@ function ItemsTable(props){
                 labelRowsPerPage='Items per page'
                 rowsPerPageOptions={[1, 2, 3]}
                 component="div"
-                count={rows.length}
+                count={props.items.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={handleChangePage}
@@ -161,16 +142,33 @@ function Title(){
 class Market extends Component {
   constructor(props) {
     super(props)
+    this.state = { items: []};
+
+    console.log("id bu: ", this.props.id);
+      axios.post(URL,
+        {
+            "request_type": "get_items",
+            "user_id": this.props.id
+         },
+        {withCredentials: false})
+        .then( res => {
+            this.setState( {items: res.data.result.items});
+            console.log(this.state.items);
+            })
+         .catch(error => {
+            console.log("list items", error);
+            });
     }
 
   render() {
+
     return(
         <UserContext.Consumer>
         { ( {username, balance, updateBalance, loggedIn, alphaCoins} ) => (
             <div>
                 <NavBar userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
                 <Title/>
-                <ItemsTable columns={columns} rows={rows}/>
+                <ItemsTable id = {this.props.id} columns={columns} items={this.state.items}/>
             </div>
              )}
         </UserContext.Consumer>);
