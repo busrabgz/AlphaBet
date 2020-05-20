@@ -488,7 +488,7 @@ class BetsPanel extends Component{
         switch (this.state.selectedSport) {
             case "FOOTBALL":
                 var rows =
-                    <Paper style={{padding: 15,}} elevation={7}>"
+                    <Paper style={{padding: 15,}} elevation={7}>
                         <RenderTitles/>
                         {this.props.footballMatches.map( match => {
                         return(
@@ -497,7 +497,7 @@ class BetsPanel extends Component{
                         break;
             case "BASKETBALL":
                 var rows =
-                    <Paper style={{padding: 15,}} elevation={7}>"
+                    <Paper style={{padding: 15,}} elevation={7}>
                         <RenderTitles/>
                         {this.props.baskMatches.map( match => {
                         return(
@@ -506,7 +506,7 @@ class BetsPanel extends Component{
                         break;
             case "TENNIS":
                 var rows =
-                    <Paper style={{padding: 15,}} elevation={7}>"
+                    <Paper style={{padding: 15,}} elevation={7}>
                         <RenderTitles/>
                     {this.props.tennMatches.map( match => {
                         return(
