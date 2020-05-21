@@ -145,7 +145,7 @@ function AdminTabs(props) {
                         <AdminBanPage id={props.id}/>
                     </TabPanel>
                     <TabPanel value={value} index={1}>
-                        <EditorRequest/>
+                        <EditorRequest id={props.id}/>
                     </TabPanel>
                     <TabPanel value={value} index={2}>
                         <AdminChangeBet matches={matches}/>

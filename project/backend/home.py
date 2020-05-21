@@ -1417,7 +1417,7 @@ def admin_dashboard_editors():
 
     if input["request_type"] == "display_editor_requests":
 
-        cur.execute("SELECT username FROM approves AS a INNER JOIN person AS p ON a.editor_id = p.person_id"
+        cur.execute("SELECT person_id, username, forename, surname FROM approves AS a INNER JOIN person AS p ON a.editor_id = p.person_id"
                     " WHERE state = 'PENDING'")
 
         editors = []
@@ -1427,7 +1427,7 @@ def admin_dashboard_editors():
         for row in cur.fetchall():
             editors.append(dict(zip(editors_columns, row)))
 
-        return {"editor_usernames": editors}
+        return {"editor_requests": editors}
 
     elif input["request_type"] == "display_editor_information":
 
