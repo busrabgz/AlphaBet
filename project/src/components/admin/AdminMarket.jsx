@@ -79,6 +79,10 @@ class RenderRow extends Component{
         }
     }
 
+    addItem(){
+
+    }
+
     removeItem(){
         axios.post(URL,
             {
@@ -307,10 +311,37 @@ class AdminMarket extends Component {
     this.state = {
         items: [],
         admin_id: this.props.id,
+        newItemName: "",
+        newItemDesc: "",
+        newItemCost: "",
         update: false,
     }
     this.handleChange = this.handleChange.bind(this);
     this.fetch = this.fetch.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    }
+
+    handleSubmit(){
+        axios.post(URL, 
+            {
+                "request_type": "add_item",
+                "item_type": this.state.newItemName,
+                "item_description": this.state.newItemDesc,
+                "item_cost": this.state.newItemCost,
+                "admin_id": this.state.admin_id
+            },
+            {withCredentials: false})
+                .then( res => {    
+                this.setState({
+                    newItemName: "",
+                    newItemDesc: "",
+                    newItemCost: ""
+                })
+                })
+                .catch( (error) => {
+                console.log("info", error)
+            });
+            this.fetch()
     }
 
     fetch(){
@@ -355,17 +386,24 @@ class AdminMarket extends Component {
                 <div style={{float:"right"}}>
                     <form onSubmit={this.handleSubmit}>
                         <input                     
-                        type="itemName"
-                        name = "itemName"
-                        placeholder="ItemName"
-                        value={this.state.itemName}
+                        type="newItemName"
+                        name = "newItemName"
+                        placeholder="Item Type"
+                        value={this.state.newItemName}
                         onChange={this.handleChange}
                         required />
                         <input                     
-                        type="itemDesc"
-                        name = "itemDesc"
-                        placeholder="ItemDesc"
-                        value={this.state.itemDesc}
+                        type="newItemDesc"
+                        name = "newItemDesc"
+                        placeholder="Item Description"
+                        value={this.state.newItemDesc}
+                        onChange={this.handleChange}
+                        required />
+                        <input                     
+                        type="newItemCost"
+                        name = "newItemCost"
+                        placeholder="Item Cost"
+                        value={this.state.newItemCost}
                         onChange={this.handleChange}
                         required />
                         <Button type="submit" style={submitStyle} size="small">Add Item</Button>

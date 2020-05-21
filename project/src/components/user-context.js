@@ -7,11 +7,11 @@ export const userInfo = {
     type: '',
     loggedIn: false,
     userId: -1,
-    betslip: [{matchname: "Real Madrid - Galatasaray",  bet: "MS-1", odd: "1.5"},
-    {matchname: "Beşiktaş - Liverpool", bet: "MS-0", odd: "1.1"}],
     dummyFriend: false,
+    filterInfo: {mbn:"", contest: [], sport: "FOOTBALL", sort_type: false, inputText: ""},
+    betsInfo: false,
+    alphaCoins: 0,
     changeUserInfo: false,
-    alphaCoins: 0
 }
 
 
@@ -20,6 +20,8 @@ export const UserContext = React.createContext({
     updateBalance: () => {},
     updateLogInState: () => {},
     updateFriends: () => {},
+    updateFilterInfo: () => {},
+    updateBetsInfo: () => {},
+    updateAlphaCoins: () => {},
     updateUserInfo: () => {},
-    updateAlphaCoins: () => {}
 });

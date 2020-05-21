@@ -149,7 +149,8 @@ function AdminTabs(props) {
                         <EditorRequest id={props.id}/>
                     </TabPanel>
                     <TabPanel value={value} index={2}>
-                        <AdminChangeBet matches={matches}/>
+                        <AdminChangeBet id={props.userId} type={props.type} updateFilterInfo={props.updateFilterInfo}
+                         filterInfo={props.filterInfo}  matches={matches}/>
                     </TabPanel>
                     <TabPanel value={value} index={3}>
                         <AdminMarket id={props.id}/>
@@ -192,7 +193,7 @@ class AdminDashboard extends React.Component {
                         </Grid>
                     </Grid>
                 </div>
-                <AdminTabs id={this.state.admin_id}/>
+                <AdminTabs updateFilterInfo={this.props.updateFilterInfo} filterInfo={this.props.filterInfo} id={this.state.admin_id}/>
             </div>
         )}
         </UserContext.Consumer>)
