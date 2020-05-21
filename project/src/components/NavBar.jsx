@@ -61,12 +61,22 @@ class NavBar extends React.Component {
       alphaCoins: 0,
       type: this.props.type,
     }
+    this.handleClick = this.handleClick.bind(this);
   }
   //const classes = useStyles();
   //const balanceStr = "Balance: " + props.userBalance;
   //let button
   //let registerButton
   //console.log('success: ',props.userSuccess)
+
+  handleClick(event){
+    var bal = this.state.balance;
+    var coin = this.state.alphaCoins;
+    var ty = "";
+    this.setState({balance: bal, alphaCoins: coin, type: ty});
+    this.props.updateType();
+    this.props.updateLogIn(false, "","", "", 0, 0);
+  }
 
   componentDidMount() {
     if (this.props.id != -1) {
@@ -137,7 +147,7 @@ class NavBar extends React.Component {
               <Link style={{textDecoration: 'none'}} to="/dashboard"><Button size="large" variant="contained" style = {menuButton} color="primary">Dashboard</Button></Link>
               <Typography variant="h6" style={{flexGrow: 1,}}>
               </Typography>
-              <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
+              <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
             </Toolbar>  
           </AppBar>
           break;
@@ -149,7 +159,7 @@ class NavBar extends React.Component {
             <Typography variant="h4" style={title}>AlphaBet</Typography>
               <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
               <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
-              <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
+              <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
           </Toolbar>
         </AppBar>
         break;
@@ -174,7 +184,7 @@ class NavBar extends React.Component {
                   <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.state.alphaCoins}></ListItemText>
                 </ListItem></Box>
               </List></Box>
-              <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
+              <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
           </Toolbar>
         </AppBar>
         break;

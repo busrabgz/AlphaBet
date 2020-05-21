@@ -340,7 +340,7 @@ class Home extends Component {
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, loggedIn, betsInfo, updateBetsInfo, selectedSport, updateSelectedSport, alphaCoins} ) => (
         <div>
-            <NavBar type={this.props.type} userBalance={balance} isLogged={loggedIn} id = {this.props.id} alphaCoins={alphaCoins}/>
+            <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type} userBalance={balance} isLogged={loggedIn} id = {this.props.id} alphaCoins={alphaCoins}/>
             <div style={divStyle}>
               <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo}/>
               <Box style={rootBoxStyle}>

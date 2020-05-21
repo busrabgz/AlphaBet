@@ -24,4 +24,5 @@ export const UserContext = React.createContext({
     updateBetsInfo: () => {},
     updateAlphaCoins: () => {},
     updateUserInfo: () => {},
+    updateType: () => {},
 });

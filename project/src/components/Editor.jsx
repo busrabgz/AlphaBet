@@ -139,7 +139,7 @@ class Editor extends React.Component {
             <UserContext.Consumer>
             { ( {username, balance, updateBalance, betslip, loggedIn, alphaCoins} ) => (
             <div>
-                <NavBar type={this.props.type} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins} />
+                <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins} />
                 <div>
                     <BetSlip/>
                     <div style={rootStyle}>

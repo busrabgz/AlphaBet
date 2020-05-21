@@ -18,29 +18,29 @@ class Landing extends React.Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, updateFilterInfo, filterInfo, updateBetsInfo, betsInfo, dummyFriend, updateFriends, alphaCoins} ) => (
+    { ( {username, balance, updateBalance, updateLogInState, updateType, type, loggedIn, userId, updateFilterInfo, filterInfo, updateBetsInfo, betsInfo, dummyFriend, updateFriends, alphaCoins} ) => (
         <div>
           <Switch>
               <Route path="/profile">
-                <Profile id={userId} type={type}/>
+                <Profile updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type}/>
               </Route>
               <Route path="/editors">
-                <Editor id = {userId} type={type} userSuccess={loggedIn} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
+                <Editor updateLogIn={updateLogInState} updateType={updateType} id = {userId} type={type} userSuccess={loggedIn} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
               </Route>
               <Route path="/register">
-                <Register id={userId} type={type} userSuccess={loggedIn} balance={balance} alphaCoins = {alphaCoins}/>
+                <Register updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type} userSuccess={loggedIn} balance={balance} alphaCoins = {alphaCoins}/>
               </Route>
               <Route path="/feed">
-                <Feed id={userId} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
+                <Feed updateLogIn={updateLogInState} updateType={updateType} id={userId} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
               </Route>
               <Route path="/signin">
-                <SignIn id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} type={type} balanceFunc={updateBalance} balance={balance} alphaCoins = {alphaCoins}/>
+                <SignIn updateType={updateType} id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} type={type} balanceFunc={updateBalance} balance={balance} alphaCoins = {alphaCoins}/>
               </Route>
               <Route path="/market">
-                <Market id={userId} type={type}/>
+                <Market updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type}/>
               </Route>
               <Route exact path="/">
-                <Home id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
+                <Home updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
               </Route>
           </Switch>
         </div>
