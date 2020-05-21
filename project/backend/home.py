@@ -49,16 +49,7 @@ def home():
             }
         }
     '''
-    input = {
-        "username": request.get_json(force=True)["username"],
-        "request_type": request.get_json(force=True)["request_type"],
-        "played_amount": request.get_json(force=True)["played_amount"],
-        "match_id": request.get_json(force=True)["match_id"],
-        "bet_id": request.get_json(force=True)["bet_id"],
-        "editor_comment": request.get_json(force=True)["editor_comment"],
-        "vote_side": request.get_json(force=True)["vote_side"],
-        "filter": request.get_json(force=True)["filter"]
-    }
+    input = request.get_json(force=True)
 
     '''
     Filter request uses input["filter"], 
@@ -267,15 +258,26 @@ def home():
                 "SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}".format(person_id)) > 0:
             bet_slip_id = cur.fetchone()[0]
 
-        cur.execute("INSERT INTO shared_bet_slip (bet_slip_id, sharer_id) VALUES ({0}, {1})"
-                    .format(bet_slip_id, person_id))
+        if cur.execute("INSERT INTO shared_bet_slip (bet_slip_id, sharer_id) VALUES ({0}, {1})"
+                    .format(bet_slip_id, person_id)) > 0:
+
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not share editor betslip"}
+
 
     elif input["request_type"] == "suggest_bet":
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
             person_id = cur.fetchone()[0]
 
-        cur.execute("INSERT INTO suggested_bet (editor_id, bet_id, match_id, comment) VALUES ({0}, {1}, {2}, '{3}')"
-                    .format(person_id, input["bet_id"], input["match_id"], input["editor_comment"]))
+        if cur.execute("INSERT INTO suggested_bet (editor_id, bet_id, match_id, comment) VALUES ({0}, {1}, {2}, '{3}')"
+                    .format(person_id, input["bet_id"], input["match_id"], input["editor_comment"])) > 0:
+            mysql.connection.commit()
+
+            return {"status": "success"}
+        else:
+            return {"status": "Could not suggest bet."}
 
     elif input["request_type"] == "add_bet_to_betslip":  # Editor also adds bet to betslip using this request
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
@@ -285,8 +287,13 @@ def home():
                 "SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}".format(person_id)) > 0:
             bet_slip_id = cur.fetchone()[0]
 
-        cur.execute("INSERT INTO included_bet (bet_slip_id, bet_id, match_id) VALUES "
-                    "({0}, {1}, {2})".format(bet_slip_id, input["bet_id"], input["match_id"]))
+        if cur.execute("INSERT INTO included_bet (bet_slip_id, bet_id, match_id) VALUES "
+                    "({0}, {1}, {2})".format(bet_slip_id, input["bet_id"], input["match_id"])) > 0:
+            mysql.connection.commit()
+
+            return {"status": "success"}
+        else:
+            return {"status": "Could not add to betslip."}
 
     elif input["request_type"] == "view_votes":
 
@@ -317,10 +324,74 @@ def home():
         if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
             person_id = cur.fetchone()[0]
 
-        cur.execute("INSERT INTO votes (match_id, user_id, side) VALUES ({0}, {1}, '{2}')"
-                    .format(input["match_id"], person_id, input["vote_side"]))
+        if cur.execute("INSERT INTO votes (match_id, user_id, side) VALUES ({0}, {1}, '{2}')"
+                    .format(input["match_id"], person_id, input["vote_side"])) > 0:
 
-    mysql.connection.commit()
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not insert vote"}
+
+    elif input["request_type"] == "display_user_bet_slip": #Requires input ["person_id"]
+
+        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND placed ="
+                    " FALSE), all_bet_data AS (SELECT * FROM user_bet_slips NATURAL JOIN included_bet NATURAL JOIN bet),"
+                    " match_data AS (SELECT * FROM all_bet_data NATURAL JOIN competitor_match), all_competitors AS"
+                    " (SELECT competitor_name, competitor_id FROM (SELECT player_id AS competitor_id, CONCAT(forename,"
+                    " ' ', surname) AS competitor_name FROM individual_player) AS temp UNION (SELECT team_name AS"
+                    " competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM match_data NATURAL JOIN"
+                    " all_competitors".format(input["person_id"]))
+
+        user_bets_results = []
+
+        user_bets_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            user_bets_results.append(dict(zip(user_bets_columns, row)))
+
+        user_map = {
+            "person_id": input["person_id"],
+            "bets": []
+        }
+
+        for row in user_bets_results:
+            composite_already_added = False
+
+            if row["side"] == "HOME":
+                home_side = row["competitor_name"]
+                away_side = ""
+
+            else:
+                home_side = ""
+                away_side = row["competitor_name"]
+
+            total_odd = row["odd"]
+
+            for bet in user_map["bets"]:
+                if bet["bet_id"] == row["bet_id"] and bet["match_id"] == row["match_id"]:
+                    composite_already_added = True
+
+                    if bet["home_side"] == "":
+                        bet["home_side"] = row["competitor_name"]
+                    else:
+                        bet["away_side"] = row["competitor_name"]
+            if not composite_already_added:
+                bet_to_add = {
+                    "bet_id": row["bet_id"],
+                    "match_id": row["match_id"],
+                    "home_side": home_side,
+                    "away_side": away_side,
+                    "result": row["result"],
+                    "odd": total_odd,
+                    "bet_type": row["bet_type"]
+                }
+                user_map["bets"].append(bet_to_add)
+
+        return user_map
+
+
+
+
     return "Hello World!"
 
 
