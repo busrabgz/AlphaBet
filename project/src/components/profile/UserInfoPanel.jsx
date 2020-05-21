@@ -68,7 +68,6 @@ class WithdrawCash extends React.Component {
   handleSubmit() {
     let temp = this.state.balance * -1
     temp = parseInt(temp)
-    console.log("temp is: ", temp)
     axios.post(URL,
       {
           "request_type": "update_balance",
@@ -78,7 +77,6 @@ class WithdrawCash extends React.Component {
       {withCredentials: false})
       .then( res => {
           if(res.data.result.success){
-              console.log("success")
               this.props.updateBalance(temp)
           }
           })
@@ -96,7 +94,6 @@ class WithdrawCash extends React.Component {
   }
 
   handleClickOpen() {
-    console.log("Im here")
     this.setState({
       open: true
     }) 
@@ -343,8 +340,6 @@ class UserInfoPanel extends Component {
         super(props);
         this.updateBalance = props.update;
         this.state = {username: '', name: '', total_winnings: '', email: ''}
-
-        console.log(this.props.userId);
   
     };
 
