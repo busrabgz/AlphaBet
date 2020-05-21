@@ -77,7 +77,7 @@ class Feed extends Component {
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, betslip, loggedIn, alphaCoins} ) => (
         <div>
-            <NavBar userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
+            <NavBar type={this.props.type}  userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
             <div style={divStyle}>
                 <BetSlip slip={this.props.betslip} />
                 <FeedPanel userSuccess={this.props.userSuccess} id={this.props.id} username={this.props.username} users={this.state.users} updateFriends = {this.props.updateFriends}/>

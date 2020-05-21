@@ -61,7 +61,7 @@ class SignIn extends Component {
     }
     return (
         <div>
-            <NavBar isLogged={this.props.isLogged} userBalance={this.props.balance} id = {this.props.id} alphaCoins = {this.props.alphaCoins}/>
+            <NavBar type={this.props.type} isLogged={this.props.isLogged} userBalance={this.props.balance} id = {this.props.id} alphaCoins = {this.props.alphaCoins}/>
             <h1>Login Page</h1>
             <form onSubmit={this.handleSubmit}>
                 <input
