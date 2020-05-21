@@ -236,6 +236,12 @@ def home():
 
                     balance_result = cur.fetchone()[0]
                     if balance_result == "enough_credits":
+
+                        cur.execute("SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}"
+                                    .format(person_id))
+
+                        played_bet_slip_id = cur.fetchone()[0]
+
                         cur.execute("UPDATE bet_slip SET played_amount = {0}, placed = TRUE WHERE "
                                     "creator_id = {1}".format(input["played_amount"], person_id))
 
@@ -246,6 +252,10 @@ def home():
 
                         cur.execute("INSERT INTO bet_slip (placed, played_amount, creator_id) VALUES (FALSE, 0, {0})"
                                     .format(person_id))
+
+                        cur.execute("INSERT INTO shared_bet_slip (bet_slip_id, sharer_id) VALUES ({0}, {1})"
+                                    .format(played_bet_slip_id, person_id))
+
                         mysql.connection.commit()
                         return {"status": "success"}
                     else:
