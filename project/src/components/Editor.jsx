@@ -36,43 +36,45 @@ class Editor extends React.Component {
         super(props)
         this.state = { clicked: false, editors: [], editor: {
             followed: false,
-            currentEditor : {
-                id: "",
-                name: "",
-                SBSuccessRate: "",
-                noOfSlipsWon: "",
-                noOfSlipsLost: "",
-                winRate: "",
-                bet_slips: [],
-                suggested_bets: []
-            }}
+            id: "",
+            name: "",
+            SBSuccessRate: "",
+            noOfSlipsWon: "",
+            noOfSlipsLost: "",
+            winRate: "",
+            bet_slips: [],
+            suggested_bets: []
+            }
         }
         this.onClick = this.handleClick.bind(this);
         this.onSwitch = this.handleSwitch.bind(this);
         this.editors = [];
 
+    }
+
+    componentDidMount(){
         axios.post(URL,
             {
                 "request_type": "display_editors",
-                "user_id": props.id,
+                "user_id": this.props.id,
                 "editor_id": ""
              },
             {withCredentials: false})
             .then( res => {
                 for( var i = 0; i < res.data.editors.length; i++) {
-                     var editor = {id: res.data.editors[i].editor_id,
+                     var editor = {followed: res.data.editors[i].followed_by_user,
+                                   id: res.data.editors[i].editor_id,
                                    name: res.data.editors[i].forename + " " + res.data.editors[i].surname,
-                                   bet_slips_lost: res.data.editors[i].bet_slips_lost,
-                                   bet_slips_won: res.data.editors[i].bet_slips_won,
-                                   winrate: res.data.editors[i].winrate,
-                                   single_bet_success_rate: res.data.editors[i].single_bet_win_count / (res.data.editors[i].single_bet_win_count + res.data.editors[i].single_bet_lose_count),
-                                   follow: res.data.editors[i].followed_by_user,
+                                   SBSuccessRate: res.data.editors[i].single_bet_win_count / (res.data.editors[i].single_bet_win_count + res.data.editors[i].single_bet_lose_count),
+                                   noOfSlipsWon: res.data.editors[i].bet_slips_won,
+                                   noOfSlipsLost: res.data.editors[i].bet_slips_lost,
+                                   winRate: res.data.editors[i].winrate,
                                    bet_slips: res.data.editors[i].bet_slips,
                                    suggested_bets: res.data.editors[i].suggested_bets};
                      this.editors.push(editor);
-                     this.setState({editors: this.editors});
                 }
-
+                console.log("in constructor editors are: ", this.editors);
+                this.setState({editors: this.editors});
                 })
              .catch(error => {
                 console.log("editors", error);
@@ -80,34 +82,24 @@ class Editor extends React.Component {
     }
 
     handleClick = (obj) => {
-        this.setState({ editor: {followed: obj.follow, currentEditor : {
-                id: obj.id,
-                name: obj.name,
-                SBSuccessRate: obj.single_bet_success_rate,
-                noOfSlipsWon: obj.bet_slips_won,
-                noOfSlipsLost: obj.bet_slips_lost,
-                winRate: obj.winrate,
-                bet_slips: obj.bet_slips,
-                suggested_bets: obj.suggested_bets
-            }}});
+        this.setState({ editor: obj});
     }
 
     handleSwitch = () => {
-        console.log(this.state.editor.currentEditor.id);
         var isFollowed = this.state.editor.followed;
         if( isFollowed == false){
             axios.post(URL,
                 {
                     "request_type": "follow_editor",
                     "user_id": this.props.id,
-                    "editor_id": this.state.editor.currentEditor.id
+                    "editor_id": this.state.editor.id
                  },
                 {withCredentials: false})
                 .then( res => {
                         if(res.data.result.success){
-                            var editor = this.state.editor.currentEditor;
-                            this.setState({ editor: { followed: true, currentEditor: editor}
-                            });
+                            var ed = this.state.editor;
+                            ed.followed = true;
+                            this.setState({ editor: ed});
                         }
                     })
                  .catch(error => {
@@ -119,14 +111,14 @@ class Editor extends React.Component {
                     {
                         "request_type": "unfollow_editor",
                         "user_id": this.props.id,
-                        "editor_id": this.state.editor.currentEditor.id
+                        "editor_id": this.state.editor.id
                      },
                     {withCredentials: false})
                     .then( res => {
                             if(res.data.result.success){
-                                var editor = this.state.editor.currentEditor;
-                                this.setState({ editor: { followed: false, currentEditor: editor}
-                                });
+                                var ed = this.state.editor;
+                                ed.followed = false;
+                                this.setState({ editor: ed});
                             }
                         })
                      .catch(error => {
@@ -136,21 +128,14 @@ class Editor extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState){
-        console.log("aaaaaa");
         if (prevState.editor.followed != this.state.editor.followed) {
             console.log("iççç");
             this.setState({clicked: this.state.clicked == false ? true : false});
         }
-
-        if (prevProps.dummyFriend != this.props.dummyFriend) {
-            
-        }
     }
 
     render() {
-        console.log(this.state.editor.followed);
         return(
-
             <UserContext.Consumer>
             { ( {username, balance, updateBalance, betslip, loggedIn, alphaCoins} ) => (
             <div>
@@ -158,8 +143,8 @@ class Editor extends React.Component {
                 <div>
                     <BetSlip slip={betslip} userBalance={balance} />
                     <div style={rootStyle}>
-                        <EditorBar key={this.state.editor.currentEditor.id} onClick={this.handleClick} editors = {this.state.editors}/>
-                        <EditorTabPanel updateFriends = {this.props.updateFriends} id = {this.props.id} editor={this.state.editor.currentEditor} followed={this.state.editor.followed} onSwitch={this.handleSwitch} userSuccess={this.props.userSuccess}/>
+                        <EditorBar key={this.state.editor.id} onClick={this.handleClick} editors = {this.state.editors}/>
+                        <EditorTabPanel updateFriends = {this.props.updateFriends} id = {this.props.id} editor={this.state.editor} followed={this.state.editor.followed} onSwitch={this.handleSwitch} userSuccess={this.props.userSuccess}/>
                     </div>
                 </div>
             </div>

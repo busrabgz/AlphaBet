@@ -26,7 +26,7 @@ const cardStyle = {
 }
 
 function EditorHeader(props){
-    const followed = props.followed;
+    console.log("EDITOR HEADER FOLLOWED: ", props.followed);
     return(
         <Box>
             <Card style={cardStyle}>
@@ -46,8 +46,8 @@ function EditorHeader(props){
                     </CardContent>
                     <CardContent>
                         <FormControlLabel onChange={props.onSwitch}
-                                          control={<Switch checked={followed}/>} 
-                                          label={ followed ? "Followed" : "Not Followed"} />
+                                          control={<Switch checked={props.followed}/>}
+                                          label={ props.followed ? "Followed" : "Not Followed"} />
                     </CardContent>
                 </div>
                 }
@@ -108,7 +108,7 @@ function EditorTabs(props) {
 class EditorTabPanel extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {editor: '', followed: ''};
+        this.state = {editor: ''};
         }
 
     componentDidUpdate(prevProps, prevState){
@@ -117,16 +117,13 @@ class EditorTabPanel extends React.Component {
             console.log("NOW ", this.props.editor);
             this.setState({editor: this.props.editor});
         }
-        if (prevProps.followed != this.props.followed){
-            this.setState({followed: this.props.followed});
-        }
     }
 
     render() {
         return(
         <Paper>
-            <EditorHeader onSwitch={this.props.onSwitch} followed={this.state.followed} editor={this.state.editor}/>
-            <EditorTabs updateFriends = {this.props.updateFriends} id = {this.props.id} followed={this.state.followed} editor={this.state.editor} userSuccess={this.props.userSuccess}/>
+            <EditorHeader onSwitch={this.props.onSwitch} followed={this.state.editor.followed} editor={this.state.editor}/>
+            <EditorTabs updateFriends = {this.props.updateFriends} id = {this.props.id} followed={this.state.editor.followed} editor={this.state.editor} userSuccess={this.props.userSuccess}/>
         </Paper>
         );
     }
