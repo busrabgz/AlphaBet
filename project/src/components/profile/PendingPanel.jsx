@@ -61,7 +61,6 @@ class PendingPanel extends Component {
             <div>
                  <Title/>
                  {this.state.pendingSlips.length != 0 && this.state.pendingSlips.map( (betslip) => {
-                     console.log("betslips bets: ", betslip.bets) 
                      return(
                          <SingleBetSlip state="pending" total_odd={betslip.total_odd} bets={betslip.bets} key={betslip.key} id={betslip.id}/>
                      )

@@ -23,7 +23,6 @@ class SingleAchievement extends Component {
         const renderMedia = () => {
             let component = '';
             if(this.props.achieved == "true"){
-                console.log(this.props.achName);
                 component = require("./" + this.props.achName + ".png");
                 }
             else

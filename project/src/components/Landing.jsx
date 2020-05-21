@@ -6,6 +6,7 @@ import SignIn from './SignIn.jsx'
 import Feed from './Feed.jsx'
 import Market from './Market.jsx'
 import Editor from './Editor.jsx'
+import AdminDashboard from './admin/AdminDashboard.jsx'
 import {
   BrowserRouter as
   Switch,
@@ -29,6 +30,9 @@ class Landing extends React.Component {
               </Route>
               <Route path="/register">
                 <Register updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type} userSuccess={loggedIn} balance={balance} alphaCoins = {alphaCoins}/>
+              </Route>
+              <Route path="/dashboard">
+                <AdminDashboard id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
               </Route>
               <Route path="/feed">
                 <Feed updateLogIn={updateLogInState} updateType={updateType} id={userId} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends} betsInfo={betsInfo} />

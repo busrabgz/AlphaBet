@@ -27,7 +27,6 @@ const lostExpSummaryStyle = {
 class SingleBetSlip extends Component {
     constructor(props){
         super(props);
-        console.log("şuan singlebetslip constructor")
         switch(this.props.state){
         case 'pending':
             this.style = pendingExpSummaryStyle;

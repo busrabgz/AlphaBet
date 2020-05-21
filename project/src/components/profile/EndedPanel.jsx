@@ -63,7 +63,6 @@ class EndedPanel extends Component {
     }
 
     render(){
-        console.log(this.state.endedSlips)
         return(
             <div>
                 <Title/>

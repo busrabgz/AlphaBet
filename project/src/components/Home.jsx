@@ -386,7 +386,6 @@ class Home extends Component {
                 <BetsPanel  matches={this.state.matches} betsInfo={betsInfo} selectedSport={this.props.filterInfo.sport} handleBet={this.handleBetButton}/>
             </Box>
            </div>
-
         </div>
          )}
      </UserContext.Consumer>);
