@@ -31,7 +31,7 @@ class Landing extends React.Component {
                 <Register id={userId} type={type} userSuccess={loggedIn} balance={balance} alphaCoins = {alphaCoins}/>
               </Route>
               <Route path="/feed">
-                <Feed id={userId} betslip={betslip} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
+                <Feed id={userId} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
               </Route>
               <Route path="/signin">
                 <SignIn id={userId} isLogged={loggedIn} name={username} updateLogIn={updateLogInState} type={type} balanceFunc={updateBalance} balance={balance} alphaCoins = {alphaCoins}/>

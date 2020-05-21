@@ -9,8 +9,8 @@ export const userInfo = {
     userId: 0,
     dummyFriend: false,
     filterInfo: {mbn:"", contest: [], sport: "FOOTBALL", sort_type: false, inputText: ""},
-    betsInfo: false
-    alphaCoins: 0
+    betsInfo: false,
+    alphaCoins: 0,
     changeUserInfo: false,
 }
 
@@ -21,7 +21,7 @@ export const UserContext = React.createContext({
     updateLogInState: () => {},
     updateFriends: () => {},
     updateFilterInfo: () => {},
-    updateBetsInfo: () => {}
-    updateAlphaCoins: () => {}
+    updateBetsInfo: () => {},
+    updateAlphaCoins: () => {},
     updateUserInfo: () => {},
 });

@@ -36,13 +36,14 @@ class App extends React.Component {
             this.setState( state => ({
                 balance: state.balance + newBalance
             }))
+    };
+
     this.updateFilterInfo = (filter) => {
         console.log("Inside filter info")
         this.setState( state => ({
             filterInfo: filter
         }))
     }
-    };
 
     this.updateAlphaCoins = (newCoin) => {
         this.setState( state => ({
@@ -85,7 +86,7 @@ class App extends React.Component {
         changeUserInfo: userInfo.changeUserInfo,
         updateUserInfo: this.updateUserInfo,
         alphaCoins: userInfo.alphaCoins,
-        updateAlphaCoins: this.updateAlphaCoins
+        updateAlphaCoins: this.updateAlphaCoins,
         filterInfo: userInfo.filterInfo,
         updateFilterInfo: this.updateFilterInfo,
         betsInfo: userInfo.betsInfo,
