@@ -180,7 +180,7 @@ class AdminDashboard extends React.Component {
         <UserContext.Consumer>
         { ( {username, balance, updateBalance, loggedIn} ) => (
             <div>
-                <NavBar type={this.props.type} userBalance={balance} userSuccess={loggedIn} />
+                <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type} userBalance={balance} userSuccess={loggedIn} />
                 <div>
                     <Grid container spacing={3} direction="row" style={gridRoot}>
                         <Grid item lg={1}>
@@ -189,7 +189,7 @@ class AdminDashboard extends React.Component {
                             </ButtonBase>
                         </Grid>
                         <Grid item lg={2}>
-                            <h3>Yüce Kılıç</h3>
+                            <h3>{username}</h3>
                         </Grid>
                     </Grid>
                 </div>

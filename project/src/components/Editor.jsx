@@ -129,7 +129,6 @@ class Editor extends React.Component {
 
     componentDidUpdate(prevProps, prevState){
         if (prevState.editor.followed != this.state.editor.followed) {
-            console.log("iççç");
             this.setState({clicked: this.state.clicked == false ? true : false});
         }
     }

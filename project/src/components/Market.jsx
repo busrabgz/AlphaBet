@@ -143,22 +143,23 @@ class Market extends Component {
   constructor(props) {
     super(props)
     this.state = { items: []};
+}
 
-    console.log("id bu: ", this.props.id);
-      axios.post(URL,
-        {
-            "request_type": "get_items",
-            "user_id": this.props.id
-         },
-        {withCredentials: false})
-        .then( res => {
-            this.setState( {items: res.data.result.items});
-            console.log(this.state.items);
-            })
-         .catch(error => {
-            console.log("list items", error);
-            });
-    }
+componentDidMount(){
+    axios.post(URL,
+    {
+        "request_type": "get_items",
+        "user_id": this.props.id
+     },
+    {withCredentials: false})
+    .then( res => {
+        this.setState( {items: res.data.result.items});
+        console.log(this.state.items);
+        })
+     .catch(error => {
+        console.log("list items", error);
+        });
+}
 
   render() {
 

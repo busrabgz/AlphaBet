@@ -381,7 +381,6 @@ class Home extends Component {
             <div style={divStyle}>
               <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo} id={this.props.id} username={username}/>
               <Box style={rootBoxStyle}>
-                <p>"WELCOME " {this.props.id}</p>
                 <FilterPanel inputText={this.state.inputText} onInputChange={this.changeInputText} contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} resetMatches = {this.resetMatches} />
                 <BetsPanel  matches={this.state.matches} betsInfo={betsInfo} selectedSport={this.props.filterInfo.sport} handleBet={this.handleBetButton}/>
             </Box>

@@ -32,7 +32,7 @@ class Landing extends React.Component {
                 <Register updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type} userSuccess={loggedIn} balance={balance} alphaCoins = {alphaCoins}/>
               </Route>
               <Route path="/dashboard">
-                <AdminDashboard id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
+                <AdminDashboard updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
               </Route>
               <Route path="/feed">
                 <Feed updateLogIn={updateLogInState} updateType={updateType} id={userId} id={userId} balance={balance} userSuccess={loggedIn} type={type} dummyFriend={dummyFriend} updateFriends = {updateFriends} betsInfo={betsInfo} />
