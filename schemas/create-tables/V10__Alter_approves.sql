@@ -1,0 +1,1 @@
+ALTER TABLE approves DROP FOREIGN KEY approves_ibfk_2
