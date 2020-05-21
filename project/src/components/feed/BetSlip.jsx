@@ -31,7 +31,7 @@ class BetSlip extends Component {
       singleBets: [],
     };
 
-  
+    /*
     for ( var i = 0; i < this.state.betslip.length; i++) {
       var betinfo = {
         name: this.state.betslip[i].matchname,
@@ -41,6 +41,7 @@ class BetSlip extends Component {
 
       this.state.singleBets[i] = <SingleBet key={i} info= {betinfo}/>
     }
+    */
   }
 
   render() {

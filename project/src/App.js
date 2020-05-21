@@ -36,6 +36,12 @@ class App extends React.Component {
             this.setState( state => ({
                 balance: state.balance + newBalance
             }))
+    this.updateFilterInfo = (filter) => {
+        console.log("Inside filter info")
+        this.setState( state => ({
+            filterInfo: filter
+        }))
+    }
     };
 
     this.updateAlphaCoins = (newCoin) => {
@@ -56,6 +62,15 @@ class App extends React.Component {
         return true
     };
 
+    this.updateBetsInfo = (bets) => {
+        this.setState( state => ({
+            betsInfo: 
+             state.betsInfo === false
+             ?  true
+             :  false
+        }))
+    }
+
     this.state = {
         userId: userInfo.userId,
         username: userInfo.username,
@@ -65,13 +80,16 @@ class App extends React.Component {
         type: userInfo.type,
         loggedIn: userInfo.loggedIn,
         updateLogInState: this.updateLogInState,
-        betslip: userInfo.betslip,
         dummyFriend: userInfo.dummyFriend,
         updateFriends: this.updateFriends,
         changeUserInfo: userInfo.changeUserInfo,
         updateUserInfo: this.updateUserInfo,
         alphaCoins: userInfo.alphaCoins,
         updateAlphaCoins: this.updateAlphaCoins
+        filterInfo: userInfo.filterInfo,
+        updateFilterInfo: this.updateFilterInfo,
+        betsInfo: userInfo.betsInfo,
+        updateBetsInfo: this.updateBetsInfo
         };
     }
 

@@ -18,7 +18,7 @@ class Landing extends React.Component {
   render() {
     return (
     <UserContext.Consumer>
-    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, betslip, dummyFriend, updateFriends, alphaCoins} ) => (
+    { ( {username, balance, updateBalance, updateLogInState, type, loggedIn, userId, updateFilterInfo, filterInfo, updateBetsInfo, betsInfo, dummyFriend, updateFriends, alphaCoins} ) => (
         <div>
           <Switch>
               <Route path="/profile">
@@ -40,7 +40,7 @@ class Landing extends React.Component {
                 <Market id={userId} type={type}/>
               </Route>
               <Route exact path="/">
-                <Home id={userId} type={type}/>
+                <Home id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
               </Route>
           </Switch>
         </div>
