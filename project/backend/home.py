@@ -346,6 +346,7 @@ def register():
         if personDetails.get('type') == "user":
             cur.execute("INSERT INTO bet_slip_creator(creator_id) VALUES({0})".format(id))
             mysql.connection.commit()
+            cur.execute("SELECT creator_id FROM bet_slip_creator WHERE creator_id = {0}".format(id))
             creator = cur.fetchone()
             creator_id = creator[0]
 
