@@ -33,12 +33,12 @@ function PickedMatch(props){
             <Box style={{boxStyle}}>
                 <Paper style={{padding: 0, backgroundColor:"yellow",  width:"80%", float: "left",}}>
                     <Typography align="left" variant="h6">
-                        {props.match.homeSide} - {props.match.awaySide}
+                        {props.match.home_side} - {props.match.away_side}
                     </Typography>
                 </Paper>
                 <Paper style={{padding: 0, backgroundColor:"yellow", width:"20%", float: "right",}}>
                     <Typography align="right" variant="h6">
-                        {props.match.pickedBet} &emsp; {props.match.odd}
+                        {props.match.bet_ype} &emsp; {props.match.odd}
                     </Typography>
                 </Paper>
             </Box>
@@ -58,8 +58,8 @@ class MatchPicks extends Component {
 
     render(){
         return (
-            matches.map((match) => {
-                return (<PickedMatch editor={this.props.editor} match={match}/>);
+            this.props.editor.suggested_bets.map((bet) => {
+                return (<PickedMatch editor={this.props.editor} match={bet}/>);
             }
         ));
     }
