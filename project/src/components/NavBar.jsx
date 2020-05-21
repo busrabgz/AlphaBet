@@ -132,7 +132,7 @@ class NavBar extends React.Component {
               <Link style={{textDecoration: 'none'}} to="/dashboard"><Button variant="contained" color="white">Dashboard</Button></Link> 
               <Typography variant="h6" style={{flexGrow: 1,}}>
               </Typography>
-              <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>
+              <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
             </Toolbar>  
           </AppBar>
           break;
@@ -144,7 +144,7 @@ class NavBar extends React.Component {
             <Typography variant="h4" style={title}>AlphaBet</Typography>
               <Link style={{textDecoration: 'none'}} to='/'><Button variant="contained" color="white">Home</Button></Link>
               <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
-              <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>
+              <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
           </Toolbar>
         </AppBar>
         break;
@@ -169,7 +169,7 @@ class NavBar extends React.Component {
                   <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.state.alphaCoins}></ListItemText>
                 </ListItem></Box>
               </List></Box>
-              <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>
+              <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
           </Toolbar>
         </AppBar>
         break;
@@ -184,10 +184,10 @@ class NavBar extends React.Component {
             <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
             <ButtonGroup color="primary" aria-label="outlined primary button group" style={buttonGroup}>
               <Link to='/register' style={{textDecoration: 'none'}}>
-                <Button size="small" variant="contained" color="secondary" >Register</Button>
+                <Button size="medium" variant="contained" color="secondary" >Register</Button>
               </Link>
               <Link to='/signin' style={{textDecoration: 'none'}}>
-                <Button size="small" variant="contained" color="secondary">Login</Button>
+                <Button size="medium" variant="contained" color="secondary">Login</Button>
               </Link>
             </ButtonGroup>
           </Toolbar>
