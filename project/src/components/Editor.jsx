@@ -62,11 +62,11 @@ class Editor extends React.Component {
     render() {
         return(
             <UserContext.Consumer>
-            { ( {username, balance, updateBalance, betslip} ) => (
+            { ( {username, balance, updateBalance} ) => (
             <div>
                 <NavBar />
                 <div>
-                    <BetSlip slip={betslip}/>
+                    <BetSlip/>
                     <div style={rootStyle}>
                         <EditorBar onClick={this.onClick}/>
                         <EditorTabPanel editor={this.state.currentEditor} followed={this.state.followed} onSwitch={this.onSwitch}/>
