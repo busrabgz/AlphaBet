@@ -249,6 +249,9 @@ def home():
                                     "user.account_balance - {1} WHERE user_id = {2}".format(input["played_amount"],
                                                                                             input["played_amount"],
                                                                                             person_id))
+
+                        cur.execute("INSERT INTO bet_slip (placed, played_amount, creator_id) VALUES (FALSE, 0, {0})"
+                                    .format(person_id))
                         mysql.connection.commit()
                         return {"status": "success"}
                     else:
@@ -988,13 +991,9 @@ def profile():
 def editor():
     cur = mysql.connection.cursor()
 
-    input = {
-        "user_id": request.get_json(force=True)["user_id"],
-        "editor_id": request.get_json(force=True)["editor_id"],
-        "request_type": request.get_json(force=True)["request_type"]
-    }
+    input = request.get_json(force=True)
 
-    if input["request_type"] == "display_editors":
+    if input["request_type"] == "display_editors":  # ["user_id"]
 
         cur.execute("SELECT forename, surname, editor_id_table.winrate, total_winnings, person_id AS editor_id FROM "
                     "( (SELECT editor.editor_id AS person_id, winrate, total_winnings FROM editor) AS editor_id_table "
@@ -1384,6 +1383,53 @@ def editor():
                                                                                               input["editor_id"]))
 
         mysql.connection.commit()
+
+    elif input["request_type"] == "play_editor_bet_slip":
+
+        cur.execute("SELECT match_id, bet_id FROM (SELECT match_id, bet_id FROM included_bet WHERE bet_slip_id = {0})"
+                    " bets NATURAL JOIN bet WHERE result = 'PENDING'".format(input["bet_slip_id"]))
+
+        editor_pending_bets_results = []
+
+        editor_pending_bets_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            editor_pending_bets_results.append(dict(zip(editor_pending_bets_columns, row)))
+
+        cur.execute("WITH user_bet_slip AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND placed = FALSE)"
+                    " SELECT match_id, bet_id FROM user_bet_slip NATURAL JOIN included_bet".format(input["user_id"]))
+
+        user_current_bets_results = []
+
+        user_current_bets_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            user_current_bets_results.append(dict(zip(user_current_bets_columns, row)))
+
+        for row in editor_pending_bets_results:
+
+            bet_found = False
+
+            for bet in user_current_bets_results:
+
+                if bet["match_id"] == row["match_id"] and bet["bet_id"] == row["bet_id"]:
+                    bet_found = True
+                    break
+            if not bet_found:
+                cur.execute("SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND placed = FALSE"
+                            .format(input["user_id"]))
+
+                user_bet_slip_id = cur.fetchone()[0]
+
+                if cur.execute("INSERT INTO included_bet (bet_slip_id, bet_id, match_id) VALUES ({0}, {1}, {2})"
+                                       .format(user_bet_slip_id, row["bet_id"], row["match_id"])) > 0:
+
+                    mysql.connection.commit()
+
+                else:
+                    return {"status": "Could not add bet to user betslip."}
+
+        return {"status": "success"}
 
 
 @app.route('/admin-dashboard/modify-bets', methods=["POST"])
