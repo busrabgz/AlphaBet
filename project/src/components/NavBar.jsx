@@ -163,10 +163,10 @@ class NavBar extends React.Component {
             <Box style={box} my={-5}>
               <List component="nav">
                 <Box mb={-2}><ListItem>
-                  <ListItemText style = {listItemText} primary={"Balance: " + this.props.userBalance}></ListItemText>
+                  <ListItemText style = {listItemText} primary={"Balance: " + this.state.balance}></ListItemText>
                 </ListItem></Box>
                 <Box mt={-1}><ListItem>
-                  <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.props.alphaCoins}></ListItemText>
+                  <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.state.alphaCoins}></ListItemText>
                 </ListItem></Box>
               </List></Box>
               <Button style={logoutButton} size="small" variant="contained" color="secondary">Logout</Button>

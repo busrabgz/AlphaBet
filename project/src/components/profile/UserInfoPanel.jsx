@@ -117,7 +117,9 @@ class WithdrawCash extends React.Component {
           <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              To withdraw cash, please enter the amount here. We will update the balance as you confirm.
+              To withdraw cash, please enter the amount here.
+              If you enter an amount more than the current balance, you will withdraw whole cash.
+              We will update the balance as you confirm.
             </DialogContentText>
             <TextField
               autoFocus
