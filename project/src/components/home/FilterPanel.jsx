@@ -266,7 +266,6 @@ class FilterPanel extends Component{
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
                     <TopPanel onInputChange={this.props.onInputChange} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
-                    <SortPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true" onClick={this.props.handleSubmit}>LIST</Button>
                 </form>

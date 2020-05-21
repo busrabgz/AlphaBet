@@ -16,9 +16,8 @@ function ActionCard(props){
 
     const buttonStyle = {
     }
-    console.log(props.mbn)
     return(
-    <Card style={{ height: 40, display: "inline-flex", overflowX: "hidden"}}>
+    <Card style={{ height: 60, display: "inline-flex", overflowX: "hidden"}}>
         <CardContent style={contentStyle}>
             {props.mbn == undefined 
             ? <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
@@ -27,7 +26,9 @@ function ActionCard(props){
             : <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
                 {props.text + " - MBN: " + props.mbn + " Odd: " + props.odd}
             </Typography>}
-            
+            <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
+                { "Played " + props.play_count + " times"}
+            </Typography>
         </CardContent>
         <CardActions style={contentStyle}>
             <Button style={buttonStyle} disabled = {hideButton} onClick={() => props.handleBet(props.id, props.match_id)}>Bet
@@ -83,7 +84,7 @@ function RenderBasketballMatchRow(props){
             padding: '0px 0px 0px 0px',
         }
         return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
             <Typography variant="subtitle2" color="initial">Match Result</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
@@ -102,7 +103,7 @@ function RenderBasketballMatchRow(props){
             padding: '0px 0px 0px 0px',
         }
         return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
             <Typography variant="subtitle2" color="initial">Rebound Over / Under X</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
@@ -121,7 +122,7 @@ function RenderBasketballMatchRow(props){
             padding: '0px 0px 0px 0px',
         }
         return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
             <Typography variant="subtitle2" color="initial">Total Score Over / Under X</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
@@ -183,7 +184,7 @@ function RenderTennisMatchRow(props){
         console.log("ms1 mbn:", props.match.bets.mr_one.MBN)
         console.log("akjsdhaksjdh")
         return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
             <Typography variant="subtitle2" color="initial">Match Result</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
@@ -202,7 +203,7 @@ function RenderTennisMatchRow(props){
             padding: '0px 0px 0px 0px',
         }
         return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
             <Typography variant="subtitle2" color="initial">First Set Winner</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
@@ -221,7 +222,7 @@ function RenderTennisMatchRow(props){
             padding: '0px 0px 0px 0px',
         }
         return(
-            <Grid item lg={6} md={6} sm={12} xs={12}><Paper elevation={4}> 
+            <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
             <Typography variant="subtitle2" color="initial">Second Set Winner</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
@@ -354,8 +355,6 @@ function RenderFootballMatchRow(props){
                 <Tooltip title={props.match.bets.over_2_5.oldOdd && "Changed from " + props.match.bets.over_2_5.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Over"} mbn={props.match.bets.over_2_5.MBN} odd={props.match.bets.over_2_5.odd} id={props.match.bets.over_2_5.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 <Tooltip title={props.match.bets.under_2_5.oldOdd && "Changed from " + props.match.bets.under_2_5.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Under"} mbn={props.match.bets.under_2_5.MBN} odd={props.match.bets.under_2_5.odd} id={props.match.bets.under_2_5.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
@@ -374,13 +373,9 @@ function RenderFootballMatchRow(props){
                 <Tooltip title={props.match.bets.redCardCount_0.oldOdd && "Changed from " + props.match.bets.redCardCount_0.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"0"} mbn={props.match.bets.redCardCount_0.MBN} odd={props.match.bets.redCardCount_0.odd} id={props.match.bets.redCardCount_0.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 <Tooltip title={props.match.bets.redCardCount_1.oldOdd && "Changed from " + props.match.bets.redCardCount_1.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"1"} mbn={props.match.bets.redCardCount_1.MBN} odd={props.match.bets.redCardCount_1.odd} id={props.match.bets.redCardCount_1.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
     }
@@ -397,13 +392,9 @@ function RenderFootballMatchRow(props){
                 <Tooltip title={props.match.bets.yellowCardCount_0.oldOdd && "Changed from " + props.match.bets.yellowCardCount_0.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"0"} mbn={props.match.bets.yellowCardCount_0.MBN} odd={props.match.bets.yellowCardCount_0.odd} id={props.match.bets.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 <Tooltip title={props.match.bets.yellowCardCount_1.oldOdd && "Changed from " + props.match.bets.yellowCardCount_1.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"1"} mbn={props.match.bets.yellowCardCount_1.MBN} odd={props.match.bets.yellowCardCount_1.odd} id={props.match.bets.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
     }
@@ -414,14 +405,12 @@ function RenderFootballMatchRow(props){
         }
         return(
             <Grid item lg={12} md={12} sm={12} xs={12}><Paper elevation={4}> 
-            <Typography variant="subtitle2" color="initial">Yellow Card Count</Typography>
+            <Typography variant="subtitle2" color="initial">Corner Count Over / Under 7.5</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow> 
                 <Tooltip title={props.match.bets.cornerCountOver_7_5.oldOdd && "Changed from " + props.match.bets.cornerCountOver_7_5.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Over 7.5"} mbn={props.match.bets.cornerCountOver_7_5.MBN} odd={props.match.bets.cornerCountOver_7_5.odd} id={props.match.bets.cornerCountOver_7_5.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
-                </TableRow>
-                <TableRow> 
                 <Tooltip title={props.match.bets.cornerCountUnder_7_5.oldOdd && "Changed from " + props.match.bets.cornerCountUnder_7_5.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Under 7.5"} mbn={props.match.bets.cornerCountUnder_7_5.MBN} odd={props.match.bets.cornerCountUnder_7_5.odd} id={props.match.bets.cornerCountUnder_7_5.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
