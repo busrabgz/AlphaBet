@@ -141,6 +141,10 @@ class Editor extends React.Component {
             console.log("iççç");
             this.setState({clicked: this.state.clicked == false ? true : false});
         }
+
+        if (prevProps.dummyFriend != this.props.dummyFriend) {
+            
+        }
     }
 
     render() {
@@ -155,7 +159,7 @@ class Editor extends React.Component {
                     <BetSlip slip={betslip} userBalance={balance} />
                     <div style={rootStyle}>
                         <EditorBar key={this.state.editor.currentEditor.id} onClick={this.handleClick} editors = {this.state.editors}/>
-                        <EditorTabPanel editor={this.state.editor.currentEditor} followed={this.state.editor.followed} onSwitch={this.handleSwitch}/>
+                        <EditorTabPanel updateFriends = {this.props.updateFriends} id = {this.props.id} editor={this.state.editor.currentEditor} followed={this.state.editor.followed} onSwitch={this.handleSwitch} userSuccess={this.props.userSuccess}/>
                     </div>
                 </div>
             </div>

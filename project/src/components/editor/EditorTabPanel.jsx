@@ -91,7 +91,7 @@ function EditorTabs(props) {
             {props.editor.name == "" ? "" :
                 <div>
                     <TabPanel value={value} index={0}>
-                    {props.followed == true ? <BetSlips editor={props.editor} /> : <NotFollowed/>}
+                    {props.followed == true ? <BetSlips updateFriends = {props.updateFriends} id = {props.id} editor={props.editor} userSuccess={props.userSuccess}/> : <NotFollowed/>}
                     </TabPanel>
                     <TabPanel value={value} index={1}>
                         {props.followed == true ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
@@ -126,7 +126,7 @@ class EditorTabPanel extends React.Component {
         return(
         <Paper>
             <EditorHeader onSwitch={this.props.onSwitch} followed={this.state.followed} editor={this.state.editor}/>
-            <EditorTabs followed={this.state.followed} editor={this.state.editor}/>
+            <EditorTabs updateFriends = {this.props.updateFriends} id = {this.props.id} followed={this.state.followed} editor={this.state.editor} userSuccess={this.props.userSuccess}/>
         </Paper>
         );
     }

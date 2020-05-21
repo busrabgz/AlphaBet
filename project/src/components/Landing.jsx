@@ -25,7 +25,7 @@ class Landing extends React.Component {
                 <Profile id={userId} type={type}/>
               </Route>
               <Route path="/editors">
-                <Editor id = {userId}/>
+                <Editor id = {userId} userSuccess={loggedIn} dummyFriend={dummyFriend} updateFriends = {updateFriends}/>
               </Route>
               <Route path="/register">
                 <Register id={userId} type={type} userSuccess={loggedIn} balance={balance} alphaCoins = {alphaCoins}/>
