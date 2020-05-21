@@ -19,7 +19,7 @@ const titleStyle = {
 
 function Title(){
     return <Typography style={titleStyle} component="h5" variant="h5">
-                Pending
+                Pending Bet Slips
            </Typography>
 }
 
@@ -57,7 +57,6 @@ class PendingPanel extends Component {
     }
 
     render(){
-        console.log("ilk olarak pending renderdayım")
         return(
             <div>
                  <Title/>

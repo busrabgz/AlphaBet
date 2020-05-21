@@ -22,7 +22,7 @@ function WonSlip(props){
 
 function Title(){
     return <Typography style={titleStyle} component="h5" variant="h5">
-                Ended
+                Ended Bet Slips
            </Typography>
 }
 
