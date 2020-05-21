@@ -57,7 +57,7 @@ class ActionCard extends Component{
             {
                 "request_type": "change_odd",
                 "new_odd_value": this.state.newOdd,
-                "bet_id": this.props.bet_id,
+                "bet_id": this.props.id,
                 "match_id": this.props.match_id
             },
             {withCredentials: false})
@@ -111,7 +111,7 @@ class ActionCard extends Component{
             <DialogTitle id="form-dialog-title">Modify Bet</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                Enter new odd or disable bet completely
+                Enter new odd or disable bet completely {this.props.bet_id + "-" + this.props.match_id}
                 </DialogContentText>
                 <TextField
                 autoFocus
@@ -391,13 +391,13 @@ function RenderFootballMatchRow(props){
             <TableContainer><Table><TableBody>
                 <TableRow> 
                 <Tooltip title={props.match.bets.mr_one.oldOdd && "Changed from " + props.match.bets.mr_one.oldOdd}>
-                    <TableCell style={cellStyle}><ActionCard match_id={props.match.match_id} text={"Home"} mbn={props.match.bets.mr_one.MBN} odd={props.match.bets.mr_one.odd} id={props.match.bets.mr_one.bet_id} match_id={props.match.match_id} handleBet={props.handleBet} handleBet={props.handleBet}/></TableCell>
+                    <TableCell style={cellStyle}><ActionCard text={"Home"} mbn={props.match.bets.mr_one.MBN} odd={props.match.bets.mr_one.odd} id={props.match.bets.mr_one.bet_id} match_id={props.match.match_id} handleBet={props.handleBet} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
                 <Tooltip title={props.match.bets.mr_two.oldOdd && "Changed from " + props.match.bets.mr_two.oldOdd}>
-                    <TableCell style={cellStyle}><ActionCard match_id={props.match.match_id} text={"Away"} mbn={props.match.bets.mr_two.MBN} odd={props.match.bets.mr_two.odd} id={props.match.bets.mr_two.bet_id} match_id={props.match.match_id} handleBet={props.handleBet} handleBet={props.handleBet}/></TableCell>
+                    <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.mr_two.MBN} odd={props.match.bets.mr_two.odd} id={props.match.bets.mr_two.bet_id} match_id={props.match.match_id} handleBet={props.handleBet} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
                 <Tooltip title={props.match.bets.mr_draw.oldOdd && "Changed from " + props.match.bets.mr_draw.oldOdd}>
-                    <TableCell style={cellStyle}><ActionCard match_id={props.match.match_id} text={"Draw"} mbn={props.match.bets.mr_draw.MBN} odd={props.match.bets.mr_draw.odd} id={props.match.bets.mr_draw.bet_id} match_id={props.match.match_id} handleBet={props.handleBet} handleBet={props.handleBet}/></TableCell>
+                    <TableCell style={cellStyle}><ActionCard text={"Draw"} mbn={props.match.bets.mr_draw.MBN} odd={props.match.bets.mr_draw.odd} id={props.match.bets.mr_draw.bet_id} match_id={props.match.match_id} handleBet={props.handleBet} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
@@ -534,7 +534,7 @@ function RenderFootballMatchRow(props){
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails style={detailStyling}>
                         <Grid container spacing={3}>
-                            {console.log("asdasd"), renderMR()}
+                            {renderMR()}
                             {renderFHMR()}
                             {renderOU2_5()}
                             {renderRedCount()}
@@ -665,7 +665,7 @@ const contests = [
             "filter": {
                 "sport_name": this.props.filterInfo.sport,
                 "max_mbn": this.props.filterInfo.mbn,
-                "contest": this.props.filterInfo.contest,
+                "contest": "",
                 "sort_type": "popularity",
                 "search_text": this.state.inputText
             }
