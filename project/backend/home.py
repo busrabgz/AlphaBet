@@ -299,6 +299,28 @@ def home():
                 return {"status": "Could not add to betslip."}
         else:
             return {"status": "User does not have an active betslip"}
+
+    elif input["request_type"] == "remove_bet_from_betslip":
+
+        if cur.execute("SELECT person_id FROM person WHERE username = '{0}'".format(input["username"])) > 0:
+            person_id = cur.fetchone()[0]
+        else:
+            return {"status": "User not found"}
+
+        if cur.execute(
+                "SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}".format(person_id)) > 0:
+            bet_slip_id = cur.fetchone()[0]
+
+            if cur.execute("DELETE included_bet FROM included_bet WHERE bet_slip_id = {0} AND bet_id = {1} AND"
+                           " match_id = {2}".format(bet_slip_id, input["bet_id"], input["match_id"])) > 0:
+                mysql.connection.commit()
+
+                return {"status": "success"}
+            else:
+                return {"status": "Could not add to betslip."}
+        else:
+            return {"status": "User does not have an active betslip"}
+
     elif input["request_type"] == "view_votes":
 
         home_votes = 0
