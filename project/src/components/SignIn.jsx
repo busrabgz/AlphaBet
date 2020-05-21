@@ -64,11 +64,11 @@ class SignIn extends Component {
   render() {
     if (this.props.isLogged) {
       // redirect to home if logged in
-      return <Redirect to = {{ pathname: "/profile" }} />;
+      return <Redirect to = {{ pathname: "/" }} />;
     }
     return (
         <div>
-            <NavBar type={this.props.type} isLogged={this.props.isLogged} userBalance={this.props.balance} id = {this.props.id} alphaCoins = {this.props.alphaCoins}/>
+            <NavBar updateType={this.props.updateType} type={this.props.type} isLogged={this.props.isLogged} userBalance={this.props.balance} id = {this.props.id} alphaCoins = {this.props.alphaCoins}/>
             <h1>Login Page</h1>
             <form onSubmit={this.handleSubmit}>
                 <input

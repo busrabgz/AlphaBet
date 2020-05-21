@@ -166,7 +166,7 @@ class Market extends Component {
         <UserContext.Consumer>
         { ( {username, balance, updateBalance, loggedIn, alphaCoins} ) => (
             <div>
-                <NavBar type={this.props.type} userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
+                <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type} userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
                 <Title/>
                 <ItemsTable id = {this.props.id} columns={columns} items={this.state.items}/>
             </div>
