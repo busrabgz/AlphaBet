@@ -10,7 +10,7 @@ export const userInfo = {
     betslip: [{matchname: "Real Madrid - Galatasaray",  bet: "MS-1", odd: "1.5"},
     {matchname: "Beşiktaş - Liverpool", bet: "MS-0", odd: "1.1"}],
     dummyFriend: false,
-    filterInfo: {mbn:"", contest: [], sport: "FOOTBALL", sort: "", inputText: ""},
+    filterInfo: {mbn:"", contest: [], sport: "FOOTBALL", sort_type: false, inputText: ""},
     betsInfo: []
 }
 

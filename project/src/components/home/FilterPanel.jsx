@@ -71,7 +71,7 @@ class ContestFilter extends React.Component {
                                     )
                                 }
                             }
-})
+                        })
                     }    
                     </FormGroup>
                 </FormControl>
@@ -113,19 +113,29 @@ function MBNFilter(props) {
 }
 
 
-function KeyWordFilter(props) {
-    const handleChange = (event) => {
-        var filterInfo = props.filterInfo;
-        filterInfo.inputText =  event.target.value;
-        props.updateFilterInfo(filterInfo)
+class KeyWordFilter extends React.Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            input :""
+        }
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event) {
+        this.setState({
+            input: event.target.value
+        })
     }
 
-    return(
-        <Grid item lg={7} md={7} sm={12} xs={12}>
-                <TextField fullWidth="true" variant="outlined" id="input-with-icon-grid" label="Search with text (etc. Beşiktaş)"
-                value= {props.filterInfo.inputText} onChange={handleChange} />
-        </Grid> 
-    );
+    render() {
+        return(
+            <Grid item lg={7} md={7} sm={12} xs={12}>
+                    <TextField fullWidth="true" variant="outlined" id="input-with-icon-grid" label="Search with text (etc. Beşiktaş)"
+                    value= {this.state.input} onChange={this.handleChange} />
+            </Grid> 
+        );
+    }
 }
 
 function SportFilter(props){
@@ -200,25 +210,47 @@ function TopPanel(props) {
     );
 }
 
-function SortPanel(props) {
-    const rootStyle = {
-        width: "100%"
+const rootStyle = {
+    width: "100%"
+}
+
+class SortPanel extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            checked: false
+        }
+        this.handleChange = this.handleChange.bind(this)
     }
-    return(
-        <Grid container spacing={3} style={rootStyle}>
-            <Grid item lg={4} md={6} sm={12} xs={12}>
-                <FormControl style={props.style} component="fieldset">
-                    <FormGroup>
-                        <FormControlLabel
-                        control={<Checkbox size="medium" value="popularitySort" checked={""} onCheck={""} name={""} />}
-                        label={"Sort by popularity"}
-                        />
-                    </FormGroup>
-                </FormControl>
+
+    handleChange(event) {
+        console.log(event.target.checked)
+        this.setState({
+            checked: event.target.checked 
+        })
+        var info = this.props.filterInfo
+        var bool = (this.props.filterInfo == true ? false : true)
+        info.sort_type = bool
+        this.props.updateFilterInfo(info)
+    }
+
+    render () {
+        return(
+            <Grid container spacing={3} style={rootStyle}>
+                <Grid item lg={4} md={6} sm={12} xs={12}>
+                    <FormControl style={this.props.style} component="fieldset">
+                        <FormGroup>
+                            <FormControlLabel
+                            control={<Checkbox size="medium" value="popularitySort" checked={this.state.checked} onChange={this.handleChange} name={"popularity"} />}
+                            label={"Sort by popularity"}
+                            />
+                        </FormGroup>
+                    </FormControl>
+                </Grid>
+                <Grid item lg={8} md={6} sm={0} xs={0}></Grid>
             </Grid>
-            <Grid item lg={8} md={6} sm={0} xs={0}></Grid>
-        </Grid>
-    );
+        );
+    }
 }
 
 class FilterPanel extends Component{
@@ -232,7 +264,7 @@ class FilterPanel extends Component{
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
                     <TopPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
-                    <SortPanel/>
+                    <SortPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true">LIST</Button>
                 </form>
