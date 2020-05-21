@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, flash, session, jsonify, redi
 from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
+from random import randrange
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -229,9 +230,9 @@ def home():
 
             if mbn_result == "MBN_satisfied":
 
-                if cur.execute("SELECT CASE WHEN user.account_balance < 3 THEN 'insufficent_credits'"
-                               "WHEN user.account_balance > 3 THEN 'enough_credits' END AS response "
-                               "FROM user WHERE user_id = {0}".format(person_id)) > 0:
+                if cur.execute("SELECT CASE WHEN user.account_balance < {0} THEN 'insufficent_credits'"
+                               "WHEN user.account_balance > {0} THEN 'enough_credits' END AS response "
+                               "FROM user WHERE user_id = {1}".format(input["played_amount"], person_id)) > 0:
 
                     balance_result = cur.fetchone()[0]
                     if balance_result == "enough_credits":
@@ -261,7 +262,7 @@ def home():
             bet_slip_id = cur.fetchone()[0]
 
         if cur.execute("INSERT INTO shared_bet_slip (bet_slip_id, sharer_id) VALUES ({0}, {1})"
-                    .format(bet_slip_id, person_id)) > 0:
+                               .format(bet_slip_id, person_id)) > 0:
 
             mysql.connection.commit()
             return {"status": "success"}
@@ -274,7 +275,7 @@ def home():
             person_id = cur.fetchone()[0]
 
         if cur.execute("INSERT INTO suggested_bet (editor_id, bet_id, match_id, comment) VALUES ({0}, {1}, {2}, '{3}')"
-                    .format(person_id, input["bet_id"], input["match_id"], input["editor_comment"])) > 0:
+                               .format(person_id, input["bet_id"], input["match_id"], input["editor_comment"])) > 0:
             mysql.connection.commit()
 
             return {"status": "success"}
@@ -289,14 +290,15 @@ def home():
                 "SELECT bet_slip_id FROM bet_slip WHERE placed = FALSE AND creator_id = {0}".format(person_id)) > 0:
             bet_slip_id = cur.fetchone()[0]
 
-        if cur.execute("INSERT INTO included_bet (bet_slip_id, bet_id, match_id) VALUES "
-                    "({0}, {1}, {2})".format(bet_slip_id, input["bet_id"], input["match_id"])) > 0:
-            mysql.connection.commit()
+            if cur.execute("INSERT INTO included_bet (bet_slip_id, bet_id, match_id) VALUES "
+                           "({0}, {1}, {2})".format(bet_slip_id, input["bet_id"], input["match_id"])) > 0:
+                mysql.connection.commit()
 
-            return {"status": "success"}
+                return {"status": "success"}
+            else:
+                return {"status": "Could not add to betslip."}
         else:
-            return {"status": "Could not add to betslip."}
-
+            return {"status": "User does not have an active betslip"}
     elif input["request_type"] == "view_votes":
 
         home_votes = 0
@@ -327,14 +329,14 @@ def home():
             person_id = cur.fetchone()[0]
 
         if cur.execute("INSERT INTO votes (match_id, user_id, side) VALUES ({0}, {1}, '{2}')"
-                    .format(input["match_id"], person_id, input["vote_side"])) > 0:
+                               .format(input["match_id"], person_id, input["vote_side"])) > 0:
 
             mysql.connection.commit()
             return {"status": "success"}
         else:
             return {"status": "Could not insert vote"}
 
-    elif input["request_type"] == "display_user_bet_slip": #Requires input ["person_id"]
+    elif input["request_type"] == "display_user_bet_slip":  # Requires input ["person_id"]
 
         cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0} AND placed ="
                     " FALSE), all_bet_data AS (SELECT * FROM user_bet_slips NATURAL JOIN included_bet NATURAL JOIN bet),"
@@ -384,15 +386,13 @@ def home():
                     "home_side": home_side,
                     "away_side": away_side,
                     "result": row["result"],
+                    "mbn": row["mbn"],
                     "odd": total_odd,
                     "bet_type": row["bet_type"]
                 }
                 user_map["bets"].append(bet_to_add)
 
         return user_map
-
-
-
 
     return "Hello World!"
 
@@ -1510,12 +1510,9 @@ def editor():
 def admin_dashboard_modify_bets():
     cur = mysql.connection.cursor()
 
-    input = {
-        "bet_id": request.get_json(force=True)["bet_id"],
-        "match_id": request.get_json(force=True)["match_id"],
-        "request_type": request.get_json(force=True)["request_type"],
-    }
-    if input["request_type"] == "change_odd":
+    input = request.get_json(force=True)
+
+    if input["request_type"] == "change_odd":  # requires ["bet_id"], ["match_id"], ["new_odd_value"]
 
         input["new_odd_value"] = request.get_json(force=True)["new_odd_value"]
 
@@ -1550,6 +1547,150 @@ def admin_dashboard_modify_bets():
             return {"status": "success"}
         else:
             return {"status": "Couldn't remove bet!"}
+
+    elif input["request_type"] == "randomize":
+        cur.execute(
+            "SELECT m.match_id, m.sport_name FROM `match` m WHERE NOT EXISTS (SELECT match_id FROM `match` NATURAL JOIN"
+            " result WHERE m.match_id = match_id)")
+
+        unfinished_matches = []
+
+        unfinished_matches_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            unfinished_matches.append(dict(zip(unfinished_matches_columns, row)))
+
+        for row in unfinished_matches:
+
+            if row["sport_name"] == "FOOTBALL":
+                home_half_score = 0
+                away_half_score = 0
+
+                home_ft_score = randrange(6)
+                away_ft_score = randrange(6)
+
+                yellow_card_number = randrange(6)
+                red_card_number = randrange(2)
+
+                corner_count = randrange(15)
+
+                if home_ft_score > 0:
+                    home_half_score = randrange(home_ft_score)
+
+                if away_half_score > 0:
+                    away_half_score = randrange(away_ft_score)
+
+                if cur.execute("INSERT INTO result (home_score, away_score, match_id) VALUES ({0}, {1}, {2})"
+                                       .format(home_ft_score, away_ft_score, row["match_id"])) > 0:
+
+                    cur.execute("SELECT LAST_INSERT_ID()")
+
+                    last_result_id = cur.fetchone()[0]
+
+                    if cur.execute("INSERT INTO football_result (result_id, yellow_card_number, red_card_number,"
+                                   " corner_count, first_half_home_goals, first_half_away_goals) VALUES ({0}, {1}, {2},"
+                                   " {3}, {4}, {5})".format(last_result_id, yellow_card_number, red_card_number,
+                                                            corner_count, home_half_score, away_half_score)) > 0:
+
+                        mysql.connection.commit()
+
+                    else:
+                        return {"status": "Could not insert to football_result"}
+
+                else:
+                    return {"status": "Could not insert to result"}
+
+            elif row["sport_name"] == "BASKETBALL":
+                home_half_score = 80
+                away_half_score = 80
+
+                home_ft_score = randrange(80, 110)
+                away_ft_score = randrange(80, 110)
+
+                home_total_rebound_count = randrange(30)
+                away_total_rebound_count = randrange(30)
+
+                if home_ft_score > 80:
+                    home_half_score = randrange(40, home_ft_score)
+
+                if away_ft_score > 80:
+                    away_half_score = randrange(40, away_ft_score)
+
+                if cur.execute("INSERT INTO result (home_score, away_score, match_id) VALUES ({0}, {1}, {2})"
+                                       .format(home_ft_score, away_ft_score, row["match_id"])) > 0:
+
+                    cur.execute("SELECT LAST_INSERT_ID()")
+
+                    last_result_id = cur.fetchone()[0]
+
+                    if cur.execute("INSERT INTO basketball_result (result_id, home_half_score, away_half_score,"
+                                   " home_total_rebound_count, away_total_rebound_count) VALUES ({0}, {1}, {2},"
+                                   " {3}, {4})".format(last_result_id, home_half_score, away_half_score,
+                                                       home_total_rebound_count, away_total_rebound_count)) > 0:
+
+                        mysql.connection.commit()
+
+                    else:
+                        return {"status": "Could not insert to basketball_result"}
+
+                else:
+                    return {"status": "Could not insert to result"}
+
+            elif row["sport_name"] == "TENNIS":
+                home_ft_score = randrange(3)
+
+                if home_ft_score == 2:
+
+                    away_ft_score = randrange(2)
+                    if away_ft_score ==  0:
+                        first_set_winner = "HOME"
+                        second_set_winner = "HOME"
+                    if away_ft_score == 1:
+
+                        half_order_decider = randrange(2)
+
+                        if half_order_decider == 0:
+                            first_set_winner = "HOME"
+                            second_set_winner = "AWAY"
+                        else:
+                            first_set_winner = "AWAY"
+                            second_set_winner = "HOME"
+                elif home_ft_score == 1:
+                    away_ft_score = 2
+
+                    half_order_decider = randrange(2)
+
+                    if half_order_decider == 0:
+                        first_set_winner = "HOME"
+                        second_set_winner = "AWAY"
+                    else:
+                        first_set_winner = "AWAY"
+                        second_set_winner = "HOME"
+                elif home_ft_score == 0:
+                    away_ft_score = 2
+                    first_set_winner = "AWAY"
+                    second_set_winner = "AWAY"
+
+                if cur.execute("INSERT INTO result (home_score, away_score, match_id) VALUES ({0}, {1}, {2})"
+                                       .format(home_ft_score, away_ft_score, row["match_id"])) > 0:
+
+                    cur.execute("SELECT LAST_INSERT_ID()")
+
+                    last_result_id = cur.fetchone()[0]
+
+                    if cur.execute("INSERT INTO tennis_result (result_id, first_set_winner, second_set_winner) "
+                                   "VALUES ({0}, '{1}', '{2}')"
+                                   "".format(last_result_id, first_set_winner, second_set_winner)) > 0:
+
+                        mysql.connection.commit()
+
+                    else:
+                        return {"status": "Could not insert to tennis_result"}
+
+                else:
+                    return {"status": "Could not insert to result"}
+
+        return {"status": "success"}
 
 
 @app.route('/admin-dashboard/editors', methods=["GET", "POST"])
