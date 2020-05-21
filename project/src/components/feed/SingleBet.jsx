@@ -13,9 +13,6 @@ class SingleBet extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      matchname: props.info.name,
-      bet: props.info.bet,
-      odd: props.info.odd
     }
   }
 
@@ -23,9 +20,9 @@ class SingleBet extends Component {
     return (
         <div style={divStyle}>
           <Paper elevation={3}>
-            <p>{this.state.matchname}</p>
-            <p>{this.state.bet}</p>
-            <p>{this.state.odd}</p>
+            <p>{this.props.matchname}</p>
+            <p>{this.props.type}</p>
+            <p>{this.props.odd}</p>
           </Paper>
         </div>
          )

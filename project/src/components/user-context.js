@@ -6,7 +6,7 @@ export const userInfo = {
     balance: 0,
     type: '',
     loggedIn: false,
-    userId: 0,
+    userId: -1,
     dummyFriend: false,
     filterInfo: {mbn:"", contest: [], sport: "FOOTBALL", sort_type: false, inputText: ""},
     betsInfo: false,

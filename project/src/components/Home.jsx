@@ -24,6 +24,8 @@ const contests = [
   { name: "Premier League", type: "FOOTBALL"},
   { name: "Turkish Super League", type: "FOOTBALL"},
   { name: "Bundesliga", type: "FOOTBALL" },
+  { name: "NBA", type: "BASKETBALL"},
+  { name: "Euro League", type: "BASKETBALL"}
 ]
 
 class Home extends Component {
@@ -36,22 +38,22 @@ class Home extends Component {
     this.handleBetButton = this.handleBetButton.bind(this)
   }
 
-    handleBetButton(prop1, prop2) {
-      axios.post(URL,
-        {
-            request_type: "add_bet_to_betslip",
-            username: this.props.username,
-            match_id: prop1,
-            bet_id: prop2
-         },
-        {withCredentials: false})
-        .then( res => {
-            this.props.updateBetsInfo()
-            })
-         .catch(error => {
-            console.log("login", error);
-            });
-    }
+  handleBetButton(prop1, prop2) {
+    axios.post(URL,
+      {
+          request_type: "add_bet_to_betslip",
+          username: this.props.username,
+          match_id: prop2,
+          bet_id: prop1
+        },
+      {withCredentials: false})
+      .then( res => {
+          this.props.updateBetsInfo()
+          })
+        .catch(error => {
+          console.log("login", error);
+          });
+  }
 
     handleSubmit() {
       var sortType = (this.props.filterInfo.sort_type == true ? "popularity" : "")
@@ -69,7 +71,7 @@ class Home extends Component {
               "sport_name": this.props.filterInfo.sport,
               "max_mbn": this.props.filterInfo.mbn,
               "contest": this.props.filterInfo.contest,
-              "sort_type": sortType,
+              "sort_type": "popularity",
               "search_text": this.props.filterInfo.inputText
           }
        })
@@ -342,7 +344,7 @@ class Home extends Component {
         <div>
             <NavBar type={this.props.type} userBalance={balance} isLogged={loggedIn} id = {this.props.id} alphaCoins={alphaCoins}/>
             <div style={divStyle}>
-              <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo}/>
+              <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo} id={this.props.id} username={username}/>
               <Box style={rootBoxStyle}>
                 <p>"WELCOME " {this.props.id}</p>
                 <FilterPanel contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} />

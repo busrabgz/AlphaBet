@@ -9,9 +9,7 @@ const detailStyling = {
 }
 
 function ActionCard(props){
-    console.log("mbn", props.mbn, "id:", props.id)
     var hideButton = props.mbn == undefined
-    console.log("button: ", hideButton, "id: ", props.id)
     const contentStyle = {
         padding: 0, margin: 0,
     }
@@ -94,9 +92,6 @@ function RenderBasketballMatchRow(props){
                 </Tooltip>
                 <Tooltip title={props.match.bets.mr_two.oldOdd && "Changed from " + props.match.bets.mr_two.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"Away"} mbn={props.match.bets.mr_two.MBN} odd={props.match.bets.mr_two.odd} id={props.match.bets.mr_two.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>
-                <Tooltip title={props.match.bets.mr_zero.oldOdd && "Changed from " + props.match.bets.mr_zero.oldOdd}>
-                    <TableCell style={cellStyle}><ActionCard text={"Draw"} mbn={props.match.bets.mr_zero.MBN} odd={props.match.bets.mr_zero.odd} id={props.match.bets.mr_zero.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
                 </Tooltip>
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
