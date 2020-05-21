@@ -57,12 +57,6 @@ class NavBar extends React.Component {
       type: this.props.type,
     }
   }
-  //const classes = useStyles();
-  //const balanceStr = "Balance: " + props.userBalance;
-  //let button
-  //let registerButton
-  //console.log('success: ',props.userSuccess)
-
   componentDidMount() {
     if (this.props.id != -1) {
       axios.post(URL,
@@ -72,12 +66,8 @@ class NavBar extends React.Component {
          },
         {withCredentials: false})
         .then( res => {
-            if (res.data.result.success) {
-              console.log("why fail?")
               this.setState({balance: res.data.result.account_balance, alphaCoins: res.data.result.alpha_coins
               })
-            }
-
             })
          .catch(error => {
             console.log("info", error);
