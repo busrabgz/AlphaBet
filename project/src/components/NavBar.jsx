@@ -23,7 +23,8 @@ const root = {
 }
 
 const menuButton = {
-  marginRight: "10px",
+  marginRight: "5px",
+  marginLeft: "5px",
 }
 
 const title = {
@@ -41,6 +42,10 @@ const listItemText = {
 }
 
 const logoutButton = {
+  marginRight: 50,
+}
+
+const loginButton = {
   marginRight: 50,
 }
 
@@ -129,7 +134,7 @@ class NavBar extends React.Component {
         <AppBar style={{width: "100%"}} position="static">
             <Toolbar style={{width: "100%"}}>
               <Typography variant="h4" style={title}>AlphaBet</Typography>
-              <Link style={{textDecoration: 'none'}} to="/dashboard"><Button variant="contained" color="white">Dashboard</Button></Link> 
+              <Link style={{textDecoration: 'none'}} to="/dashboard"><Button size="large" variant="contained" style = {menuButton} color="primary">Dashboard</Button></Link>
               <Typography variant="h6" style={{flexGrow: 1,}}>
               </Typography>
               <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
@@ -142,7 +147,7 @@ class NavBar extends React.Component {
           <AppBar position="static">
           <Toolbar>
             <Typography variant="h4" style={title}>AlphaBet</Typography>
-              <Link style={{textDecoration: 'none'}} to='/'><Button variant="contained" color="white">Home</Button></Link>
+              <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
               <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
               <Button style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button>
           </Toolbar>
@@ -154,11 +159,11 @@ class NavBar extends React.Component {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h4" style={title}>AlphaBet</Typography>
-            <Link style={{textDecoration: 'none'}} to='/'><Button variant="contained" color="white">Home</Button></Link>
-            <Link style={{textDecoration: 'none'}} to="/profile"><Button variant="contained" color="white">Profile</Button></Link>
-            <Link style={{textDecoration: 'none'}} to="/editors"><Button  variant="contained"color="white">Editors</Button></Link>
-            <Link style={{textDecoration: 'none'}} to="/feed"><Button variant="contained" color="white">Feed</Button></Link>
-            <Link style={{textDecoration: 'none'}} to="/market"><Button variant="contained" style = {menuButton} color="white"> Market</Button></Link>
+            <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/profile"><Button size="large" variant="contained" style = {menuButton} color="primary">Profile</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/editors"><Button  size="large" variant="contained" style = {menuButton} color="primary">Editors</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/feed"><Button size="large" variant="contained" style = {menuButton} color="primary">Feed</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/market"><Button size="large" variant="contained" style = {menuButton} color="primary"> Market</Button></Link>
             <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
             <Box style={box} my={-5}>
               <List component="nav">
@@ -179,15 +184,14 @@ class NavBar extends React.Component {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h4" style={title}>AlphaBet</Typography>
-            <Link style={{textDecoration: 'none'}} to='/'><Button variant="contained" color="white">Home</Button></Link>
-            <Link style={{textDecoration: 'none'}} to="/editors"><Button variant="contained" color="white">Editors</Button></Link>
+            <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
             <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
             <ButtonGroup color="primary" aria-label="outlined primary button group" style={buttonGroup}>
               <Link to='/register' style={{textDecoration: 'none'}}>
-                <Button size="medium" variant="contained" color="secondary" >Register</Button>
+                <Button size="medium" style = {menuButton} variant="contained" color="secondary" >Register</Button>
               </Link>
               <Link to='/signin' style={{textDecoration: 'none'}}>
-                <Button size="medium" variant="contained" color="secondary">Login</Button>
+                <Button size="medium" style = {loginButton} variant="contained" color="secondary">Login</Button>
               </Link>
             </ButtonGroup>
           </Toolbar>
