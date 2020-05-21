@@ -1823,8 +1823,13 @@ def admin_dashboard_editors():
                 if cur.execute("UPDATE approves SET state = 'APPROVED' WHERE editor_id = {0}"
                                        .format(input["person_id"])) > 0:
 
-                    mysql.connection.commit()
-                    return {"status": "success"}
+                    if cur.execute("INSERT INTO bet_slip (creator_id, placed, played_amount) VALUES ({0}, 0, 0)"
+                                           .format(input["person_id"])) > 0:
+
+                        mysql.connection.commit()
+                        return {"status": "success"}
+                    else:
+                        return {"status": "Could not create a new bet slip for editor"}
                 else:
                     return {"status": "State not updated"}
             else:
