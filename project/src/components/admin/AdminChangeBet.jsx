@@ -40,7 +40,7 @@ class ActionCard extends Component{
         axios.post(URL_admin, 
             {
                 "request_type": "cancel_bet",
-                "bet_id": this.props.bet_id,
+                "bet_id": this.props.id,
                 "match_id": this.props.match_id
             },
             {withCredentials: false})
@@ -91,7 +91,7 @@ class ActionCard extends Component{
 
     render(){
     return(
-    <Card style={{ height: 60, display: "inline-flex", overflowX: "hidden"}}>
+    <Card style={{ height: 30, display: "inline-flex", overflowX: "hidden"}}>
         <CardContent style={contentStyle}>
             {this.props.mbn == undefined 
             ? <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
@@ -100,9 +100,6 @@ class ActionCard extends Component{
             : <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
                 {this.props.text + " - MBN: " + this.props.mbn + " Odd: " + this.props.odd}
             </Typography>}
-            <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
-                { "Played " + this.props.play_count + " times"}
-            </Typography>
         </CardContent>
         <CardActions style={contentStyle}>
             <Button onClick={this.handleClickOpen} style={buttonStyle}>Change
@@ -111,7 +108,7 @@ class ActionCard extends Component{
             <DialogTitle id="form-dialog-title">Modify Bet</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                Enter new odd or disable bet completely {this.props.bet_id + "-" + this.props.match_id}
+                Enter new odd or disable bet completely 
                 </DialogContentText>
                 <TextField
                 autoFocus
