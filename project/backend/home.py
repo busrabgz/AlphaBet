@@ -736,15 +736,15 @@ def profile():
     if input["request_type"] == "get_ended_bet_slips":
         cur = mysql.connection.cursor()
 
-        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0}), "
-                    "ended_slip AS (SELECT DISTINCT bet_slip_id FROM user_bet_slips NATURAL JOIN "
-                    "included_bet NATURAL JOIN bet WHERE result = 'WON' OR result = 'LOST'), all_bet_data AS (SELECT * "
-                    "FROM ended_slip NATURAL JOIN included_bet NATURAL JOIN bet), match_data AS "
-                    "(SELECT * FROM all_bet_data NATURAL JOIN competitor_match), all_competitors AS "
-                    "(SELECT competitor_name, competitor_id FROM (SELECT player_id AS competitor_id, "
-                    "CONCAT(forename, ' ', surname) AS competitor_name FROM individual_player) AS temp UNION "
-                    "(SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT * FROM "
-                    "match_data NATURAL JOIN all_competitors".format(input["user_id"]))
+        cur.execute("WITH user_bet_slips AS (SELECT bet_slip_id FROM bet_slip WHERE creator_id = {0}), ended_slip AS"
+                    " (SELECT DISTINCT u.bet_slip_id FROM user_bet_slips u WHERE NOT EXISTS (SELECT bet_id FROM "
+                    "user_bet_slips NATURAL JOIN included_bet NATURAL JOIN bet WHERE bet_slip_id = u.bet_slip_id AND"
+                    " result = 'PENDING')), all_bet_data AS (SELECT * FROM ended_slip NATURAL JOIN included_bet"
+                    " NATURAL JOIN bet), match_data AS (SELECT * FROM all_bet_data NATURAL JOIN competitor_match),"
+                    " all_competitors AS (SELECT competitor_name, competitor_id FROM (SELECT player_id AS"
+                    " competitor_id, CONCAT(forename, ' ', surname) AS competitor_name FROM individual_player) AS"
+                    " temp UNION (SELECT team_name AS competitor_name, team_id AS competitor_id FROM team)) SELECT"
+                    " * FROM match_data NATURAL JOIN all_competitors;".format(input["user_id"]))
 
         ended_bet_slips_results = []
 
@@ -1364,7 +1364,7 @@ def editor():
 
 
 @app.route('/admin-dashboard/modify-bets', methods=["POST"])
-def admin_dashboard():
+def admin_dashboard_modify_bets():
     cur = mysql.connection.cursor()
 
     input = {
@@ -1402,12 +1402,254 @@ def admin_dashboard():
     elif input["request_type"] == "cancel_bet":
 
         if cur.execute("UPDATE bet SET active = FALSE WHERE bet_id = {0} AND match_id = {1}"
-                                .format(input["bet_id"], input["match_id"])) > 0:
+                               .format(input["bet_id"], input["match_id"])) > 0:
             mysql.connection.commit()
             return {"status": "success"}
         else:
             return {"status": "Couldn't remove bet!"}
 
+
+@app.route('/admin-dashboard/editors', methods=["GET", "POST"])
+def admin_dashboard_editors():
+    cur = mysql.connection.cursor()
+
+    input = request.get_json(force=True)
+
+    if input["request_type"] == "display_editor_requests":
+
+        cur.execute("SELECT username FROM approves AS a INNER JOIN person AS p ON a.editor_id = p.person_id"
+                    " WHERE state = 'PENDING'")
+
+        editors = []
+
+        editors_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            editors.append(dict(zip(editors_columns, row)))
+
+        return {"editor_usernames": editors}
+
+    elif input["request_type"] == "display_editor_information":
+
+        if cur.execute("SELECT username, forename, surname, email FROM approves AS a INNER JOIN person AS p ON"
+                       " a.editor_id = p.person_id WHERE state = 'PENDING' AND p.person_id = {0}"
+                               .format(input["person_id"])) > 0:
+
+            editor_desc = []
+
+            editors_columns = [column[0] for column in cur.description]
+
+            for row in cur.fetchall():
+                editor_desc.append(dict(zip(editors_columns, row)))
+
+            return {"editor": editor_desc[0]}
+        else:
+            return {"status": "Editor request not found."}
+
+    elif input["request_type"] == "accept_editor_request":
+
+        if cur.execute("INSERT INTO bet_slip_creator (creator_id) VALUES ({0})".format(input["person_id"])) > 0:
+
+            if cur.execute("INSERT INTO editor(editor_id, winrate, total_winnings) VALUES ({0}, 0, 0)"
+                                   .format(input["person_id"])) > 0:
+
+                if cur.execute("UPDATE approves SET state = 'APPROVED' WHERE editor_id = {0}"
+                                       .format(input["person_id"])) > 0:
+
+                    mysql.connection.commit()
+                    return {"status": "success"}
+                else:
+                    return {"status": "State not updated"}
+            else:
+                return {"status": "Editor not added."}
+        else:
+            return {"status": "Bet slip creator not created."}
+
+    elif input["request_type"] == "decline_editor_request":
+
+        if cur.execute("DELETE FROM person WHERE person_id = {0}".format(input["person_id"])) > 0:
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not delete person."}
+
+
+@app.route('/admin-dashboard/ban-users', methods=["GET", "POST"])
+def admin_dashboard_ban_users():
+    cur = mysql.connection.cursor()
+
+    input = request.get_json(force=True)
+
+    if input["request_type"] == "search_users":
+
+        cur.execute("SELECT username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id WHERE "
+                    "username LIKE {0}".format('\'' + input["username"] + '%\''))
+
+        username_results = []
+
+        username_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            username_results.append(dict(zip(username_columns, row)))
+
+        return {"users": username_results}
+
+    elif input["request_type"] == "display_details_of_user":
+
+        cur.execute("SELECT username, forename, surname, account_balance, total_winnings FROM user AS u INNER JOIN"
+                    " person AS p ON user_id = person_id WHERE user_id = {0}".format(input["user_id"]))
+
+        user_desc = []
+
+        user_desc_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            user_desc.append(dict(zip(user_desc_columns, row)))
+
+        return {"user": user_desc[0]}
+
+    elif input["request_type"] == "ban_user":
+
+        if cur.execute("INSERT INTO bans (user_id, admin_id) VALUES ({0}, {1})"
+                               .format(input["user_id"], input["admin_id"])) > 0:
+
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Couldn't ban user."}
+
+    elif input["request_type"] == "unban_user":
+
+        if cur.execute("DELETE FROM bans WHERE user_id = {0}".format(input["user_id"])) > 0:
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not unban user."}
+
+
+@app.route('/admin-dashboard/modify-achievements', methods=["GET", "POST"])
+def admin_dashboard_modify_achievements():
+    cur = mysql.connection.cursor()
+
+    input = request.get_json(force=True)
+
+    if input["request_type"] == "display_all_achievements":
+
+        cur.execute("SELECT * FROM achievement")
+
+        achv_results = []
+
+        achv_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            achv_results.append(dict(zip(achv_columns, row)))
+
+    elif input["request_type"] == "add_achievement":
+
+        if cur.execute("INSERT INTO achievement (achievement_name, achievement_description) VALUES ('{0}', '{1}')"
+                               .format(input["achievement_name"], input["achievement_description"])) > 0:
+
+            cur.execute("SELECT LAST_INSERT_ID()")
+
+            last_achievement_id = cur.fetchone()[0]
+
+            if cur.execute("INSERT INTO added_achievement(admin_id, achievement_id) VALUES({0}, {1})"
+                                   .format(input["admin_id"], last_achievement_id)) > 0:
+                mysql.connection.commit()
+                return {"status": "success"}
+            else:
+                return {"status": "Could not add to added_achievement"}
+        else:
+            return {"status": "Could not add to achievement"}
+
+    elif input["request_type"] == "remove_achievement":
+        if cur.execute("DELETE FROM achievement WHERE achievement_id = {0}".format(input["achievement_id"])) > 0:
+
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not remove achievement."}
+
+
+@app.route('/admin-dashboard/modify-market', methods=["GET", "POST"])
+def admin_dashboard_modify_market():
+    cur = mysql.connection.cursor()
+
+    input = request.get_json(force=True)
+
+    if input["request_type"] == "add_item":
+
+        if cur.execute("INSERT INTO shop_item(item_type, item_description, cost) VALUES ('{0}', '{1}', {2})"
+                               .format(input["item_type"], input["item_description"],
+                                       input["item_cost"])) > 0:
+
+            cur.execute("SELECT LAST_INSERT_ID()")
+
+            last_item_id = cur.fetchone()[0]
+
+            if cur.execute("INSERT INTO added_item(admin_id, shop_item_id, item_type) VALUES({0},"
+                           " {1}, '{2}')".format(input["admin_id"], last_item_id, input["item_type"])) > 0:
+                mysql.connection.commit()
+                return {"status": "success"}
+            else:
+                return {"status": "Could not add to added_item"}
+        else:
+            return {"status": "Could not add to shop_item"}
+
+    elif input["request_type"] == "display_all_items":
+
+        cur.execute("SELECT * FROM shop_item")
+
+        item_results = []
+
+        item_results_columns = [column[0] for column in cur.description]
+
+        for row in cur.fetchall():
+            item_results.append(dict(zip(item_results_columns, row)))
+
+        return {"items": item_results}
+
+    elif input["request_type"] == "update_cost":
+
+        if cur.execute("SELECT item_type FROM shop_item WHERE shop_item_id = {0}"
+                               .format(input["selected_item_id"])) > 0:
+
+            item_type = cur.fetchone()[0]
+
+            if cur.execute("UPDATE shop_item SET cost = {0} WHERE item_type = '{1}'"
+                                   .format(input["new_cost"], item_type)) > 0:
+
+                mysql.connection.commit()
+                return {"status": "success"}
+            else:
+                return {"status": "New cost can't be equal to old cost"}
+        else:
+            return {"status": "No item found"}
+
+    elif input["request_type"] == "update_description":
+
+        if cur.execute("SELECT item_type FROM shop_item WHERE shop_item_id = {0}"
+                               .format(input["selected_item_id"])) > 0:
+            item_type = cur.fetchone()[0]
+
+            if cur.execute("UPDATE shop_item SET item_description = '{0}' WHERE item_type = '{1}'"
+                                   .format(input["new_description"], item_type)) > 0:
+
+                mysql.connection.commit()
+                return {"status": "success"}
+            else:
+                return {"status": "New description can't be equal to old description"}
+
+    elif input["request_type"] == "remove_item":
+
+        if cur.execute("DELETE FROM shop_item WHERE shop_item_id = {0} AND item_type = '{1}' AND NOT EXISTS (SELECT"
+                       " shop_item_id, item_type FROM bought_item WHERE shop_item_id = {0} AND item_type = '{1}')"
+                               .format(input["selected_item_id"], input["item_type"])) > 0:
+
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not remove the item. Item may be already bought"}
 
 
 @app.route('/market', methods=["GET", "POST"])
