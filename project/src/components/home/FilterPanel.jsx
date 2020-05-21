@@ -266,7 +266,7 @@ class FilterPanel extends Component{
                     <TopPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
                     <SortPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
-                    <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true">LIST</Button>
+                    <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true" onClick={this.props.handleSubmit}>LIST</Button>
                 </form>
             </Paper>
         );
