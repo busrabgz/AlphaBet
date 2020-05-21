@@ -32,10 +32,18 @@ class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      matches: []
+      matches: [],
+      inputText: "",
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleBetButton = this.handleBetButton.bind(this)
+    this.changeInputText = this.changeInputText.bind(this)
+  }
+
+  changeInputText(text){
+    this.setState({
+      inputText: text
+    })
   }
 
   handleBetButton(prop1, prop2) {
@@ -58,6 +66,9 @@ class Home extends Component {
     handleSubmit() {
       var sortType = (this.props.filterInfo.sort_type == true ? "popularity" : "")
       var temp = []
+      this.setState({
+        matches: []
+      })
       axios.post(URL,
         {
           "username": "",
@@ -72,7 +83,7 @@ class Home extends Component {
               "max_mbn": this.props.filterInfo.mbn,
               "contest": this.props.filterInfo.contest,
               "sort_type": "popularity",
-              "search_text": this.props.filterInfo.inputText
+              "search_text": this.state.inputText
           }
        })
         .then( res => {
@@ -337,7 +348,7 @@ class Home extends Component {
     }
 
   render() {
-     
+    console.log("text", this.state.inputText) 
     return (
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, loggedIn, betsInfo, updateBetsInfo, selectedSport, updateSelectedSport, alphaCoins} ) => (
@@ -347,7 +358,7 @@ class Home extends Component {
               <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo} id={this.props.id} username={username}/>
               <Box style={rootBoxStyle}>
                 <p>"WELCOME " {this.props.id}</p>
-                <FilterPanel contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} />
+                <FilterPanel inputText={this.state.inputText} onInputChange={this.changeInputText} contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} />
                 <BetsPanel  matches={this.state.matches} betsInfo={betsInfo} selectedSport={this.props.filterInfo.sport} handleBet={this.handleBetButton}/>
             </Box>
            </div>

@@ -122,10 +122,12 @@ class KeyWordFilter extends React.Component {
         }
         this.handleChange = this.handleChange.bind(this)
     }
+    
     handleChange(event) {
         this.setState({
             input: event.target.value
         })
+        this.props.onInputChange(this.state.input)
     }
 
     render() {
@@ -205,7 +207,7 @@ function TopPanel(props) {
     return(
         <Grid container spacing={3} style={rootStyle}>
             <SportFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} updateBetsInfo = {props.updateBetsInfo}/>
-            <KeyWordFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
+            <KeyWordFilter onInputChange={props.onInputChange} updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
         </Grid>
     );
 }
@@ -263,7 +265,7 @@ class FilterPanel extends Component{
         return(
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
-                    <TopPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
+                    <TopPanel onInputChange={this.props.onInputChange} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
                     <SortPanel updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true" onClick={this.props.handleSubmit}>LIST</Button>
