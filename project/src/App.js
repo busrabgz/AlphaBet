@@ -48,13 +48,12 @@ class App extends React.Component {
     };
 
     this.updateBetsInfo = (bets) => {
-        var temp = this.state.betsInfo;
-        temp.push(bets);
-
         this.setState( state => ({
-            betsInfo: temp
-            }
-        ))
+            betsInfo: 
+             state.betsInfo === false
+             ?  true
+             :  false
+        }))
     }
 
     this.state = {
@@ -66,7 +65,6 @@ class App extends React.Component {
         type: userInfo.type,
         loggedIn: userInfo.loggedIn,
         updateLogInState: this.updateLogInState,
-        betslip: userInfo.betslip,
         dummyFriend: userInfo.dummyFriend,
         updateFriends: this.updateFriends,
         filterInfo: userInfo.filterInfo,
