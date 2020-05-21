@@ -48,6 +48,8 @@ class Home extends Component {
   }
 
   handleBetButton(prop1, prop2) {
+    console.log("match_id", prop2)
+    console.log("id", prop1)
     axios.post(URL,
       {
           request_type: "add_bet_to_betslip",
@@ -249,6 +251,7 @@ class Home extends Component {
               } };
               match.home = res.data.matches[i].bets[0].home_side;
               match.away = res.data.matches[i].bets[0].away_side;
+              match.match_id = res.data.matches[i].match_id
 
               for( var j = 0; j < res.data.matches[i].bets.length; j++) {
                 var type = res.data.matches[i].bets[j].bet_type;
@@ -256,33 +259,40 @@ class Home extends Component {
                   case "mr_one":
                      match.bets.mr_one = { MBN: res.data.matches[i].bets[j].mbn,
                                       odd:res.data.matches[i].bets[j].odd,
-                                      oldOdd: res.data.matches[i].bets[j].old_odd};
+                                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                                      bet_id: res.data.matches[i].bets[j].bet_id};
+                                      
                       break;
 
                   case "mr_two":
                      match.bets.mr_two = { MBN: res.data.matches[i].bets[j].mbn,
                                       odd:res.data.matches[i].bets[j].odd,
-                                      oldOdd: res.data.matches[i].bets[j].old_odd};
+                                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                                      bet_id: res.data.matches[i].bets[j].bet_id};
                       break;
                   case "rebound_over_x":
                       match.bets.reboundOverX = {MBN: res.data.matches[i].bets[j].mbn,
                                           odd:res.data.matches[i].bets[j].odd,
-                                          oldOdd: res.data.matches[i].bets[j].old_odd}
+                                          oldOdd: res.data.matches[i].bets[j].old_odd,
+                                          bet_id: res.data.matches[i].bets[j].bet_id}
                       break;
                   case "rebound_under_x":
                       match.bets.reboundUnderX = {MBN: res.data.matches[i].bets[j].mbn,
                         odd:res.data.matches[i].bets[j].odd,
-                        oldOdd: res.data.matches[i].bets[j].old_odd}
+                        oldOdd: res.data.matches[i].bets[j].old_odd,
+                        bet_id: res.data.matches[i].bets[j].bet_id}
                       break;
                   case "total_score_over_x":
                     match.bets.totalScoreOverX = {MBN: res.data.matches[i].bets[j].mbn,
                       odd:res.data.matches[i].bets[j].odd,
-                      oldOdd: res.data.matches[i].bets[j].old_odd}
+                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                      bet_id: res.data.matches[i].bets[j].bet_id}
                     break;
                   case "total_score_under_x":
                     match.bets.totalScoreUnderX = {MBN: res.data.matches[i].bets[j].mbn,
                       odd:res.data.matches[i].bets[j].odd,
-                      oldOdd: res.data.matches[i].bets[j].old_odd}
+                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                      bet_id: res.data.matches[i].bets[j].bet_id}
                     break;
                   default: break;
               }
@@ -303,6 +313,7 @@ class Home extends Component {
               } };
               match.home = res.data.matches[i].bets[0].home_side;
               match.away = res.data.matches[i].bets[0].away_side;
+              match.match_id = res.data.matches[i].match_id
 
               for( var j = 0; j < res.data.matches[i].bets.length; j++) {
                 var type = res.data.matches[i].bets[j].bet_type;
@@ -310,33 +321,39 @@ class Home extends Component {
                   case "mr_one":
                      match.bets.mr_one = { MBN: res.data.matches[i].bets[j].mbn,
                                       odd:res.data.matches[i].bets[j].odd,
-                                      oldOdd: res.data.matches[i].bets[j].old_odd};
+                                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                                      bet_id: res.data.matches[i].bets[j].bet_id};
                       break;
 
                   case "mr_two":
                      match.bets.mr_two = { MBN: res.data.matches[i].bets[j].mbn,
                                       odd:res.data.matches[i].bets[j].odd,
-                                      oldOdd: res.data.matches[i].bets[j].old_odd};
+                                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                                      bet_id: res.data.matches[i].bets[j].bet_id};
                       break;
                   case "first_set_home":
                       match.bets.firstSetHome = {MBN: res.data.matches[i].bets[j].mbn,
                                           odd:res.data.matches[i].bets[j].odd,
-                                          oldOdd: res.data.matches[i].bets[j].old_odd}
+                                          oldOdd: res.data.matches[i].bets[j].old_odd,
+                                          bet_id: res.data.matches[i].bets[j].bet_id}
                       break;
                   case "first_set_away":
                       match.bets.firstSetAway = {MBN: res.data.matches[i].bets[j].mbn,
                         odd:res.data.matches[i].bets[j].odd,
-                        oldOdd: res.data.matches[i].bets[j].old_odd}
+                        oldOdd: res.data.matches[i].bets[j].old_odd,
+                        bet_id: res.data.matches[i].bets[j].bet_id}
                       break;
                   case "second_set_home":
                     match.bets.secondSetHome = {MBN: res.data.matches[i].bets[j].mbn,
                       odd:res.data.matches[i].bets[j].odd,
-                      oldOdd: res.data.matches[i].bets[j].old_odd}
+                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                      bet_id: res.data.matches[i].bets[j].bet_id}
                     break;
                   case "second_set_away":
                     match.bets.secondSetAway = {MBN: res.data.matches[i].bets[j].mbn,
                       odd:res.data.matches[i].bets[j].odd,
-                      oldOdd: res.data.matches[i].bets[j].old_odd}
+                      oldOdd: res.data.matches[i].bets[j].old_odd,
+                      bet_id: res.data.matches[i].bets[j].bet_id}
                     break;
                   default: break;
               }

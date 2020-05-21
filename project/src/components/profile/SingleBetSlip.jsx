@@ -55,7 +55,6 @@ class SingleBetSlip extends Component {
         if ( prevProps.bets != this.props.bets) {
             this.setState({
                 bets: this.props.bets,
-                total: this.calculateTotalOdd()
             })
         }
     }
