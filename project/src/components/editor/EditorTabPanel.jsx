@@ -26,7 +26,7 @@ const cardStyle = {
 }
 
 function EditorHeader(props){
-    const followed = props.followed == "true" ? true : false;
+    console.log("EDITOR HEADER FOLLOWED: ", props.followed);
     return(
         <Box>
             <Card style={cardStyle}>
@@ -41,13 +41,13 @@ function EditorHeader(props){
                 <div style={{display: "inherit"}}>
                     <CardContent>
                         <Typography component="h5" variant="h5">
-                            {props.editor.name + " " + props.editor.surname}
+                            {props.editor.name}
                         </Typography>
                     </CardContent>
                     <CardContent>
                         <FormControlLabel onChange={props.onSwitch}
-                                          control={<Switch checked={followed}/>} 
-                                          label={ followed ? "Followed" : "Not Followed"} />
+                                          control={<Switch checked={props.followed}/>}
+                                          label={ props.followed ? "Followed" : "Not Followed"} />
                     </CardContent>
                 </div>
                 }
@@ -91,13 +91,13 @@ function EditorTabs(props) {
             {props.editor.name == "" ? "" :
                 <div>
                     <TabPanel value={value} index={0}>
-                    {props.followed == "true" ? <BetSlips/> : <NotFollowed/>}
+                    {props.followed == true ? <BetSlips updateFriends = {props.updateFriends} id = {props.id} editor={props.editor} userSuccess={props.userSuccess}/> : <NotFollowed/>}
                     </TabPanel>
                     <TabPanel value={value} index={1}>
-                        {props.followed == "true" ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
+                        {props.followed == true ? <MatchPicks editor={props.editor}/> : <NotFollowed/>}
                     </TabPanel>
                     <TabPanel value={value} index={2}>
-                        {props.followed == "true" ? <Performance editor={props.editor}/> : <NotFollowed/>}
+                        {props.followed == true ? <Performance editor={props.editor}/> : <NotFollowed/>}
                     </TabPanel>
                 </div>
             }
@@ -106,12 +106,24 @@ function EditorTabs(props) {
 }
 
 class EditorTabPanel extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {editor: ''};
+        }
+
+    componentDidUpdate(prevProps, prevState){
+        if (prevProps.editor != this.props.editor) {
+            console.log("PREV ", prevProps.editor);
+            console.log("NOW ", this.props.editor);
+            this.setState({editor: this.props.editor});
+        }
+    }
 
     render() {
         return(
         <Paper>
-            <EditorHeader onSwitch={this.props.onSwitch} followed={this.props.followed} editor={this.props.editor}/>
-            <EditorTabs followed={this.props.followed} editor={this.props.editor}/>
+            <EditorHeader onSwitch={this.props.onSwitch} followed={this.state.editor.followed} editor={this.state.editor}/>
+            <EditorTabs updateFriends = {this.props.updateFriends} id = {this.props.id} followed={this.state.editor.followed} editor={this.state.editor} userSuccess={this.props.userSuccess}/>
         </Paper>
         );
     }

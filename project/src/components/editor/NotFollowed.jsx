@@ -9,7 +9,7 @@ class MatchPicks extends Component {
         return (
             <Box>
                 <Typography variant="h1" color="initial">
-                    You must follow the editor to see their bet slips, match picks and performance
+                    You must follow the editor to see their bet slips, match picks and performance.
                 </Typography>
             </Box>
         );

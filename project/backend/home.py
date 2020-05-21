@@ -1409,8 +1409,9 @@ def editor():
 
         for editor in editor_results:
             editor_to_add = {
+                "editor_id": editor["editor_id"],
                 "forename": editor["forename"],
-                "surname:": editor["surname"],
+                "surname": editor["surname"],
                 "winrate": editor["winrate"],
                 "total_winnings": editor["total_winnings"],
                 "followed_by_user": False,
@@ -1446,17 +1447,35 @@ def editor():
 
     elif input["request_type"] == "follow_editor":
 
-        cur.execute("INSERT INTO user_follows (editor_id, user_id) VALUES ({0}, {1})".format(input["editor_id"],
+        val = cur.execute("INSERT INTO user_follows (editor_id, user_id) VALUES ({0}, {1})".format(input["editor_id"],
                                                                                              input["user_id"]))
 
         mysql.connection.commit()
 
+        if val > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+        return jsonify({"result": result})
+
     elif input["request_type"] == "unfollow_editor":
 
-        cur.execute("DELETE FROM user_follows WHERE user_id = {0} AND editor_id = {1}".format(input["user_id"],
+        val = cur.execute("DELETE FROM user_follows WHERE user_id = {0} AND editor_id = {1}".format(input["user_id"],
                                                                                               input["editor_id"]))
-
         mysql.connection.commit()
+        if val > 0:
+            result = {
+                "success": True
+            }
+        else:
+            result = {
+                "success": False
+            }
+        return jsonify({"result": result})
 
     elif input["request_type"] == "play_editor_bet_slip":
 

@@ -52,7 +52,7 @@ function RenderRow(props){
                 }
                 })
              .catch(error => {
-                console.log("search results", error);
+                console.log("could not buy", error);
                 });
         setDisabled(true);
     }
