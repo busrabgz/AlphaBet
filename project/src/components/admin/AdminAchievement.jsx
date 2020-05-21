@@ -49,9 +49,6 @@ class AdminAchievements extends React.Component {
             },
             {withCredentials: false})
                 .then( res => {    
-                this.setState({
-                    achievements: res.data.achievements,
-                })
                 })
                 .catch( (error) => {
                     alert("errror")
