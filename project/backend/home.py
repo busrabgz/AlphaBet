@@ -243,7 +243,8 @@ def home():
                         played_bet_slip_id = cur.fetchone()[0]
 
                         cur.execute("UPDATE bet_slip SET played_amount = {0}, placed = TRUE WHERE "
-                                    "creator_id = {1}".format(input["played_amount"], person_id))
+                                    "creator_id = {1} AND bet_slip_id = {2}".format(input["played_amount"]
+                                                                                    , person_id, played_bet_slip_id))
 
                         cur.execute("UPDATE user SET alpha_coins = user.alpha_coins + ({0} * 3), account_balance = "
                                     "user.account_balance - {1} WHERE user_id = {2}".format(input["played_amount"],
@@ -274,8 +275,18 @@ def home():
         if cur.execute("INSERT INTO shared_bet_slip (bet_slip_id, sharer_id) VALUES ({0}, {1})"
                                .format(bet_slip_id, person_id)) > 0:
 
-            mysql.connection.commit()
-            return {"status": "success"}
+            if cur.execute("UPDATE bet_slip SET played_amount = 0, placed = TRUE WHERE creator_id = {0}"
+                           " AND bet_slip_id = {1}".format(person_id, bet_slip_id)) > 0:
+
+                if cur.execute("INSERT INTO bet_slip (placed, played_amount, creator_id) VALUES (FALSE, 0, {0})"
+                                       .format(person_id)) > 0:
+
+                    mysql.connection.commit()
+                    return {"status": "success"}
+                else:
+                    return {"status": "Could not create new betslip"}
+            else:
+                return {"status": "Bet slip not updated"}
         else:
             return {"status": "Could not share editor betslip"}
 
@@ -1812,8 +1823,13 @@ def admin_dashboard_editors():
                 if cur.execute("UPDATE approves SET state = 'APPROVED' WHERE editor_id = {0}"
                                        .format(input["person_id"])) > 0:
 
-                    mysql.connection.commit()
-                    return {"status": "success"}
+                    if cur.execute("INSERT INTO bet_slip (creator_id, placed, played_amount) VALUES ({0}, 0, 0)"
+                                           .format(input["person_id"])) > 0:
+
+                        mysql.connection.commit()
+                        return {"status": "success"}
+                    else:
+                        return {"status": "Could not create a new bet slip for editor"}
                 else:
                     return {"status": "State not updated"}
             else:
