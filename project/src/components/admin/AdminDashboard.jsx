@@ -138,6 +138,7 @@ function AdminTabs(props) {
                 <Tab label="change remove odds"  />
                 <Tab label="modify market"  />
                 <Tab label="modify achievements"  />
+                <Tab label="run randomizer"  />
                 </Tabs>
             </AppBar>
                 <div>
@@ -155,6 +156,9 @@ function AdminTabs(props) {
                     </TabPanel>
                     <TabPanel value={value} index={4}>
                         <AdminAchievements id={props.id}/>
+                    </TabPanel>
+                    <TabPanel value={value} index={5}>
+                        <Button variant="outlined" size="large">Run Randomizer</Button>
                     </TabPanel>
                 </div>
         </div>
