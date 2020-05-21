@@ -31,7 +31,8 @@ class BetSlip extends Component {
     this.state = {
       singleBets: [],
       text: "",
-      mbn: 0
+      mbn: 0,
+      totalOdd: 1
     };
     this.handleChange = this.handleChange.bind(this)
     this.handleButton = this.handleButton.bind(this)
@@ -43,21 +44,22 @@ class BetSlip extends Component {
   }
 
   handleButton() {
+    var no = parseInt(this.state.text)
     axios.post(URL,
       {
         request_type: "play_betslip",
         username: this.props.username,
-        played_amount: this.state.text
+        played_amount: no
        },
        )
       .then( res => {
-        if (res.status == "not_enough_credits") {
+        if (res.data.status == "not_enough_credits") {
           alert("Not enough credits.")
         }
-        else if ( res.status == "mbn_not_satisfied") {
+        else if ( res.data.status == "mbn_not_satisfied") {
           alert("MBN not satisfied!")
         }
-        else {
+        else if (res.data.status == "success") {
           console.log("success")
         }
 
@@ -76,14 +78,20 @@ class BetSlip extends Component {
        )
       .then( res => {
         console.log("User's bets are:", res.data)
-        /*
         var max = 0;
+        var total = 1
         for (var i = 0; i < res.data.bets.length; i++) {
-          if (max < res.data.bets)
+          if (max < res.data.bets[i].mbn) {
+            max = res.data.bets[i].mbn
+          }
+          total = total * res.data.bets[i].odd
         }
-        */
+
+
         this.setState({
-          singleBets: res.data.bets
+          singleBets: res.data.bets,
+          mbn:max,
+          totalOdd: total
         })
           })
        .catch(error => {
@@ -100,6 +108,12 @@ class BetSlip extends Component {
          },
          )
         .then( res => {
+          var max = 0;
+          for (var i = 0; i < res.data.bets.length; i++) {
+            if (max < res.data.bets[i].mbn) {
+              max = res.data.bets[i].mbn
+            }
+          }
           console.log("User's bets are:", res.data)
           this.setState({
             singleBets: res.data.bets
@@ -113,6 +127,7 @@ class BetSlip extends Component {
   }
 
   render() {
+    let expected = this.state.text * this.state.totalOdd
     return (
         <div style={divStyle}>
           {this.state.singleBets.map((singleBet) => {
@@ -124,9 +139,9 @@ class BetSlip extends Component {
           <Box style={boxStyle}>
             <Paper elevation={4}>
               <div style={{position: "relative", float: "center"}}>
-                  <Typography align="left" variant="subtitle1" color="initial">Minimum Bet Number</Typography>
-                  <Typography align="left" variant="subtitle1" color="initial">Total Odd</Typography>
-                  <Typography align="left" variant="subtitle1" color="initial">Expected Winning</Typography>
+                  <Typography align="left" variant="subtitle1" color="initial">{"Minimum Bet Number " + this.state.mbn}</Typography>
+                  <Typography align="left" variant="subtitle1" color="initial">{"Total Odd " + this.state.totalOdd}</Typography>
+                  <Typography align="left" variant="subtitle1" color="initial">{"Expected Winning " + expected}</Typography>
                 </div>
             </Paper>
             <form>

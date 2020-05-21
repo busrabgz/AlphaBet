@@ -32,6 +32,12 @@ class App extends React.Component {
         }))
     }
 
+    this.updateType = () => {
+        this.setState( state => ({
+            type: ""
+        }))
+    }
+
     this.updateBalance = (newBalance) => {
             this.setState( state => ({
                 balance: state.balance + newBalance
@@ -79,6 +85,7 @@ class App extends React.Component {
         balance: userInfo.balance,
         updateBalance: this.updateBalance,
         type: userInfo.type,
+        updateType: this.updateType,
         loggedIn: userInfo.loggedIn,
         updateLogInState: this.updateLogInState,
         dummyFriend: userInfo.dummyFriend,

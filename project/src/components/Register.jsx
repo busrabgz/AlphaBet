@@ -59,7 +59,7 @@ class Register extends Component {
       return <Redirect to = {{ pathname: "/" }} />;
     }
     return (<div>
-        <NavBar type={this.props.type} id = {this.props.id} isLogged={this.props.userSuccess} userBalance={this.props.balance} alphaCoins = {this.props.alphaCoins}/>
+        <NavBar updateType={this.props.updateType} type={this.props.type} id = {this.props.id} isLogged={this.props.userSuccess} userBalance={this.props.balance} alphaCoins = {this.props.alphaCoins}/>
         <h1>Register Page</h1>
         <form onSubmit={this.handleSubmit}>
             <input
