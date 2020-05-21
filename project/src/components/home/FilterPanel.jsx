@@ -144,6 +144,7 @@ function SportFilter(props){
     console.log("sport filter: ", props.filterInfo)
 
     const handleChange = (event) => {
+        props.resetMatches()
         var filterInfo = props.filterInfo;
         filterInfo.sport = event.target.value;
         props.updateFilterInfo(filterInfo);
@@ -206,7 +207,7 @@ function TopPanel(props) {
     }
     return(
         <Grid container spacing={3} style={rootStyle}>
-            <SportFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} updateBetsInfo = {props.updateBetsInfo}/>
+            <SportFilter updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} updateBetsInfo = {props.updateBetsInfo} resetMatches = {props.resetMatches}/>
             <KeyWordFilter onInputChange={props.onInputChange} updateFilterInfo = {props.updateFilterInfo} filterInfo = {props.filterInfo} />
         </Grid>
     );
@@ -265,7 +266,7 @@ class FilterPanel extends Component{
         return(
             <Paper style={{padding: 15,}} elevation={7}>
                 <form>
-                    <TopPanel onInputChange={this.props.onInputChange} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} />
+                    <TopPanel onInputChange={this.props.onInputChange} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo} updateBetsInfo = {this.props.updateBetsInfo} resetMatches = {this.props.resetMatches} />
                     <BottomPanel contests={this.props.contests} updateFilterInfo = {this.props.updateFilterInfo} filterInfo = {this.props.filterInfo}/>
                     <Button style={{marginTop: 20, backgroundColor: "#14FF43"}} variant="outlined" fullWidth="true" onClick={this.props.handleSubmit}>LIST</Button>
                 </form>

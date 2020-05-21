@@ -38,6 +38,7 @@ class Home extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleBetButton = this.handleBetButton.bind(this)
     this.changeInputText = this.changeInputText.bind(this)
+    this.resetMatches = this.resetMatches.bind(this)
   }
 
   changeInputText(text){
@@ -61,6 +62,12 @@ class Home extends Component {
         .catch(error => {
           console.log("login", error);
           });
+  }
+
+  resetMatches() {
+    this.setState({
+      matches: []
+    })
   }
 
     handleSubmit() {
@@ -358,7 +365,7 @@ class Home extends Component {
               <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo} id={this.props.id} username={username}/>
               <Box style={rootBoxStyle}>
                 <p>"WELCOME " {this.props.id}</p>
-                <FilterPanel inputText={this.state.inputText} onInputChange={this.changeInputText} contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} />
+                <FilterPanel inputText={this.state.inputText} onInputChange={this.changeInputText} contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} resetMatches = {this.resetMatches} />
                 <BetsPanel  matches={this.state.matches} betsInfo={betsInfo} selectedSport={this.props.filterInfo.sport} handleBet={this.handleBetButton}/>
             </Box>
            </div>
