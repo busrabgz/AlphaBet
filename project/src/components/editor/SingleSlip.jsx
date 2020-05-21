@@ -30,8 +30,8 @@ function RenderBets(props){
         props.bets.map((bet) => {
             return(
                 <Paper style={betStyle}>
-                    <p>{bet.homeSide + "-" + bet.awaySide}</p>
-                    <p>{"Bet:" + bet.bet + "  Odd: " + bet.odd}</p> 
+                    <p>{bet.home_side + "-" + bet.away_side}</p>
+                    <p>{"Bet:" + bet.bet_type + "  Odd: " + bet.odd}</p>
                 </Paper>
         )})
     );
@@ -42,9 +42,9 @@ function RenderComments(props){
         props.comments.map((comment) => {
             return(
             <Paper style={{minHeight: 40, padding: 10, border: "0.5px solid"}}>
-                <Box style={{float:"left"}}><Typography variant="h7" color="initial">{comment.commentor + " says: \n"}</Typography></Box>
+                <Box style={{float:"left"}}><Typography variant="h7" color="initial">{comment.username + " says: \n"}</Typography></Box>
                 <Box style={{float:"center"}}><Typography variant="subtitle" color="initial">{comment.comment}</Typography></Box>
-                <Box style={{float:"right"}}><Button style={{color: "white", bottom: 20, backgroundColor: "#FC498A"}}>Like ({comment.likeCount})</Button></Box>
+                <Box style={{float:"right"}}><Button style={{color: "white", bottom: 20, backgroundColor: "#FC498A"}}>Like ({comment.comment_like_count})</Button></Box>
             </Paper>
         )})
     );
@@ -52,24 +52,30 @@ function RenderComments(props){
 
 
 class SingleSlip extends Component {
+    constructor(props) {
+        super(props);
+        this.totalOdd = 1;
 
-
+        for(var i=0; i < this.props.slip.bets.length; i++){
+            this.totalOdd = this.totalOdd * this.props.slip.bets[i].odd;
+        }
+     }
 
     render(){
         return (
             <Grid item lg={6} md={6} sm={12} xs={12}>
                 <Paper>
                     <Paper style={buttonPaperStyle} elevation={10}>
-                        <Button style={{color: "white", backgroundColor: "#FC498A", float:"left", width:"50%"}}>LIKE ({this.props.slip.likeCount})</Button>
+                        <Button style={{color: "white", backgroundColor: "#FC498A", float:"left", width:"50%"}}>LIKE ({this.props.slip.bet_slip_like_count})</Button>
                         <Button style={{color: "white", backgroundColor: "#49AEFC", float:"right", width:"50%"}}>SHARE</Button>
                     </Paper>
                     <Paper style={outerPaperStyle} elevation={10}>
-                        Bet Slip With Total Odd {this.props.slip.totalOdd}
+                        Bet Slip With Total Odd {this.totalOdd}
                     </Paper>
                     <Paper style={innerPaperStyle} elevation={10}>
                         <RenderBets bets={this.props.slip.bets}/>
                         <Paper style style={betStyle}>
-                            Total odd : {this.props.slip.totalOdd}
+                            Total odd : {this.totalOdd}
                         </Paper>
                         <Button style={{border: "solid 0.8px", marginTop:20, backgroundColor:"#14FF43", float:"center", width:"100%"}}>BET ON THIS NOW!</Button>
                     </Paper>

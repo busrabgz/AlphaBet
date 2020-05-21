@@ -45,7 +45,7 @@ class EditorBar extends Component {
             <div style={rootStyle}>
             <GridList style={gridListStyle} cols={0}>
                 {this.props.editors.map((tile) => (
-                <GridListTile key={avatarIcon}>
+                <GridListTile key={tile.id}>
                     <img src={avatarIcon} style={avatarStyle} alt={'Image'} />
                     <GridListTileBar
                         actionPosition="left"

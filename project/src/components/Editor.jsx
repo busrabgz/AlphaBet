@@ -31,12 +31,10 @@ const editor = {
     winRate: 84,
 }
 
-
-
 class Editor extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { editors: [], editor: {
+        this.state = { clicked: false, editors: [], editor: {
             followed: false,
             currentEditor : {
                 id: "",
@@ -44,7 +42,9 @@ class Editor extends React.Component {
                 SBSuccessRate: "",
                 noOfSlipsWon: "",
                 noOfSlipsLost: "",
-                winRate: ""
+                winRate: "",
+                bet_slips: [],
+                suggested_bets: []
             }}
         }
         this.onClick = this.handleClick.bind(this);
@@ -66,7 +66,9 @@ class Editor extends React.Component {
                                    bet_slips_won: res.data.editors[i].bet_slips_won,
                                    winrate: res.data.editors[i].winrate,
                                    single_bet_success_rate: res.data.editors[i].single_bet_win_count / (res.data.editors[i].single_bet_win_count + res.data.editors[i].single_bet_lose_count),
-                                   follow: res.data.editors[i].followed_by_user};
+                                   follow: res.data.editors[i].followed_by_user,
+                                   bet_slips: res.data.editors[i].bet_slips,
+                                   suggested_bets: res.data.editors[i].suggested_bets};
                      this.editors.push(editor);
                      this.setState({editors: this.editors});
                 }
@@ -78,20 +80,21 @@ class Editor extends React.Component {
     }
 
     handleClick = (obj) => {
-        console.log(obj);
         this.setState({ editor: {followed: obj.follow, currentEditor : {
                 id: obj.id,
                 name: obj.name,
                 SBSuccessRate: obj.single_bet_success_rate,
                 noOfSlipsWon: obj.bet_slips_won,
                 noOfSlipsLost: obj.bet_slips_lost,
-                winRate: obj.winrate
+                winRate: obj.winrate,
+                bet_slips: obj.bet_slips,
+                suggested_bets: obj.suggested_bets
             }}});
     }
 
     handleSwitch = () => {
+        console.log(this.state.editor.currentEditor.id);
         var isFollowed = this.state.editor.followed;
-        console.log(isFollowed);
         if( isFollowed == false){
             axios.post(URL,
                 {
@@ -132,8 +135,18 @@ class Editor extends React.Component {
           }
     }
 
+    componentDidUpdate(prevProps, prevState){
+        console.log("aaaaaa");
+        if (prevState.editor.followed != this.state.editor.followed) {
+            console.log("iççç");
+            this.setState({clicked: this.state.clicked == false ? true : false});
+        }
+    }
+
     render() {
+        console.log(this.state.editor.followed);
         return(
+
             <UserContext.Consumer>
             { ( {username, balance, updateBalance, betslip, loggedIn, alphaCoins} ) => (
             <div>
@@ -141,7 +154,7 @@ class Editor extends React.Component {
                 <div>
                     <BetSlip slip={betslip} userBalance={balance} />
                     <div style={rootStyle}>
-                        <EditorBar onClick={this.handleClick} editors = {this.state.editors}/>
+                        <EditorBar key={this.state.editor.currentEditor.id} onClick={this.handleClick} editors = {this.state.editors}/>
                         <EditorTabPanel editor={this.state.editor.currentEditor} followed={this.state.editor.followed} onSwitch={this.handleSwitch}/>
                     </div>
                 </div>
