@@ -78,8 +78,26 @@ class AdminBanPage extends React.Component {
         this.banUser = this.banUser.bind(this)
     }
 
+    unbanUser(){
+        console.log("focused id is", this.state.focused_user_id)
+        axios.post(URL, 
+            {
+                "request_type": "unban_user",
+                "user_id": this.state.focused_user_id,
+                },
+                {withCredentials: false})
+                .then( res => {
+                    console.log("status", res.data.status)
+                this.setState({
+                    updated: this.state.updated == "true" ? "false" : "true"  
+                    })
+                })
+                .catch( (error) => {
+                console.log("info", error)
+            });
+    }
+
     banUser(event){
-        console.log("admin", this.state.admin_id ,"is banning", this.state.focused_user_id)
         axios.post(URL, 
             {
                 "request_type": "ban_user",
@@ -126,20 +144,19 @@ class AdminBanPage extends React.Component {
            });
     }   
     
-    displayDetails(event){
-        console.log("displayin dteails of", event.target.value)
+    displayDetails(id){
         this.setState({
-            focused_user_id: event.target.value
+            focused_user_id: id
         })
         axios.post(URL, 
             {
                 "request_type": "display_details_of_user",
-                "user_id": event.target.value 
+                "user_id": this.state.focused_user_id
             },
             {withCredentials: false})
                 .then( res => {    
                 this.setState({
-                    user_details: res.data.user,
+                    user_details: res.data.result.user_details[0][0],
                 })
                 })
                 .catch( (error) => {
@@ -148,7 +165,7 @@ class AdminBanPage extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState){
-        if(prevState.user_details != this.state.user_details){
+        if(prevState.focused_user_id != this.state.focused_user_id){
             this.setState({
                 updated: this.state.updated == "true" ? "false" : "true"  
             })
@@ -177,7 +194,7 @@ class AdminBanPage extends React.Component {
                                                     </Typography>
                                                     </CardContent>
                                                     <CardActions>
-                                                        <button value={res.person_id} onClick={this.displayDetails}>Details</button>
+                                                        <button onClick={ () => {this.displayDetails(res.person_id)}}>Details</button>
                                                     </CardActions>
                                                 </div>
                                             </Card>
@@ -203,7 +220,11 @@ class AdminBanPage extends React.Component {
                         <Typography align="center" component="h5" variant="subtitle1">
                             {"Account Balance: " + this.state.user_details.account_balance}
                         </Typography>
-                        <Button onClick={this.banUser} variant="outlined" style={{backgroundColor:"red", width: "100%"}}>Ban this user</Button>
+                        {
+                            this.state.user_details.banned ? 
+                            <Button onClick={this.unbanUser} variant="outlined" style={{backgroundColor:"green", width: "100%"}}>Unban this user</Button>
+                        :   <Button onClick={this.banUser} variant="outlined" style={{backgroundColor:"red", width: "100%"}}>Ban this user</Button>
+                        }
                     </Paper>
                     } 
                 </Grid>
