@@ -185,28 +185,28 @@ class Home extends Component {
                                         bet_id: res.data.matches[i].bets[j].bet_id};
                         break;
   
-                    case "redCardCount_0":
+                    case "red_card_count_0":
                        match.bets.redCardCount_0 = { MBN: res.data.matches[i].bets[j].mbn,
                                         odd:res.data.matches[i].bets[j].odd,
                                         oldOdd: res.data.matches[i].bets[j].old_odd,
                                         bet_id: res.data.matches[i].bets[j].bet_id};
                         break;
   
-                    case "redCardCount_1":
+                    case "red_card_count_1":
                        match.bets.redCardCount_1 = { MBN: res.data.matches[i].bets[j].mbn,
                                         odd:res.data.matches[i].bets[j].odd,
                                         oldOdd: res.data.matches[i].bets[j].old_odd,
                                         bet_id: res.data.matches[i].bets[j].bet_id};
                        break;
   
-                    case "cornerCountOver_7_5":
+                    case "corner_count_over_7_5":
                        match.bets.cornerCountOver_7_5 = { MBN: res.data.matches[i].bets[j].mbn,
                                         odd:res.data.matches[i].bets[j].odd,
                                         oldOdd: res.data.matches[i].bets[j].old_odd,
                                         bet_id: res.data.matches[i].bets[j].bet_id};
                        break;
   
-                    case "cornerCountUnder_7_5":
+                    case "corner_count_under_7_5":
                        match.bets.cornerCountUnder_7_5 = { MBN: res.data.matches[i].bets[j].mbn,
                                         odd:res.data.matches[i].bets[j].odd,
                                         oldOdd: res.data.matches[i].bets[j].old_odd,

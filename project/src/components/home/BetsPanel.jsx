@@ -9,6 +9,9 @@ const detailStyling = {
 }
 
 function ActionCard(props){
+    console.log("mbn", props.mbn, "id:", props.id)
+    var hideButton = props.mbn == undefined
+    console.log("button: ", hideButton, "id: ", props.id)
     const contentStyle = {
         padding: 0, margin: 0,
     }
@@ -19,12 +22,17 @@ function ActionCard(props){
     return(
     <Card style={{ height: 40, display: "inline-flex", overflowX: "hidden"}}>
         <CardContent style={contentStyle}>
-            <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
-                {props.text + " - MBN: " + props.mbn + " Odd: " + props.odd}
+            {props.mbn == undefined 
+            ? <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
+                {props.text + " - MBN: N/A"  + " Odd: N/A" }
             </Typography>
+            : <Typography style={{fontSize: 12, paddingLeft: 6, paddingTop: 6,}} color="primary" gutterBottom>
+                {props.text + " - MBN: " + props.mbn + " Odd: " + props.odd}
+            </Typography>}
+            
         </CardContent>
         <CardActions style={contentStyle}>
-            <Button style={buttonStyle} onClick={() => props.handleBet(props.id, props.match_id)}>Bet
+            <Button style={buttonStyle} disabled = {hideButton} onClick={() => props.handleBet(props.id, props.match_id)}>Bet
             </Button>
         </CardActions>
     </Card>
@@ -305,47 +313,37 @@ function RenderFootballMatchRow(props){
             <Typography variant="subtitle2" color="initial">First Half - Match Result</Typography>
             <TableContainer><Table><TableBody>
                 <TableRow>
-                {typeof props.match.bets.one_one !== "undefined" && 
                 <Tooltip title={props.match.bets.one_one.oldOdd && "Changed from " + props.match.bets.one_one.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"1/1"} mbn={props.match.bets.one_one.MBN} odd={props.match.bets.one_one.odd} id={props.match.bets.one_one.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
-
-                {props.match.bets.one_two != undefined && 
+                </Tooltip>
                 <Tooltip title={props.match.bets.one_two.oldOdd && "Changed from " + props.match.bets.one_two.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"1/2"} mbn={props.match.bets.one_two.MBN} odd={props.match.bets.one_two.odd} id={props.match.bets.one_two.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
-                {props.match.bets.one_zero != {} && 
+                </Tooltip>
                 <Tooltip title={props.match.bets.one_zero.oldOdd && "Changed from " + props.match.bets.one_zero.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"1/X"} mbn={props.match.bets.one_zero.MBN} odd={props.match.bets.one_zero.odd} id={props.match.bets.one_zero.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
+                </Tooltip>
                 </TableRow>
                 <TableRow>
-                {props.match.bets.zero_one != {} &&  
                 <Tooltip title={props.match.bets.zero_one.oldOdd && "Changed from " + props.match.bets.zero_one.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"X/1"} mbn={props.match.bets.zero_one.MBN} odd={props.match.bets.zero_one.odd} id={props.match.bets.zero_one.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
-                {props.match.bets.zero_two != {} &&  
+                </Tooltip>
                 <Tooltip title={props.match.bets.zero_two.oldOdd && "Changed from " + props.match.bets.zero_two.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"X/2"} mbn={props.match.bets.zero_two.MBN} odd={props.match.bets.zero_two.odd} id={props.match.bets.zero_two.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
-                {props.match.bets.zero_zero != {} &&  
+                </Tooltip>
                 <Tooltip title={props.match.bets.zero_zero.oldOdd && "Changed from " + props.match.bets.zero_zero.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"X/X"} mbn={props.match.bets.zero_zero.MBN} odd={props.match.bets.zero_zero.odd} id={props.match.bets.zero_zero.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
+                </Tooltip>
                 </TableRow>
                 <TableRow> 
-                {props.match.bets.two_one != {} &&  
                 <Tooltip title={props.match.bets.two_one.oldOdd && "Changed from " + props.match.bets.two_one.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"2/1"} mbn={props.match.bets.two_one.MBN} odd={props.match.bets.two_one.odd} id={props.match.bets.two_one.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
-                {props.match.bets.two_two != {} &&  
+                </Tooltip>
                 <Tooltip title={props.match.bets.two_two.oldOdd && "Changed from " + props.match.bets.two_two.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"2/2"} mbn={props.match.bets.two_two.MBN} odd={props.match.bets.two_two.odd} id={props.match.bets.two_two.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
-                {props.match.bets.two_zero != {} &&  
+                </Tooltip>
                 <Tooltip title={props.match.bets.two_zero.oldOdd && "Changed from " + props.match.bets.two_zero.oldOdd}>
                     <TableCell style={cellStyle}><ActionCard text={"2/X"} mbn={props.match.bets.two_zero.MBN} odd={props.match.bets.two_zero.odd} id={props.match.bets.two_zero.bet_id} match_id={props.match.match_id} handleBet={props.handleBet}/></TableCell>
-                </Tooltip>}
+                </Tooltip>
                 </TableRow></TableBody></Table></TableContainer></Paper></Grid>
         );
     }
