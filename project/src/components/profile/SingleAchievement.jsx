@@ -24,10 +24,10 @@ class SingleAchievement extends Component {
             let component = '';
             if(this.props.achieved == "true"){
                 console.log(this.props.achName);
-                component = require("./" + this.props.achName + "_true.png");
+                component = require("./" + this.props.achName + ".png");
                 }
             else
-                component = require("./" + this.props.achName + "_false.png");
+                component = require("./" + this.props.achName + ".png");
 
          return (<CardMedia
                 height='auto'
