@@ -37,10 +37,17 @@ class SignIn extends Component {
         {withCredentials: false})
         .then( res => {
             if(res.data.result.success == "true"){
-                console.log("login", res);
-                console.log("alpha during signin", res.data.result.alpha_coins)
                 this.props.updateLogIn(res.data.result.success,res.data.result.type, res.data.result.username, res.data.result.user_id, res.data.result.account_balance,res.data.result.alpha_coins)
                  }
+             else if (res.data.result.ban == "true"){
+                alert("This user is banned. You cannot login.");
+             }
+             else if (res.data.result.pending == "true") {
+                alert("Editor registration is not approved yet.")
+             }
+             else {
+                alert("This user is not registered.");
+             }
             })
          .catch(error => {
             console.log("login", error);
