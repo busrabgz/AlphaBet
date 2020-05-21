@@ -151,7 +151,7 @@ function AdminTabs(props) {
                         <AdminChangeBet matches={matches}/>
                     </TabPanel>
                     <TabPanel value={value} index={3}>
-                        <AdminMarket/>
+                        <AdminMarket id={props.id}/>
                     </TabPanel>
                     <TabPanel value={value} index={4}>
                         <AdminAchievements id={props.id}/>
@@ -165,7 +165,8 @@ class AdminDashboard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            admin_id: this.props.id
+            admin_id: this.props.id,
+            update: false,
         }
     }
 
