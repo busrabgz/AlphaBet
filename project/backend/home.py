@@ -514,14 +514,9 @@ def login():
 def feed():
     cur = mysql.connection.cursor()
 
-    input = {
-        "user_id": request.get_json(force=True)["user_id"],
-        "request_type": request.get_json(force=True)["request_type"],
-        "comment_text": request.get_json(force=True)["comment_text"],
-        "focused_bet_slip_id": request.get_json(force=True)["focused_bet_slip_id"]
-    }
+    input = request.get_json(force=True)
 
-    if input["request_type"] == "display_shared_bets":
+    if input["request_type"] == "display_shared_bets": #Requires ["user_id"]
 
         friend_slip_id_query = "WITH friend_id_set AS (SELECT friend_id AS person_id FROM user_friend " \
                                "WHERE user_id = {0}), friend_data AS (SELECT username, person_id AS sharer_id FROM friend_id_set " \
@@ -704,27 +699,44 @@ def feed():
 
         return {"users": friend_bet_slip_map}
 
-    elif input["request_type"] == "user_like_bet_slip":
-        cur.execute("INSERT INTO bet_slip_like (user_id, bet_slip_id) VALUES"
-                    " ({0}, {1})".format(input["user_id"], input["focused_bet_slip_id"]))
+    elif input["request_type"] == "user_like_bet_slip": #Requires ["user_id"], ["focused_bet_slip_id"]
+        if cur.execute("INSERT INTO bet_slip_like (user_id, bet_slip_id) VALUES"
+                    " ({0}, {1})".format(input["user_id"], input["focused_bet_slip_id"])) > 0:
+            mysql.connection.commit()
+            return {"status": "success"}
+        else:
+            return {"status": "Could not insert into bet_slip_like"}
 
-    elif input["request_type"] == "comment_on_bet_slip":
+    elif input["request_type"] == "comment_on_bet_slip": #Requires ["comment_text"], ["user_id"], ["focused_bet_slip_id"]
 
-        cur.execute("INSERT INTO comment (comment, person_id, comment_date) VALUES ('{0}', {1}, NOW())"
-                    .format(input["comment_text"], input["user_id"]))
+        if cur.execute("INSERT INTO comment (comment, person_id, comment_date) VALUES ('{0}', {1}, NOW())"
+                    .format(input["comment_text"], input["user_id"])) > 0:
 
-        cur.execute("SELECT LAST_INSERT_ID()")
+            cur.execute("SELECT LAST_INSERT_ID()")
 
-        last_comment_id = cur.fetchone()[0]
+            last_comment_id = cur.fetchone()[0]
 
-        cur.execute("INSERT INTO bet_slip_comment(comment_id, bet_slip_id) VALUES ({0}, {1})"
-                    .format(last_comment_id, input["focused_bet_slip_id"]))
+            if cur.execute("INSERT INTO bet_slip_comment(comment_id, bet_slip_id) VALUES ({0}, {1})"
+                        .format(last_comment_id, input["focused_bet_slip_id"])) > 0:
 
-    cur.connection.commit()
+                cur.connection.commit()
 
-    return {
-        "status": "success"
-    }
+                return {"status": "success"}
+            else:
+                return {"status": "Could not insert into bet_slip_comment"}
+        else:
+            return {"status": "Could not insert into comment table"}
+
+    elif input["request_type"] == "like_comment": #Requires ["comment_id"], ["user_id"]
+
+        if cur.execute("INSERT INTO comment_likes (comment_id, user_id) VALUES ({0}, {1})"
+                               .format(input["comment_id"], input["user_id"])) > 0:
+
+            mysql.connection.commit()
+            return {"status": "success"}
+
+        else:
+            return {"status": "Could not like comment"}
 
 
 @app.route('/time')
@@ -1503,7 +1515,16 @@ def editor():
                 else:
                     return {"status": "Could not add bet to user betslip."}
 
-        return {"status": "success"}
+    elif input["request_type"] == "like_comment":
+
+        if cur.execute("INSERT INTO comment_likes (comment_id, user_id) VALUES ({0}, {1})"
+                               .format(input["comment_id"], input["user_id"])) > 0:
+
+            mysql.connection.commit()
+            return {"status": "success"}
+
+        else:
+            return {"status": "Could not like comment"}
 
 
 @app.route('/admin-dashboard/modify-bets', methods=["POST"])
