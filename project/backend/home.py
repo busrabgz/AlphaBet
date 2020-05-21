@@ -343,23 +343,20 @@ def register():
         person = cur.fetchone()
         id = person[0]
 
+        cur.execute("INSERT INTO bet_slip_creator(creator_id) VALUES({0})".format(id))
+        mysql.connection.commit()
+
+        # cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
+        # mysql.connection.commit()
+
         if personDetails.get('type') == "user":
-            cur.execute("INSERT INTO bet_slip_creator(creator_id) VALUES({0})".format(id))
-            mysql.connection.commit()
-            creator = cur.fetchone()
-            creator_id = creator[0]
-
-            cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})"
-                        .format(creator_id, False, 0))
-            mysql.connection.commit()
-
             cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) "
                         "VALUES(%s,%s,%s,%s)", (id, 0, 0, 0))
             mysql.connection.commit()
 
         if personDetails.get('type') == "editor":
-            cur.execute("INSERT INTO approves(editor_id, state) "
-                        "VALUES(%s,%s)", (id, "PENDING"))
+            cur.execute("INSERT INTO editor(editor_id, winrate, total_winnings) "
+                        "VALUES(%s,%s,%s)", (id, 0, 0))
             mysql.connection.commit()
 
         result = {
@@ -384,51 +381,31 @@ def login():
                 user = cur.execute("SELECT * FROM user WHERE user_id = %s", ([person[0]]))
                 users = cur.fetchone()
                 if user > 0:
-                    ban = cur.execute("SELECT * FROM bans WHERE user_id = %s", ([users[0]]))
-                    if ban > 0:
-                        result = {
-                            "success": "false",
-                            "ban": "true"
-                        }
-                    else:
-                        type = "user"
-                        result = {
-                            "success": "true",
-                            "type": type,
-                            "user_id": users[0],
-                            "username": personDetails['username'],
-                            "account_balance": users[1],
-                            "alpha_coins": users[3]
-                        }
+                    type = "user"
+                    result = {
+                        "success": "true",
+                        "type": type,
+                        "user_id": person[0],
+                        "username": personDetails['username'],
+                        "account_balance": users[1],
+                        "alpha_coins": users[3]
+                    }
                 else:
                     editor = cur.execute("SELECT editor_id FROM editor WHERE editor_id = %s", ([person[0]]))
                     if editor > 0:
                         type = "editor"
-                        result = {
-                            "success": "true",
-                            "type": type,
-                            "user_id": person[0],
-                            "username": personDetails['username']
-                        }
                     else:
-                        admin = cur.execute("SELECT admin_id FROM admin WHERE admin_id = %s", ([person[0]]))
-                        if admin > 0:
-                            type = "admin"
-                            result = {
-                                "success": "true",
-                                "type": type,
-                                "user_id": person[0],
-                                "username": personDetails['username']
-                            }
-                        else:
-                            result = {
-                                "success": "false",
-                                "pending": "true"
-                            }
+                        type = "admin"
+
+                    result = {
+                        "success": "true",
+                        "type": type,
+                        "user_id": person[0],
+                        "username": personDetails['username']
+                    }
         else:
             result = {
-                "success": "false",
-                "ban": "false"
+                "success": "false"
             }
         return jsonify({"result": result})
 
@@ -1505,7 +1482,7 @@ def admin_dashboard_ban_users():
 
     if input["request_type"] == "search_users":
 
-        cur.execute("SELECT username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id WHERE "
+        cur.execute("SELECT person_id, username FROM user AS u INNER JOIN person AS p ON u.user_id = p.person_id WHERE "
                     "username LIKE {0}".format('\'' + input["username"] + '%\''))
 
         username_results = []
@@ -1519,17 +1496,36 @@ def admin_dashboard_ban_users():
 
     elif input["request_type"] == "display_details_of_user":
 
-        cur.execute("SELECT username, forename, surname, account_balance, total_winnings FROM user AS u INNER JOIN"
+        cur.execute("SELECT user_id, username, forename, surname, account_balance, total_winnings FROM user AS u INNER JOIN"
                     " person AS p ON user_id = person_id WHERE user_id = {0}".format(input["user_id"]))
 
+        val = cur.fetchall()
         user_desc = []
 
-        user_desc_columns = [column[0] for column in cur.description]
+        for row in val:
+            check = cur.execute("SELECT user_id FROM bans WHERE user_id = {0}".format(row[0]))
+            if check > 0:
+                user = [{"banned": True,
+                         "username": row[1],
+                         "forename": row[2],
+                         "surname": row[3],
+                         "account_balance": row[4],
+                         "total_winnings": row[5]}]
+            else:
+                user = [{"banned": False,
+                         "username": row[1],
+                         "forename": row[2],
+                         "surname": row[3],
+                         "account_balance": row[4],
+                         "total_winnings": row[5]}]
 
-        for row in cur.fetchall():
-            user_desc.append(dict(zip(user_desc_columns, row)))
+            user_desc.append(user)
 
-        return {"user": user_desc[0]}
+        result = {
+            "user_details": user_desc
+        }
+
+        return jsonify({"result": result})
 
     elif input["request_type"] == "ban_user":
 
@@ -1566,6 +1562,8 @@ def admin_dashboard_modify_achievements():
 
         for row in cur.fetchall():
             achv_results.append(dict(zip(achv_columns, row)))
+
+        return{"achievements": achv_results}
 
     elif input["request_type"] == "add_achievement":
 
