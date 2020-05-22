@@ -69,7 +69,7 @@ function RenderRow(props){
                     {cell.item_description}
                 </TableCell>
                 <TableCell>
-                    {cell.item_id}
+                    {cell.cost}
                 </TableCell>
                 <TableCell>
                     <Button disabled={disabled} onClick={handleClick(cell.item_id, cell.item_type)} >
