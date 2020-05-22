@@ -13,6 +13,9 @@ import AdminBanPage from "./AdminBanPage.jsx"
 import AdminAchievements from './AdminAchievement.jsx';
 import AdminMarket from './AdminMarket.jsx';
 import AdminChangeBet from './AdminChangeBet.jsx';
+import axios from 'axios';
+
+const URL = "http://localhost:5000/admin-dashboard/modify-bets";
 
 const buttonStyle = {
     backgroundColor: '#4e4b57',
@@ -129,6 +132,25 @@ function AdminTabs(props) {
         setValue(newValue);
     };
 
+    const handleClick = (event) => {
+        axios.post(URL,
+            {
+                "request_type": "randomize"
+            },
+            {withCredentials: false})
+                .then( res => {
+                    if(res.data.status == "success"){
+                        alert("Results are randomized.");
+                    }
+                    else {
+                        alert("Something went wrong while randomizing.");
+                    }
+                })
+                .catch( (error) => {
+                console.log("info", error)
+            });
+    };
+
     return (
         <div>
             <AppBar position="static">
@@ -159,7 +181,7 @@ function AdminTabs(props) {
                         <AdminAchievements id={props.id}/>
                     </TabPanel>
                     <TabPanel value={value} index={5}>
-                        <Button variant="outlined" size="large">Run Randomizer</Button>
+                        <Button onClick={handleClick} variant="outlined" size="large">Run Randomizer</Button>
                     </TabPanel>
                 </div>
         </div>
