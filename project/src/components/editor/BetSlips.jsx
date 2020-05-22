@@ -9,7 +9,7 @@ class BetSlips extends Component {
             <Grid container spacing={3}>
                 {this.props.editor.bet_slips && this.props.editor.bet_slips.map( (single) => {
                         return(
-                            <SingleSlip updateFriends = {this.props.updateFriends} id = {this.props.id} slip={single} userSuccess={this.props.userSuccess}/>
+                            <SingleSlip updateFriends = {this.props.updateFriends} id = {this.props.id} slip={single} userSuccess={this.props.userSuccess} handleBetChange = {this.props.handleBetChange}/>
                         );
                         })
                  }

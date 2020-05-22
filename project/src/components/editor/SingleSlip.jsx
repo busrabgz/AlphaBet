@@ -114,6 +114,7 @@ class SingleSlip extends Component {
     }
   }
 
+
   userLikeBetSlip(){
     if(this.props.userSuccess){
       axios.post(URL,
@@ -155,7 +156,7 @@ class SingleSlip extends Component {
                         <Paper style style={betStyle}>
                             Total odd : {this.totalOdd}
                         </Paper>
-                        <Button style={{border: "solid 0.8px", marginTop:20, backgroundColor:"#14FF43", float:"center", width:"100%"}}>BET ON THIS NOW!</Button>
+                        <Button onClick={() => this.props.handleBetChange(this.props.slip.bet_slip_id)} style={{border: "solid 0.8px", marginTop:20, backgroundColor:"#14FF43", float:"center", width:"100%"}}>BET ON THIS NOW!</Button>
                     </Paper>
                     <Paper style={outerPaperStyle} elevation={10}>
                         <Typography align="left" variant="h5" color="initial"> Comments </Typography>
