@@ -1197,7 +1197,7 @@ def editor():
                 if row["bet_slip_id"] == bet_slip["bet_slip_id"]:
                     bet_slip_found = True
 
-                    bet_slip["comment"].append(comment_to_add)
+                    bet_slip["bet_slip_comments"].append(comment_to_add)
             if not bet_slip_found:
                 comment_map_to_add = {
                     "bet_slip_id": row["bet_slip_id"],
@@ -1587,8 +1587,6 @@ def admin_dashboard_modify_bets():
         bet_type = result_tuple[0]
         mbn = result_tuple[1]
 
-        print(bet_type, mbn)
-
         if cur.execute("UPDATE bet SET active = FALSE WHERE bet_id = {0} AND match_id = {1}"
                                .format(input["bet_id"], input["match_id"])) > 0:
             if cur.execute("INSERT INTO bet (match_id, bet_type, change_date, odd, mbn, result, active) VALUES ({0},"
@@ -1620,7 +1618,8 @@ def admin_dashboard_modify_bets():
 
         unfinished_matches_columns = [column[0] for column in cur.description]
 
-        for row in cur.fetchall():
+        un_tuple = cur.fetchall()
+        for row in un_tuple:
             unfinished_matches.append(dict(zip(unfinished_matches_columns, row)))
 
         for row in unfinished_matches:
@@ -1747,14 +1746,88 @@ def admin_dashboard_modify_bets():
 
                         mysql.connection.commit()
 
+
+
                     else:
                         return {"status": "Could not insert to tennis_result"}
 
                 else:
                     return {"status": "Could not insert to result"}
 
-        return {"status": "success"}
+        match_ids = []
+        for row in un_tuple:
+            match_ids.append(row[0])
 
+        if len(match_ids) != 0:
+
+            if len(match_ids) == 1:
+                match_ids = str(tuple(match_ids)).replace(",", "")
+
+            else:
+                match_ids = str(tuple(match_ids))
+
+            cur.execute("SELECT DISTINCT bet_slip_id FROM included_bet WHERE match_id IN {0}".format(match_ids))
+
+            betslips_to_check = cur.fetchall()
+
+            betslips = []
+
+            for row in betslips_to_check:
+                betslips.append(row[0])
+
+            if len(betslips) != 0:
+                if len(betslips) == 1:
+                    betslips = str(tuple(betslips)).replace(",", "")
+                elif len(betslips) == 0:
+                    betslips = "()"
+                else:
+                    betslips = str(tuple(betslips))
+
+                print(betslips)
+
+                cur.execute("WITH bet_data AS (SELECT * FROM included_bet NATURAL JOIN bet), winning_bet_slips AS"
+                            " (SELECT bet_data.bet_slip_id, odd FROM bet_data WHERE bet_slip_id IN {0} AND NOT EXISTS "
+                            "(SELECT bet_id FROM included_bet NATURAL JOIN bet WHERE bet_data.bet_slip_id = bet_slip_id"
+                            " AND (result = 'LOST' OR result = 'PENDING'))) SELECT DISTINCT * FROM winning_bet_slips"
+                            " NATURAL JOIN bet_slip".format(betslips))
+
+                winning_bet_slips = []
+
+                winning_bet_slips_columns = [column[0] for column in cur.description]
+
+                for row in cur.fetchall():
+                    winning_bet_slips.append(dict(zip(winning_bet_slips_columns, row)))
+
+                payment_map = []
+
+                for row in winning_bet_slips:
+                    user_found = False
+
+                    for payment_data in payment_map:
+
+                        if row["creator_id"] == payment_data["creator_id"]:
+                            user_found = True
+
+                            payment_data["money_to_add"] = payment_data["money_to_add"] * row["odd"]
+
+                    if not user_found:
+                        payment_to_add = {
+                            "creator_id": row["creator_id"],
+                            "money_to_add": row["played_amount"] * row["odd"]
+                        }
+
+                        payment_map.append(payment_to_add)
+
+                for row in payment_map:
+
+                    cur.execute("UPDATE user SET account_balance = user.account_balance + {0} WHERE user_id = {1}"
+                                .format(row["money_to_add"], row["creator_id"]))
+                    mysql.connection.commit()
+                return {"status": "success"}
+            else:
+                return {"status": "No winning betslips"}
+        else:
+            return {"status": "No matches ended"}
 
 @app.route('/admin-dashboard/editors', methods=["GET", "POST"])
 def admin_dashboard_editors():
