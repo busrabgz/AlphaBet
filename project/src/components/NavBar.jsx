@@ -74,8 +74,12 @@ class NavBar extends React.Component {
     var coin = this.state.alphaCoins;
     var ty = "";
     this.setState({balance: bal, alphaCoins: coin, type: ty});
+
+    if (this.state.type == "user"){
+        this.props.updateLogIn(false, "","", "", 0, 0);
+    }
     this.props.updateType();
-    this.props.updateLogIn(false, "","", "", 0, 0);
+
   }
 
   componentDidMount() {
