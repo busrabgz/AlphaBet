@@ -79,7 +79,7 @@ class Feed extends Component {
         <div>
             <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type}  userBalance={balance} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins}/>
             <div style={divStyle}>
-                <BetSlip id={this.props.id}/>
+                <BetSlip id={this.props.id} type={this.props.type} username={username}/>
                 <FeedPanel userSuccess={this.props.userSuccess} id={this.props.id} username={this.props.username} users={this.state.users} updateFriends = {this.props.updateFriends}/>
             </div>
         </div>

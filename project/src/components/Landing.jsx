@@ -6,6 +6,7 @@ import SignIn from './SignIn.jsx'
 import Feed from './Feed.jsx'
 import Market from './Market.jsx'
 import Editor from './Editor.jsx'
+import EditorHome from './editor/EditorHome.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
 import {
   BrowserRouter as
@@ -45,6 +46,9 @@ class Landing extends React.Component {
               </Route>
               <Route exact path="/">
                 <Home updateLogIn={updateLogInState} updateType={updateType} id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
+              </Route>
+              <Route exact path="/editorHome">
+                <EditorHome id={userId} type={type} updateFilterInfo={updateFilterInfo} filterInfo={filterInfo} username={username} updateBetsInfo={updateBetsInfo} betsInfo={betsInfo}/>
               </Route>
           </Switch>
         </div>

@@ -10,7 +10,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # configure db
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_PASSWORD'] = '123456789'
+app.config['MYSQL_PASSWORD'] = '459150'
 app.config['MYSQL_DB'] = 'alpha'
 app.config['MYSQL_USER'] = 'root'
 app.config['JWT_SECRET_KEY'] = 'secret'
@@ -1556,6 +1556,7 @@ def editor():
 
                 else:
                     return {"status": "Could not add bet to user betslip."}
+        return {"status": "success"}
 
     elif input["request_type"] == "like_comment":
 

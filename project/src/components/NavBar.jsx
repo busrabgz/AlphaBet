@@ -153,7 +153,7 @@ class NavBar extends React.Component {
           <AppBar position="static">
           <Toolbar>
             <Typography variant="h4" style={title}>AlphaBet</Typography>
-              <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
+              <Link style={{textDecoration: 'none'}} to='/editorHome'><Button size="large" variant="contained" style={menuButton} color="primary">Home</Button></Link>
               <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
               <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
           </Toolbar>

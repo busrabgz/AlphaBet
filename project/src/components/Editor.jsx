@@ -44,11 +44,12 @@ class Editor extends React.Component {
             winRate: "",
             bet_slips: [],
             suggested_bets: []
-            }
+            }, dummy: false
         }
         this.onClick = this.handleClick.bind(this);
         this.onSwitch = this.handleSwitch.bind(this);
         this.editors = [];
+        this.handleBetChange = this.handleBetChange.bind(this)
 
     }
 
@@ -133,6 +134,24 @@ class Editor extends React.Component {
         }
     }
 
+    handleBetChange(betslip_id) {
+        console.log("girdik mi ")
+        console.log("betslip id:", betslip_id)
+        axios.post(URL,
+            {
+                "request_type": "play_editor_bet_slip",
+                "user_id": this.props.id,   
+                "bet_slip_id": betslip_id
+             },
+            {withCredentials: false})
+            .then( res => {
+                    this.props.updateBetsInfo()
+                })
+             .catch(error => {
+                console.log("editors", error);
+                });
+    }
+
     render() {
         return(
             <UserContext.Consumer>
@@ -140,10 +159,10 @@ class Editor extends React.Component {
             <div>
                 <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type} id = {this.props.id} isLogged={loggedIn} alphaCoins={alphaCoins} userBalance={balance} />
                 <div>
-                    <BetSlip id={this.props.id}/>
+                    <BetSlip id={this.props.id} type={this.props.type} username={username}/>
                     <div style={rootStyle}>
                         <EditorBar key={this.state.editor.id} onClick={this.handleClick} editors = {this.state.editors}/>
-                        <EditorTabPanel updateFriends = {this.props.updateFriends} id = {this.props.id} editor={this.state.editor} followed={this.state.editor.followed} onSwitch={this.handleSwitch} userSuccess={this.props.userSuccess}/>
+                        <EditorTabPanel updateFriends = {this.props.updateFriends} id = {this.props.id} editor={this.state.editor} followed={this.state.editor.followed} onSwitch={this.handleSwitch} userSuccess={this.props.userSuccess} handleBetChange = {this.handleBetChange}/>
                     </div>
                 </div>
             </div>

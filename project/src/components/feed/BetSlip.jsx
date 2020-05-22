@@ -36,6 +36,7 @@ class BetSlip extends Component {
     };
     this.handleChange = this.handleChange.bind(this)
     this.handleButton = this.handleButton.bind(this)
+    this.handleEditorButton = this.handleEditorButton.bind(this)
   }
   handleChange(event) {
     this.setState({
@@ -69,7 +70,24 @@ class BetSlip extends Component {
           });
   }
 
+  handleEditorButton() {
+    axios.post(URL,
+      {
+        request_type: "editor_share_betslip",
+        username: this.props.username,
+       },
+       )
+      .then( res => {
+        console.log("share status: ", res.data.status)
+
+      })
+       .catch(error => {
+          console.log("share error", error);
+          });
+  }
+
   componentDidMount() {
+    console.log(this.props.id)
     axios.post(URL,
       {
         request_type: "display_user_bet_slip",
@@ -145,14 +163,18 @@ class BetSlip extends Component {
                 </div>
             </Paper>
             <form>
-              <TextField
+            {this.props.type != "editor" && 
+            <TextField
                 id="amount"
                 label="Enter Amount"
                 value={this.state.text}
                 onChange={this.handleChange}
                 variant="outlined"
-              />
-              <Button onClick={this.handleButton} style={{border: "solid 0.8px", height: 55}}>Place Bet</Button>
+              />}
+              {this.props.type == "editor"
+              ?  <Button onClick={this.handleEditorButton} style={{border: "solid 0.8px", height: 55}}>Share Bet</Button>
+              :  <Button onClick={this.handleButton} style={{border: "solid 0.8px", height: 55}}>Place Bet</Button>}
+             
             </form>
           </Box>
         </div>
