@@ -133,12 +133,6 @@ BEGIN
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "one_two";
             END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
-            END IF;
     END IF;
 
     IF half_home > half_away AND home < away
@@ -195,12 +189,6 @@ BEGIN
             IF bet_count > 0
                 THEN
                     UPDATE bet SET result = "WON" WHERE match_id = id AND bet_type = "one_two";
-            END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
             END IF;
     END IF;
 
@@ -259,12 +247,6 @@ BEGIN
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "one_two";
             END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
-            END IF;
     END IF;
 
     IF half_home < half_away AND home < away
@@ -322,12 +304,6 @@ BEGIN
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
             END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
-            END IF;
     END IF;
 
     IF half_home < half_away AND home > away
@@ -356,10 +332,10 @@ BEGIN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "zero_two";
             END IF;
 
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "zero_two");
+            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "zero_zero");
             IF bet_count > 0
                 THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "zero_two";
+                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "zero_zero";
             END IF;
 
             SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_zero");
@@ -384,12 +360,6 @@ BEGIN
             IF bet_count > 0
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "one_two";
-            END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "WON" WHERE match_id = id AND bet_type = "two_one";
             END IF;
     END IF;
 
@@ -448,12 +418,6 @@ BEGIN
                 THEN
                     UPDATE bet SET result = "LOSTN" WHERE match_id = id AND bet_type = "two_one";
             END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
-            END IF;
     END IF;
 
     IF half_home = half_away AND home < away
@@ -482,10 +446,10 @@ BEGIN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "zero_two";
             END IF;
 
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "zero_two");
+            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "zero_zero");
             IF bet_count > 0
                 THEN
-                    UPDATE bet SET result = "WON" WHERE match_id = id AND bet_type = "zero_two";
+                    UPDATE bet SET result = "WON" WHERE match_id = id AND bet_type = "zero_zero";
             END IF;
 
             SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_zero");
@@ -510,12 +474,6 @@ BEGIN
             IF bet_count > 0
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "one_two";
-            END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
             END IF;
     END IF;
 
@@ -574,12 +532,6 @@ BEGIN
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "one_two";
             END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
-            END IF;
     END IF;
 
     IF half_home = half_away AND home = away
@@ -636,12 +588,6 @@ BEGIN
             IF bet_count > 0
                 THEN
                     UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "one_two";
-            END IF;
-
-            SET bet_count = ( SELECT COUNT(*) FROM bet WHERE match_id = id AND bet_type = "two_one");
-            IF bet_count > 0
-                THEN
-                    UPDATE bet SET result = "LOST" WHERE match_id = id AND bet_type = "two_one";
             END IF;
     END IF;
 END
