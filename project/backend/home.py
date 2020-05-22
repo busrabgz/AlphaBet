@@ -10,7 +10,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # configure db
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_PASSWORD'] = '123456789'
+app.config['MYSQL_PASSWORD'] = '459150'
 app.config['MYSQL_DB'] = 'alpha'
 app.config['MYSQL_USER'] = 'root'
 app.config['JWT_SECRET_KEY'] = 'secret'
@@ -1562,6 +1562,8 @@ def editor():
                                        .format(user_bet_slip_id, row["bet_id"], row["match_id"])) > 0:
 
                     mysql.connection.commit()
+                    
+                    return {"status": "success"}
 
                 else:
                     return {"status": "Could not add bet to user betslip."}
