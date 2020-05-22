@@ -2054,18 +2054,28 @@ def market():
 
     # get request_type, user_id, shop_item_id, item_type
     if input["request_type"] == "buy_item":
-        val = cur.execute("INSERT INTO bought_item (shop_item_id, user_id, item_type) VALUES ('{0}', '{1}', '{2}')"
-                          .format(input["shop_item_id"], input["user_id"], input["item_type"]))
-        mysql.connection.commit()
 
-        if val > 0:
-            result = {
-                "success": True
-            }
-        else:
+        cur.execute("SELECT cost FROM shop_item WHERE shop_item_id = {0}".format(input["shop_item_id"]))
+        cost = cur.fetchone()
+
+        cur.execute("SELECT alpha_coins FROM user WHERE user_id = {0}".format(input["user_id"]))
+        coins = cur.fetchone()
+
+        if cost[0] > coins[0]:
             result = {
                 "success": False
             }
+        else:
+            cur.execute("INSERT INTO bought_item (shop_item_id, user_id, item_type) VALUES ('{0}', '{1}', '{2}')"
+                          .format(input["shop_item_id"], input["user_id"], input["item_type"]))
+            new_coins = coins[0] - cost[0]
+            cur.execute("UPDATE user SET alpha_coins = {0} WHERE user_id = {1}".format(new_coins, input["user_id"]))
+            mysql.connection.commit()
+
+            result = {
+                "success": True
+            }
+
         return jsonify({"result": result})
 
 
