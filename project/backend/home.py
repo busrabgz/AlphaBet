@@ -469,8 +469,8 @@ def register():
             creator = cur.fetchone()
             creator_id = creator[0]
 
-        # cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
-        # mysql.connection.commit()
+            cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
+            mysql.connection.commit()
 
         if personDetails.get('type') == "user":
             cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) "

@@ -60,7 +60,7 @@ class BetSlip extends Component {
           alert("MBN not satisfied!")
         }
         else if (res.data.status == "success") {
-          console.log("success")
+          alert("Bet slip is placed! Check profile page.")
         }
 
       })
@@ -133,7 +133,7 @@ class BetSlip extends Component {
           {this.state.singleBets.map((singleBet) => {
             let matchName = singleBet.away_side + "-" + singleBet.home_side
             return(
-              <SingleBet matchname={matchName} type={singleBet.bet_type} odd={singleBet.odd}/>
+              <SingleBet matchname={matchName} type={singleBet.bet_type} odd={singleBet.odd} mbn={singleBet.mbn} />
               ) 
           })}
           <Box style={boxStyle}>

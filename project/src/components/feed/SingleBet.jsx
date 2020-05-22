@@ -21,8 +21,8 @@ class SingleBet extends Component {
         <div style={divStyle}>
           <Paper elevation={3}>
             <p>{this.props.matchname}</p>
-            <p>{this.props.type}</p>
-            <p>{this.props.odd}</p>
+            <p>Bet type: {this.props.type}</p>
+            <p>Odd: {this.props.odd}  MBN: {this.props.mbn}</p>
           </Paper>
         </div>
          )
