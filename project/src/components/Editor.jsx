@@ -44,7 +44,7 @@ class Editor extends React.Component {
             winRate: "",
             bet_slips: [],
             suggested_bets: []
-            }
+            }, dummy: false
         }
         this.onClick = this.handleClick.bind(this);
         this.onSwitch = this.handleSwitch.bind(this);
@@ -146,7 +146,6 @@ class Editor extends React.Component {
              },
             {withCredentials: false})
             .then( res => {
-                    console.log("success?")
                     this.props.updateBetsInfo()
                 })
              .catch(error => {

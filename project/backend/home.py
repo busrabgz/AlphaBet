@@ -1562,11 +1562,10 @@ def editor():
                                        .format(user_bet_slip_id, row["bet_id"], row["match_id"])) > 0:
 
                     mysql.connection.commit()
-                    
-                    return {"status": "success"}
 
                 else:
                     return {"status": "Could not add bet to user betslip."}
+        return {"status": "success"}
 
     elif input["request_type"] == "like_comment":
 
