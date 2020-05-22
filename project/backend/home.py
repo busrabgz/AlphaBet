@@ -465,21 +465,20 @@ def register():
         if personDetails.get('type') == "user":
             cur.execute("INSERT INTO bet_slip_creator(creator_id) VALUES({0})".format(id))
             mysql.connection.commit()
-            cur.execute("SELECT creator_id FROM bet_slip_creator WHERE creator_id = {0}".format(id))
             creator = cur.fetchone()
             creator_id = creator[0]
 
-            cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})".format(creator_id, False, 0))
+            cur.execute("INSERT INTO bet_slip(creator_id, placed, played_amount) VALUES({0}, {1}, {2})"
+                        .format(creator_id, False, 0))
             mysql.connection.commit()
 
-        if personDetails.get('type') == "user":
             cur.execute("INSERT INTO user(user_id, account_balance, total_winnings, alpha_coins) "
                         "VALUES(%s,%s,%s,%s)", (id, 0, 0, 0))
             mysql.connection.commit()
 
         if personDetails.get('type') == "editor":
-            cur.execute("INSERT INTO editor(editor_id, winrate, total_winnings) "
-                        "VALUES(%s,%s,%s)", (id, 0, 0))
+            cur.execute("INSERT INTO approves(editor_id, state) "
+                        "VALUES(%s,%s)", (id, "PENDING"))
             mysql.connection.commit()
 
         result = {
@@ -489,7 +488,6 @@ def register():
             "username": personDetails.get('username')
         }
         return jsonify({"result": result})
-
 
 @app.route('/signin', methods=["GET", "POST"])
 def login():
@@ -504,31 +502,51 @@ def login():
                 user = cur.execute("SELECT * FROM user WHERE user_id = %s", ([person[0]]))
                 users = cur.fetchone()
                 if user > 0:
-                    type = "user"
-                    result = {
-                        "success": "true",
-                        "type": type,
-                        "user_id": person[0],
-                        "username": personDetails['username'],
-                        "account_balance": users[1],
-                        "alpha_coins": users[3]
-                    }
+                    ban = cur.execute("SELECT * FROM bans WHERE user_id = %s", ([users[0]]))
+                    if ban > 0:
+                        result = {
+                            "success": "false",
+                            "ban": "true"
+                        }
+                    else:
+                        type = "user"
+                        result = {
+                            "success": "true",
+                            "type": type,
+                            "user_id": users[0],
+                            "username": personDetails['username'],
+                            "account_balance": users[1],
+                            "alpha_coins": users[3]
+                        }
                 else:
                     editor = cur.execute("SELECT editor_id FROM editor WHERE editor_id = %s", ([person[0]]))
                     if editor > 0:
                         type = "editor"
+                        result = {
+                            "success": "true",
+                            "type": type,
+                            "user_id": person[0],
+                            "username": personDetails['username']
+                        }
                     else:
-                        type = "admin"
-
-                    result = {
-                        "success": "true",
-                        "type": type,
-                        "user_id": person[0],
-                        "username": personDetails['username']
-                    }
+                        admin = cur.execute("SELECT admin_id FROM admin WHERE admin_id = %s", ([person[0]]))
+                        if admin > 0:
+                            type = "admin"
+                            result = {
+                                "success": "true",
+                                "type": type,
+                                "user_id": person[0],
+                                "username": personDetails['username']
+                            }
+                        else:
+                            result = {
+                                "success": "false",
+                                "pending": "true"
+                            }
         else:
             result = {
-                "success": "false"
+                "success": "false",
+                "ban": "false"
             }
         return jsonify({"result": result})
 

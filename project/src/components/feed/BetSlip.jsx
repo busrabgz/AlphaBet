@@ -46,6 +46,7 @@ class BetSlip extends Component {
 
   handleButton() {
     var no = parseInt(this.state.text)
+    console.log("username is:" , this.props.username)
     axios.post(URL,
       {
         request_type: "play_betslip",
