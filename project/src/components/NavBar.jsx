@@ -15,89 +15,201 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import axios from 'axios';
+const URL = "http://localhost:5000/profile";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(10),
-  },
-  title: {
-    flexGrow: 0.1,
-    marginRight: theme.spacing(5),
-  },
-  box: {
-    maxHeight: 100,
-    marginLeft: theme.spacing(20),
-  },
-  listItemText: {
-    fontSize: '0.8em',
-  },
-  logoutButton: {
-    marginLeft: theme.spacing(5),
+const root = {
+  flexGrow: 1,
+}
 
-  },
-  buttonGroup: {
-    marginLeft: theme.spacing(15),
-  },
-}));
+const menuButton = {
+  marginRight: "5px",
+  marginLeft: "5px",
+}
 
-export default function NavBar(props) {
-  const classes = useStyles();
-  const balanceStr = "Balance: " + props.userBalance;
-  return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h4" className={classes.title}>
-            AlphaBet
-          </Typography>
-            <Link to='/'>
-              <Button color="white">
-              Home
-              </Button>
-            </Link>
-              <Button color="inherit">
-                <Link to="/about">About</Link>
-              </Button>
-              <Button color="inherit">
-                <Link to="/profile">Profile</Link>
-              </Button>
-              <Button color="inherit">
-                <Link to="/editors">Editors</Link>
-              </Button>
-              <Button color="white">
-                    <Link to="/feed">Feed</Link>
-              </Button>
-              <Button className={classes.menuButton} color="inherit">
-                    <Link to="/market">Market</Link>
-              </Button>
-          <Box className={classes.box} my={-5}>
-            <List component="nav">
-              <Box mb={-2}>
-              <ListItem>
-                <ListItemText classes={{primary:classes.listItemText}} primary={balanceStr}></ListItemText>
-              </ListItem>
-              </Box>
-              <Box mt={-1}>
-              <ListItem>
-                <ListItemText classes={{primary:classes.listItemText}} primary="AlphaBet: "></ListItemText>
-              </ListItem>
-              </Box>
-            </List>
-          </Box>
+const title = {
+  flexGrow: 0.1,
+  marginRight: "5px",
+}
 
-          <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.buttonGroup}>
-          <Link to='/register' style={{textDecoration: 'none'}}>
-            <Button size="small" variant="contained" color="secondary" >Register</Button>
-          </Link>
-          <Link to='/signin' style={{textDecoration: 'none'}}>
-            <Button size="small" variant="contained" color="secondary" >Sign In</Button>
-          </Link>
-          </ButtonGroup> 
-        </Toolbar>
-      </AppBar>
-    </div>
-    ); 
-  }   
+const box = {
+  maxHeight: 100,
+  marginLeft: "20px",
+}
+
+const listItemText = {
+  fontSize: '0.8em',
+}
+
+const logoutButton = {
+  marginRight: 50,
+}
+
+const loginButton = {
+  marginRight: 50,
+}
+
+const buttonGroup = {
+  marginLeft: "30px",
+}
+
+class NavBar extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      balance: 0,
+      alphaCoins: 0,
+      type: this.props.type,
+    }
+    this.handleClick = this.handleClick.bind(this);
+  }
+  //const classes = useStyles();
+  //const balanceStr = "Balance: " + props.userBalance;
+  //let button
+  //let registerButton
+  //console.log('success: ',props.userSuccess)
+
+  handleClick(event){
+    var bal = this.state.balance;
+    var coin = this.state.alphaCoins;
+    var ty = "";
+    this.setState({balance: bal, alphaCoins: coin, type: ty});
+
+    if (this.state.type == "user"){
+        this.props.updateLogIn(false, "","", "", 0, 0);
+    }
+    this.props.updateType();
+
+  }
+
+  componentDidMount() {
+    if (this.props.id != -1) {
+      axios.post(URL,
+        {
+            "request_type": "get_user_info",
+            "user_id": this.props.id
+         },
+        {withCredentials: false})
+        .then( res => {
+              this.setState({balance: res.data.result.account_balance, alphaCoins: res.data.result.alpha_coins
+              })
+            })
+         .catch(error => {
+            console.log("info", error);
+            });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.userBalance != this.props.userBalance) {
+      if (this.props.id != -1) {
+        axios.post(URL,
+          {
+              "request_type": "get_user_info",
+              "user_id": this.props.id
+           },
+          {withCredentials: false})
+          .then( res => {
+              this.setState({balance: res.data.result.account_balance,
+                })
+              })
+           .catch(error => {
+              console.log("info", error);
+              });
+      }
+    }
+    if (prevProps.alphaCoins != this.props.alphaCoins) {
+      if (this.props.id != -1) {
+        axios.post(URL,
+          {
+              "request_type": "get_user_info",
+              "user_id": this.props.id
+           },
+          {withCredentials: false})
+          .then( res => {
+              this.setState({alphaCoins: res.data.result.alpha_coins,
+                })
+              })
+           .catch(error => {
+              console.log("info", error);
+              });
+      }
+    }
+  }
+  
+  render() {  
+    switch(this.state.type){
+      case "admin":
+        var navbar =  
+        <AppBar style={{width: "100%"}} position="static">
+            <Toolbar style={{width: "100%"}}>
+              <Typography variant="h4" style={title}>AlphaBet</Typography>
+              <Link style={{textDecoration: 'none'}} to="/dashboard"><Button size="large" variant="contained" style = {menuButton} color="primary">Dashboard</Button></Link>
+              <Typography variant="h6" style={{flexGrow: 1,}}>
+              </Typography>
+              <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
+            </Toolbar>  
+          </AppBar>
+          break;
+
+        case "editor":
+          var navbar = 
+          <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h4" style={title}>AlphaBet</Typography>
+              <Link style={{textDecoration: 'none'}} to='/editorHome'><Button size="large" variant="contained" style={menuButton} color="primary">Home</Button></Link>
+              <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
+              <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
+          </Toolbar>
+        </AppBar>
+        break;
+
+      case "user":
+        var navbar = 
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h4" style={title}>AlphaBet</Typography>
+            <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/profile"><Button size="large" variant="contained" style = {menuButton} color="primary">Profile</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/editors"><Button  size="large" variant="contained" style = {menuButton} color="primary">Editors</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/feed"><Button size="large" variant="contained" style = {menuButton} color="primary">Feed</Button></Link>
+            <Link style={{textDecoration: 'none'}} to="/market"><Button size="large" variant="contained" style = {menuButton} color="primary"> Market</Button></Link>
+            <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
+            <Box style={box} my={-5}>
+              <List component="nav">
+                <Box mb={-2}><ListItem>
+                  <ListItemText style = {listItemText} primary={"Balance: " + this.state.balance}></ListItemText>
+                </ListItem></Box>
+                <Box mt={-1}><ListItem>
+                  <ListItemText style = {listItemText} primary={"AlphaCoins: " + this.state.alphaCoins}></ListItemText>
+                </ListItem></Box>
+              </List></Box>
+              <Link to="/"><Button onClick={this.handleClick} style={logoutButton} size="medium" variant="contained" color="secondary">Logout</Button></Link>
+          </Toolbar>
+        </AppBar>
+        break;
+
+      default:
+        var navbar = 
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h4" style={title}>AlphaBet</Typography>
+            <Link style={{textDecoration: 'none'}} to='/'><Button size="large" variant="contained" style = {menuButton} color="primary">Home</Button></Link>
+            <Typography variant="h6" style={{flexGrow: 1,}}></Typography>
+            <ButtonGroup color="primary" aria-label="outlined primary button group" style={buttonGroup}>
+              <Link to='/register' style={{textDecoration: 'none'}}>
+                <Button size="medium" style = {menuButton} variant="contained" color="secondary" >Register</Button>
+              </Link>
+              <Link to='/signin' style={{textDecoration: 'none'}}>
+                <Button size="medium" style = {loginButton} variant="contained" color="secondary">Login</Button>
+              </Link>
+            </ButtonGroup>
+          </Toolbar>
+        </AppBar>
+        break;
+    }
+    return(navbar);
+  }
+}
+
+export default NavBar

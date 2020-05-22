@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import NavBar from './NavBar.jsx'
-import {UserContext} from './user-context';
+import NavBar from '../NavBar.jsx'
+import {UserContext} from '../user-context';
 import { Box, Paper } from '@material-ui/core';
-import BetSlip from './feed/BetSlip.jsx';
-import FilterPanel from './home/FilterPanel.jsx'
-import BetsPanel from './home/BetsPanel.jsx'
+import BetSlip from '../feed/BetSlip.jsx';
+import FilterPanel from '../home/FilterPanel.jsx'
+import BetsPanel from '../home/BetsPanel.jsx'
 import axios from 'axios'
+import EditorBetPanel from "./EditorBetPanel"
 
 const URL = "http://localhost:5000/";
 
@@ -37,6 +38,7 @@ class Home extends Component {
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleBetButton = this.handleBetButton.bind(this)
+    this.handleSuggestButton = this.handleSuggestButton.bind(this)
     this.changeInputText = this.changeInputText.bind(this)
     this.resetMatches = this.resetMatches.bind(this)
   }
@@ -47,9 +49,31 @@ class Home extends Component {
     })
   }
 
+  handleSuggestButton(betId, matchId, closeFunc, text) {
+    console.log("inside suggest button")
+    axios.post(URL,
+        {
+            request_type: "suggest_bet",
+            username: this.props.username,
+            match_id: matchId,
+            bet_id: betId,
+            editor_comment: text
+          },
+        {withCredentials: false})
+        .then( res => {
+            console.log("result: ", res.data.status)
+            closeFunc()
+            this.props.updateBetsInfo()
+            })
+          .catch(error => {
+            console.log("login", error);
+            });
+  }
+
   handleBetButton(prop1, prop2) {
     console.log("match_id", prop2)
     console.log("id", prop1)
+    console.log("username is:", this.props.username)
     axios.post(URL,
       {
           request_type: "add_bet_to_betslip",
@@ -377,14 +401,16 @@ class Home extends Component {
     <UserContext.Consumer>
     { ( {username, balance, updateBalance, loggedIn, betsInfo, updateBetsInfo, selectedSport, updateSelectedSport, alphaCoins} ) => (
         <div>
-            <NavBar updateLogIn={this.props.updateLogIn} updateType={this.props.updateType} type={this.props.type} userBalance={balance} isLogged={loggedIn} id = {this.props.id} alphaCoins={alphaCoins}/>
+            <NavBar type={this.props.type} userBalance={balance} isLogged={loggedIn} id = {this.props.id} alphaCoins={alphaCoins}/>
             <div style={divStyle}>
-              <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo} id={this.props.id} username={username} type={this.props.type}/>
+              <BetSlip betsInfo = {this.props.betsInfo} updateBetsInfo={updateBetsInfo} id={this.props.id} username={username} type={this.props.type} />
               <Box style={rootBoxStyle}>
+                <p>"WELCOME " {this.props.id}</p>
                 <FilterPanel inputText={this.state.inputText} onInputChange={this.changeInputText} contests={contests} filterInfo = {this.props.filterInfo} updateFilterInfo = {this.props.updateFilterInfo} updateBetsInfo={updateBetsInfo} handleSubmit={this.handleSubmit} resetMatches = {this.resetMatches} />
-                <BetsPanel  matches={this.state.matches} betsInfo={betsInfo} selectedSport={this.props.filterInfo.sport} handleBet={this.handleBetButton}/>
+                <EditorBetPanel  matches={this.state.matches} betsInfo={betsInfo} selectedSport={this.props.filterInfo.sport} handleBet={this.handleBetButton} handleSuggest={this.handleSuggestButton}/>
             </Box>
            </div>
+
         </div>
          )}
      </UserContext.Consumer>);

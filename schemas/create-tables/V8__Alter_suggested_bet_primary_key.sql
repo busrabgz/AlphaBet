@@ -1,0 +1,1 @@
+ALTER TABLE suggested_bet DROP PRIMARY KEY,ADD PRIMARY KEY (editor_id, match_id);

@@ -14,19 +14,91 @@ class App extends React.Component {
     constructor(props){
     super(props)
 
-    this.updateBalance = (amount) => {
+    this.updateFriends = () => {
         this.setState( state => ({
-            balance: state.balance + 1
-        }));
+            dummyFriend: 
+             state.dummyFriend === false
+             ?  true
+             :  false
+        }))
+    }
+    
+    this.updateUserInfo = () => {
+        this.setState( state => ({
+            changeUserInfo: 
+             state.changeUserInfo === false
+             ?  true
+             :  false
+        }))
+    }
+
+    this.updateType = () => {
+        this.setState( state => ({
+            type: ""
+        }))
+    }
+
+    this.updateBalance = (newBalance) => {
+            this.setState( state => ({
+                balance: state.balance + newBalance
+            }))
     };
 
+    this.updateFilterInfo = (filter) => {
+        console.log("Inside filter info")
+        this.setState( state => ({
+            filterInfo: filter
+        }))
+    }
+
+    this.updateAlphaCoins = (newCoin) => {
+        this.setState( state => ({
+            alphaCoins: state.alphaCoins + newCoin
+        }))
+    }
+
+    this.updateLogInState = (newState, newType, newName,newId, newBalance, newCoins) => {
+        this.setState( state => ({
+            loggedIn: newState,
+            type: newType,
+            username: newName,
+            userId: newId,
+            balance: newBalance,
+            alphaCoins: newCoins
+        }));
+        return true
+    };
+
+    this.updateBetsInfo = (bets) => {
+        this.setState( state => ({
+            betsInfo: 
+             state.betsInfo === false
+             ?  true
+             :  false
+        }))
+    }
+
     this.state = {
+        userId: userInfo.userId,
         username: userInfo.username,
         password: userInfo.password,
         balance: userInfo.balance,
         updateBalance: this.updateBalance,
+        type: userInfo.type,
+        updateType: this.updateType,
+        loggedIn: userInfo.loggedIn,
+        updateLogInState: this.updateLogInState,
+        dummyFriend: userInfo.dummyFriend,
+        updateFriends: this.updateFriends,
+        changeUserInfo: userInfo.changeUserInfo,
+        updateUserInfo: this.updateUserInfo,
+        alphaCoins: userInfo.alphaCoins,
+        updateAlphaCoins: this.updateAlphaCoins,
+        filterInfo: userInfo.filterInfo,
+        updateFilterInfo: this.updateFilterInfo,
+        betsInfo: userInfo.betsInfo,
+        updateBetsInfo: this.updateBetsInfo
         };
-
     }
 
   render(){
